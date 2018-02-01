@@ -1,0 +1,40 @@
+version: '2'
+
+services:
+
+  cdx:
+    image: ukwa/tinycdxserver:ukwa-production
+    ports:
+      - "9090:8080"
+  
+  hadoop:
+    image: sequenceiq/hadoop-docker:2.7.0
+    command: "/etc/bootstrap.sh -d"
+    ports:
+      - "50070:50070"
+      - "50075:50075"
+    hostname: hadoop
+
+  owb:
+    image: ukwa/waybacks
+    ports:
+      - "8080:8080"
+      - "8090:8090"
+    environment:
+      - "UKWA_OWB_VERSION=qa"
+      - "WAYBACK_URL_PORT=8080"
+      - "WAYBACK_PROXY_PORT=8090"
+      - "CDX_WHITELIST="
+      - "WAYBACK_EXCLUDE_FILE=/usr/local/tomcat/webapps/ROOT/WEB-INF/classes/exclude.txt"
+      - "WAYBACK_EMBARGO=0"
+      - "WAYBACK_HTTPFS_PREFIX=http://hadoop:50070/webhdfs/v1/"
+      - "CDX_INDEX_SERVER=http://cdx:8080/tc"
+      - "WAYBACK_URL_PREFIX=http://localhost:8080"
+      - "WAYBACK_URL_HOST=localhost" 
+
+  populate:
+    image: sequenceiq/alpine-curl
+    command: /test-data/populate.sh
+    volumes:
+      - ./test-data/:/test-data
+
