@@ -11,7 +11,8 @@ This set of services, described by a Docker Compose file, will simulate the APIs
 If it all spins up correctly, these URLs should work:
 
  - http://localhost:50070/explorer.html#/ to observe the WARC file in HDFS
- - http://localhost:9090/tc?url=http%3A%2F%2Facid.matkelly.com%2F to see what's in the CDX server
+ - http://localhost:9090/tc?q=type:urlquery+url:http%3A%2F%2Facid.matkelly.com%2F to see what's in the CDX server
  - http://localhost:8080/wayback/*/http://acid.matkelly.com/ to access the content via OpenWayback
 
+The archived version of the 'acid test' page looks pretty poor in OWB, although it renders okay in proxy mode (use `localhost:8090` as your proxy for that to work).
 
