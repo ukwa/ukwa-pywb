@@ -8,7 +8,7 @@ services:
       - "9090:8080"
   
   hadoop:
-    image: sequenceiq/hadoop-docker:2.7.0
+    build: ./hadoop/
     command: "/etc/bootstrap.sh -d"
     ports:
       - "50070:50070"
@@ -37,4 +37,17 @@ services:
     command: /test-data/populate.sh
     volumes:
       - ./test-data/:/test-data
+
+  pywb:
+    image: ukwa/pywb
+    volumes:
+      - ./pywb:/webarchive
+
+    ports:
+      - "8081:8080"
+
+    depends_on:
+      - cdx
+      - hadoop
+
 

@@ -1,0 +1,6 @@
+collections:
+    test:
+        index_paths: xmlquery+http://cdx:8080/tc
+        archive_paths: webhdfs://hadoop:50070/
+
+
