@@ -1,0 +1,20 @@
+ CDX N b a m s k r M S V g
+com,matkelly,acid)/ 20180203004147 http://acid.matkelly.com/ text/html 200 WHWMCPBESZL6AHQXUI6VZYQW6XTLEYH6 - - 5969 797 acidtest-20180203004221.warc.gz
+com,matkelly,acid)/1f.css 20180203004147 http://acid.matkelly.com/1f.css text/css 200 IOSOX7FEIROVDLAYUBDMEJH2MOC7YPVC - - 668 7377 acidtest-20180203004221.warc.gz
+com,matkelly,acid)/1f_recursive.css 20180203004148 http://acid.matkelly.com/1f_recursive.css text/css 200 E3735HFKXJRUX7JTKQEQGJZV7MMXTQRQ - - 578 20715 acidtest-20180203004221.warc.gz
+com,matkelly,acid)/2j.css 20180203004149 http://acid.matkelly.com/2j.css text/css 200 MEE5HWNTC6QG2PC6KJ3DJGMY7CB65O5I - - 629 21842 acidtest-20180203004221.warc.gz
+com,matkelly,acid)/3c.html 20180203004149 http://acid.matkelly.com/3c.html text/html 200 YZ4EM4LIGNT6AZ4SQF4ZRAYRNO2ZD3UU - - 695 24525 acidtest-20180203004221.warc.gz
+com,matkelly,acid)/arraybuffer.js 20180203004147 http://acid.matkelly.com/arrayBuffer.js application/javascript 200 5VBNXZMF4PQSLPZ5T64GWGCHMDSGF5NQ - - 1313 8584 acidtest-20180203004221.warc.gz
+com,matkelly,acid)/localscript.js 20180203004147 http://acid.matkelly.com/localScript.js application/javascript 200 Q2Z233LBWKQUUPMNKW6UHYVQIFJP5XYY - - 737 11947 acidtest-20180203004221.warc.gz
+com,matkelly,acid)/pixel.png 20180203004147 http://acid.matkelly.com/pixel.png image/png 200 LEORAXXV5VG4UZTAMWTOXKFJ7JBG54BI - - 959 10435 acidtest-20180203004221.warc.gz
+com,matkelly,acid)/pixel_1f.png 20180203004149 http://acid.matkelly.com/pixel_1f.png image/png 200 LEORAXXV5VG4UZTAMWTOXKFJ7JBG54BI - - 958 25804 acidtest-20180203004221.warc.gz
+com,matkelly,acid)/pixel_2i.png 20180203004154 http://acid.matkelly.com/pixel_2i.png image/png 200 LEORAXXV5VG4UZTAMWTOXKFJ7JBG54BI - - 962 32911 acidtest-20180203004221.warc.gz
+com,matkelly,acid)/pixel_2j.png 20180203004149 http://acid.matkelly.com/pixel_2j.png image/png 200 LEORAXXV5VG4UZTAMWTOXKFJ7JBG54BI - - 960 31389 acidtest-20180203004221.warc.gz
+com,matkelly,acid)/pixel_3c.png 20180203004149 http://acid.matkelly.com/pixel_3c.png image/png 200 LEORAXXV5VG4UZTAMWTOXKFJ7JBG54BI - - 960 29868 acidtest-20180203004221.warc.gz
+com,matkelly,acid)/pixel_3f.mp4 20180203004149 http://acid.matkelly.com/pixel_3f.mp4 video/mp4 200 I3V5DF5ND5WHQOAAO5LPIVQS3VNPFG5Y - - 884 27332 acidtest-20180203004221.warc.gz
+com,matkelly,acid)/red.png 20180203004149 http://acid.matkelly.com/red.png image/png 200 SJPVNENIBSYUNBLA4U3NP7F72BDJZDS2 - - 962 23012 acidtest-20180203004221.warc.gz
+com,matkelly,acid)/transparent_1f.png 20180203004147 http://acid.matkelly.com/transparent_1f.png image/png 200 FN4O2TFF6J2OGGEYG2FMTIINMFMVDICY - - 552 13219 acidtest-20180203004221.warc.gz
+com,matkelly,acid)/transparent_2j.png 20180203004149 http://acid.matkelly.com/transparent_2j.png image/png 200 FN4O2TFF6J2OGGEYG2FMTIINMFMVDICY - - 556 28751 acidtest-20180203004221.warc.gz
+com,matkelly,acid)/whichbrowser/detect.js?e=52&f=127&h=900&r=sssst&ua=mozilla/5.0%20(macintosh;%20intel%20mac%20os%20x%2010_12_6)%20applewebkit/537.36%20(khtml,%20like%20gecko)%20chrome/63.0.3239.132%20safari/537.36&w=1440 20180203004147 http://acid.matkelly.com/WhichBrowser/detect.js?ua=Mozilla%2F5.0%20(Macintosh%3B%20Intel%20Mac%20OS%20X%2010_12_6)%20AppleWebKit%2F537.36%20(KHTML%2C%20like%20Gecko)%20Chrome%2F63.0.3239.132%20Safari%2F537.36&e=52&f=127&r=sssst&w=1440&h=900 application/x-httpd-php5 200 FXDIANOWL5BWQHJCKSRVLOCDJDSCCXXR - - 2863 14332 acidtest-20180203004221.warc.gz
+edu,odu,cs)/~mkelly/acid/externalscript.js 20180203004147 http://www.cs.odu.edu/~mkelly/acid/externalScript.js application/javascript 200 UHGAPAPF7ITNFPPFDLJ7WXVGYNJJPV33 - - 763 19391 acidtest-20180203004221.warc.gz
+edu,odu,cs)/~mkelly/acid/pixel.png 20180203004147 http://www.cs.odu.edu/~mkelly/acid/pixel.png image/png 200 LEORAXXV5VG4UZTAMWTOXKFJ7JBG54BI - - 978 17839 acidtest-20180203004221.warc.gz
