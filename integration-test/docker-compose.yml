@@ -43,6 +43,9 @@ services:
     volumes:
       - ./pywb:/webarchive
 
+    environment:
+      - "WEBHDFS_USER=hadoop"
+
     ports:
       - "8081:8080"
 
