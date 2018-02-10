@@ -1,4 +1,4 @@
-from gevent import monkey; monkey.patch_all(thread=False)
+#from gevent import monkey; monkey.patch_all(thread=False)
 
 import pytest
 import webtest
@@ -6,8 +6,6 @@ import os
 import time
 
 from pywb.warcserver.test.testutils import BaseTestClass
-
-import ukwa_pywb.ratelimitapp
 
 from fakeredis import FakeStrictRedis
 
@@ -19,16 +17,16 @@ class TestSessionLimitApp(BaseTestClass):
     @classmethod
     def get_test_app(cls, config_file, custom_config=None):
         config_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), config_file)
-        #app = UKWApp(config_file=config_file, custom_config=custom_config)
 
-        ukwa_pywb.ratelimitapp.SESSION_TTL = 3
+        os.environ['SESSION_LOCK_INTERVAL'] = '3'
+        import ukwa_pywb.ratelimitapp
         ukwa_pywb.ratelimitapp.StrictRedis = FakeStrictRedis
         app = ukwa_pywb.ratelimitapp.WaybackCli(args=['--debug']).load(config_file=config_file)
         return app, webtest.TestApp(app)
 
     @classmethod
-    def get_cookie(cls):
-        return cls.testapp.cookies[ukwa_pywb.ratelimitapp.COOKIE_NAME].strip('"')
+    def get_session(cls):
+        return cls.testapp.cookies['_ukwa_pywb_sesh'].strip('"')
 
     @classmethod
     def setup_class(cls):
@@ -62,7 +60,7 @@ class TestSessionLimitApp(BaseTestClass):
         assert self.redis.smembers(sesh_keys[0]) == {'lock:pywb//http://acid.matkelly.com/', 'lock:pywb/20180203004147/http://acid.matkelly.com/'}
 
         sesh = sesh_keys[0].split(':')[1]
-        assert self.get_cookie() == sesh
+        assert self.get_session() == sesh
 
         assert self.redis.get('lock:pywb//http://acid.matkelly.com/') == sesh
         assert self.redis.get('lock:pywb/20180203004147/http://acid.matkelly.com/') == sesh
@@ -81,16 +79,16 @@ class TestSessionLimitApp(BaseTestClass):
         TestSessionLimitApp.sesh_one = self.redis.keys('sesh:*')[0].split(':')[1]
         self.testapp.cookiejar.clear()
 
-        resp = self.testapp.get('/pywb/20180203004147mp_/acid.matkelly.com/', status=403)
+        res = self.testapp.get('/pywb/20180203004147mp_/acid.matkelly.com/', status=403)
 
         # not setting cookie until used
-        assert 'Set-Cookie' not in resp.headers
+        assert 'Set-Cookie' not in res.headers
 
     def test_replay_no_lock_different_ts(self):
         res = self.testapp.get('/pywb/20140716200243mp_/acid.matkelly.com/')
         assert self.redis.exists('lock:pywb/20140716200243/http://acid.matkelly.com/')
 
-        assert self.get_cookie() != self.sesh_one
+        assert self.get_session() != self.sesh_one
 
     def test_two_sessions(self):
         assert len(self.redis.keys('sesh:*')) == 2
@@ -100,9 +98,9 @@ class TestSessionLimitApp(BaseTestClass):
         self.testapp.get('/pywb/20180203004147mp_/acid.matkelly.com/', status=403)
 
         self.testapp.cookiejar.clear()
-        self.testapp.set_cookie(ukwa_pywb.ratelimitapp.COOKIE_NAME, self.sesh_one)
+        self.testapp.set_cookie('_ukwa_pywb_sesh', self.sesh_one)
 
-        assert self.get_cookie() == self.sesh_one
+        assert self.get_session() == self.sesh_one
 
         # back to first
         self.testapp.get('/pywb/20140716200243mp_/acid.matkelly.com/', status=403)
@@ -116,16 +114,59 @@ class TestSessionLimitApp(BaseTestClass):
 
         assert self.redis.keys('*') == []
 
-        resp = self.testapp.get('/pywb/20140716200243mp_/acid.matkelly.com/', status=200)
+        res = self.testapp.get('/pywb/20140716200243mp_/acid.matkelly.com/', status=200)
 
         # cookie hasn't expired yet, so refresh the expiry for another interval
-        assert '=' + self.sesh_one in resp.headers['Set-Cookie']
-        assert 'Max-Age=6' in resp.headers['Set-Cookie']
+        assert '=' + self.sesh_one in res.headers['Set-Cookie']
+        assert 'Max-Age=3' in res.headers['Set-Cookie']
 
     def test_replay_cookie_already_set(self):
-        resp = self.testapp.get('/pywb/20180203004147mp_/acid.matkelly.com/', status=200)
-        assert 'Set-Cookie' not in resp.headers
+        res = self.testapp.get('/pywb/20180203004147mp_/acid.matkelly.com/?_=123', status=307)
+        assert 'Set-Cookie' not in res.headers
 
+        #NOTE: fuzzy redirect to first capture, not closest!
+        assert res.location.endswith('/pywb/20140716200243mp_/http://acid.matkelly.com/')
 
+    def test_locks_view(self):
+        res = self.testapp.get('/_locks')
+
+        assert '/_locks/clear_url/pywb/20180203004147/http://acid.matkelly.com/?_=123' in res.text
+        assert '/_locks/clear_url/pywb/20180203004147/http://acid.matkelly.com/' in res.text
+        assert '/_locks/clear_url/pywb/20140716200243/http://acid.matkelly.com/' in res.text
+
+    def test_locks_clear_url(self):
+        # clear url
+        res = self.testapp.get('/_locks/clear_url/pywb/20180203004147/http://acid.matkelly.com/?_=123', status=302)
+        res = res.follow()
+
+        # cleared
+        assert '/_locks/clear_url/pywb/20180203004147/http://acid.matkelly.com/?_=123' not in res.text
+
+        # non-existant lock clear, just ignore
+        new_res = self.testapp.get('/_locks/clear_url/pywb/20180203004147/foobar', status=302)
+        assert new_res.location.endswith('/_locks')
+
+        # not cleared yet
+        assert '/_locks/clear_url/pywb/20140716200243/http://acid.matkelly.com/' in res.text
+        assert '"/_locks/clear/{0}"'.format(self.get_session()) in res.text
+
+    def test_clear_sesh(self):
+        # clear session
+        res = self.testapp.get('/_locks/clear/{0}'.format(self.get_session()), status=302)
+        res = res.follow()
+
+        assert '"/_locks/clear/{0}"'.format(self.get_session()) not in res.text
+
+        assert self.redis.keys('*') == []
+
+    def test_logout(self):
+        res = self.testapp.get('/pywb/20180203004147mp_/acid.matkelly.com/', status=200)
+
+        assert self.redis.smembers('sesh:' + self.get_session()) == {'lock:pywb/20180203004147/http://acid.matkelly.com/'}
+
+        res = self.testapp.get('/_locks/clear', status=302)
+        assert res.location.endswith('/_locks')
+
+        assert self.redis.smembers('sesh:' + self.get_session()) == set()
 
 

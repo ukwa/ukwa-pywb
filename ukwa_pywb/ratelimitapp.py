@@ -1,4 +1,5 @@
 from werkzeug.contrib.sessions import SessionMiddleware, SessionStore, Session
+from werkzeug.routing import Map, Rule
 
 import time
 import os
@@ -7,6 +8,7 @@ from redis import StrictRedis
 
 from pywb.apps.frontendapp import FrontEndApp
 from pywb.apps.rewriterapp import RewriterApp, UpstreamException
+from pywb.rewrite.templateview import BaseInsertView
 
 from pywb.apps.cli import ReplayCli
 
@@ -18,9 +20,12 @@ COOKIE_NAME = '_ukwa_pywb_sesh'
 SESSION_KEY = 'ukwa.pywb.session'
 
 SESH_LIST = 'sesh:{0}'
-ALL_SESH = 'all_sessions'
 
-SESSION_TTL = 86400
+try:
+    SESSION_TTL = int(os.environ.get('SESSION_LOCK_INTERVAL'))
+except:  #pragma: no cover
+    SESSION_TTL = 86400
+
 LOCK_KEY = 'lock:{coll}/{ts}/{url}'
 
 
@@ -70,9 +75,6 @@ class LockingSession(Session):
 
 # ============================================================================
 class RateLimitRewriterApp(RewriterApp):
-    def __init__(self, *args, **kwargs):
-        super(RateLimitRewriterApp, self).__init__(*args, **kwargs)
-
     def should_lock(self, wb_url, environ):
         if wb_url.mod == 'mp_' and not self.is_ajax(environ):
             return True
@@ -97,6 +99,70 @@ class RateLimitRewriterApp(RewriterApp):
 class UKWApp(FrontEndApp):
     REWRITER_APP_CLS = RateLimitRewriterApp
 
+    def _init_routes(self):
+        super(UKWApp, self)._init_routes()
+        self.url_map.add(Rule('/_locks/clear_url/<path:url>', endpoint=self.lock_clear_url))
+        self.url_map.add(Rule('/_locks/clear/<id>', endpoint=self.lock_clear_session))
+        self.url_map.add(Rule('/_locks/clear', endpoint=self.lock_log_out))
+        self.url_map.add(Rule('/_locks', endpoint=self.lock_listing))
+
+    def lock_clear_url(self, environ, url):
+        if environ.get('QUERY_STRING'):
+            url += '?' + environ.get('QUERY_STRING')
+
+        redis = environ[SESSION_KEY].redis
+
+        lock_key = 'lock:' + url
+
+        sesh = redis.get(lock_key)
+        redis.delete(lock_key)
+
+        # check if has session (may be not existant lock) and remove from it
+        if sesh:
+            redis.srem(SESH_LIST.format(sesh), lock_key)
+
+        return WbResponse.redir_response('/_locks')
+
+    def lock_clear_session(self, environ, id):
+        self._clear_session(environ, id)
+
+        return WbResponse.redir_response('/_locks')
+
+    def lock_log_out(self, environ):
+        self._clear_session(environ)
+
+        return WbResponse.redir_response('/_locks')
+
+    def _clear_session(self, environ, id_=None):
+        redis = environ[SESSION_KEY].redis
+        if not id_:
+            id_ = environ[SESSION_KEY].sid
+
+        sesh_key = SESH_LIST.format(id_)
+        locks = redis.smembers(sesh_key)
+        for lock in locks:
+            redis.delete(lock)
+
+        redis.delete(sesh_key)
+
+    def lock_listing(self, environ):
+        lock_view = BaseInsertView(self.rewriterapp.jinja_env, 'locks.html')
+
+        session = environ[SESSION_KEY]
+
+        sessions = {}
+
+        for sesh_key in session.redis.scan_iter(SESH_LIST.format('*')):
+            sesh = sesh_key.split(':')[1]
+
+            sessions[sesh] = [key[5:] for key in session.redis.smembers(sesh_key)]
+
+        content = lock_view.render_to_string(environ,
+                                             current=session.sid,
+                                             sessions=sessions)
+
+        return WbResponse.text_response(content, content_type='text/html; charset="utf-8"')
+
 
 #=============================================================================
 class WaybackCli(ReplayCli):
@@ -112,7 +178,7 @@ class WaybackCli(ReplayCli):
                                 cookie_name=COOKIE_NAME,
                                 environ_key=SESSION_KEY,
                                 cookie_httponly=True,
-                                cookie_age=SESSION_TTL * 2)
+                                cookie_age=SESSION_TTL)
         return app
 
 

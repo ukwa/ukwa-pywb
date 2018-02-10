@@ -1,0 +1,23 @@
+
+<html>
+<body>
+	<h2>Single-User Sessions and Locks</h2>
+        <p>Current Session: {{ current }}</p><a href="/_locks/clear">(clear current)</a>
+	{% if sessions %}
+	<ul>
+		{% for sesh, locks in sessions.items() %}
+		<li>{{ sesh }}&nbsp;<a href="/_locks/clear/{{ sesh }}">(clear session)</a>
+			<ul>
+				{% for lock in locks %}
+				<li>{{ lock }}&nbsp;<a href="/_locks/clear_url/{{ lock }}">(clear url lock)</a></li>
+				{% endfor %}
+			</ul>
+		</li>
+		{% endfor %}
+	</ul>
+	{% else %}
+	<i>No Session Locks</i>
+	{% endif %}
+</body>
+</html>
+

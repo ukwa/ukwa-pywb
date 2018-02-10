@@ -46,11 +46,13 @@ services:
     command: python /ukwa_pywb/ratelimitapp.py --debug
     build: ../
     volumes:
-      - ./pywb:/webarchive
+      #- ./pywb:/webarchive
+      - ./pywb/config.yaml:/webarchive/config.yaml
 
     environment:
       - "WEBHDFS_USER=hadoop"
       - "REDIS_URL=redis://redis:6379/0"
+      - "SESSION_LOCK_INTERVAL=600"
 
     ports:
       - "8081:8080"
