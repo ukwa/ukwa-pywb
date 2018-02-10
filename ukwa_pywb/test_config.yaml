@@ -1,0 +1,13 @@
+debug: true
+
+collections:
+    all: $all
+    pywb:
+        index_paths: ./integration-test/test-data/
+        archive_paths: ./integration-test/test-data/
+
+redirect_to_exact: true
+
+enable_memento: true
+
+
