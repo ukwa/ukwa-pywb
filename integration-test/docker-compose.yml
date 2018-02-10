@@ -38,13 +38,19 @@ services:
     volumes:
       - ./test-data/:/test-data
 
+  redis:
+    image: redis:3.2.4
+
   pywb:
-    image: ukwa/pywb
+    #image: ukwa/pywb
+    command: python /ukwa_pywb/ratelimitapp.py --debug
+    build: ../
     volumes:
       - ./pywb:/webarchive
 
     environment:
       - "WEBHDFS_USER=hadoop"
+      - "REDIS_URL=redis://redis:6379/0"
 
     ports:
       - "8081:8080"
@@ -52,5 +58,6 @@ services:
     depends_on:
       - cdx
       - hadoop
+      - redis
 
 
