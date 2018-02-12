@@ -17,3 +17,16 @@ If it all spins up correctly, these URLs should work:
 
 The archived version of the 'acid test' page looks pretty poor in OWB, although it renders okay in proxy mode (use `localhost:8090` as your proxy for that to work).
 
+
+### Automated Feature Testings ###
+
+Some automated tests are set up to verify specific features. Once 
+
+    docker-compose run populate
+
+has run successfully, you should be able to run the tests using
+
+
+    docker-compose run test
+
+

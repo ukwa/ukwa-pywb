@@ -62,4 +62,43 @@ services:
       - hadoop
       - redis
 
+# -----------------------------------------------------------
+# Automated test engine
+# -----------------------------------------------------------
+
+  test:
+    build: robot
+    #command: -v BROWSER:ff --outputdir /out /tests
+    command: --outputdir /out /tests
+    volumes:
+      - ./robot/tests:/tests:ro
+      - ./results/locktest:/out:rw
+    depends_on:
+      - pywb
+      - firefox
+      - chrome
+      - hub
+
+  firefox:
+    image: selenium/node-firefox:3.9.1-actinium
+    volumes:
+      - /dev/shm:/dev/shm
+    depends_on:
+      - hub
+    environment:
+      HUB_HOST: hub
+
+  chrome:
+    image: selenium/node-chrome:3.9.1-actinium
+    volumes:
+      - /dev/shm:/dev/shm
+    depends_on:
+      - hub
+    environment:
+      HUB_HOST: hub
+
+  hub:
+    image: selenium/hub:3.9.1-actinium
+    ports:
+      - "4444:4444"
 
