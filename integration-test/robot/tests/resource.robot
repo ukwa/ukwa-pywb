@@ -3,7 +3,7 @@ Documentation     A resource file with reusable keywords and variables.
 ...
 ...               The system specific keywords created here form our own
 ...               domain specific language. They utilize keywords provided
-...               by the imported Selenium2Library.
+...               by the imported SeleniumLibrary.
 Library           SeleniumLibrary
 
 *** Variables ***
@@ -13,13 +13,13 @@ ${BROWSER}           Firefox
 ${DELAY}             0
 ${VALID USER}        demo
 ${VALID PASSWORD}    mode
-${LOGIN URL}         ${APPLICATION}/_login/
+${LOGIN URL}         ${APPLICATION}/_login
 ${WELCOME URL}       ${APPLICATION}/test/
 ${ERROR URL}         ${APPLICATION}/error.html
 
 *** Keywords ***
 Open Browser To Collection Page
-    Open Browser    http://pywb:8080/test    browser=${BROWSER}    remote_url=${SELENIUM}
+    Open Browser    ${WELCOME URL}    browser=${BROWSER}    remote_url=${SELENIUM}
     Maximize Browser Window
     Set Selenium Speed    ${DELAY}
     Element Text Should Be     //h2    test Search Page

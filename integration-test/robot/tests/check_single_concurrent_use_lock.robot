@@ -1,6 +1,6 @@
 
 *** Settings ***
-Documentation     A test suite with a single test for valid login.
+Documentation     A test suite that verifies the behaviour of the single-concurrent-usage lock functionality
 ...
 ...               This test has a workflow that is created using keywords in
 ...               the imported resource file.
