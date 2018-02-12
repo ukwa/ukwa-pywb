@@ -169,4 +169,22 @@ class TestSessionLimitApp(BaseTestClass):
 
         assert self.redis.smembers('sesh:' + self.get_session()) == set()
 
+        assert self.redis.keys('*') == []
+
+    def test_clear_all(self):
+        res = self.testapp.get('/pywb/20180203004147mp_/acid.matkelly.com/', status=200)
+        self.testapp.cookiejar.clear()
+        res = self.testapp.get('/pywb/20140716200243mp_/acid.matkelly.com/', status=200)
+        self.testapp.cookiejar.clear()
+        res = self.testapp.get('/pywb/20180203004147mp_/acid.matkelly.com/?_=123', status=307)
+
+        assert len(self.redis.keys('sesh:*')) == 3
+        assert len(self.redis.keys('lock:*')) == 3
+
+        res = self.testapp.get('/_locks/reset', status=302)
+        res = res.follow()
+
+        assert 'No Session Locks' in res.text
+        assert self.redis.keys('*') == []
+
 

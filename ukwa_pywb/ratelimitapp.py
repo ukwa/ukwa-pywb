@@ -104,6 +104,7 @@ class UKWApp(FrontEndApp):
         self.url_map.add(Rule('/_locks/clear_url/<path:url>', endpoint=self.lock_clear_url))
         self.url_map.add(Rule('/_locks/clear/<id>', endpoint=self.lock_clear_session))
         self.url_map.add(Rule('/_locks/clear', endpoint=self.lock_log_out))
+        self.url_map.add(Rule('/_locks/reset', endpoint=self.lock_clear_all))
         self.url_map.add(Rule('/_locks', endpoint=self.lock_listing))
 
     def lock_clear_url(self, environ, url):
@@ -120,6 +121,17 @@ class UKWApp(FrontEndApp):
         # check if has session (may be not existant lock) and remove from it
         if sesh:
             redis.srem(SESH_LIST.format(sesh), lock_key)
+
+        return WbResponse.redir_response('/_locks')
+
+    def lock_clear_all(self, environ):
+        redis = environ[SESSION_KEY].redis
+
+        for sesh_key in redis.scan_iter(SESH_LIST.format('*')):
+            redis.delete(sesh_key)
+
+        for lock_key in redis.scan_iter('lock:*'):
+            redis.delete(lock_key)
 
         return WbResponse.redir_response('/_locks')
 

@@ -6,10 +6,10 @@
 	{% if sessions %}
 	<ul>
 		{% for sesh, locks in sessions.items() %}
-		<li>{{ sesh }}&nbsp;<a href="/_locks/clear/{{ sesh }}">(clear session)</a>
+		<li class="session-lock">{{ sesh }}&nbsp;<a href="/_locks/clear/{{ sesh }}">(clear session)</a>
 			<ul>
 				{% for lock in locks %}
-				<li>{{ lock }}&nbsp;<a href="/_locks/clear_url/{{ lock }}">(clear url lock)</a></li>
+				<li class="url-lock">{{ lock }}&nbsp;<a href="/_locks/clear_url/{{ lock }}">(clear url lock)</a></li>
 				{% endfor %}
 			</ul>
 		</li>

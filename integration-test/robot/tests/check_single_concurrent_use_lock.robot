@@ -8,12 +8,12 @@ Resource          resource.robot
 
 *** Test Cases ***
 Check Collection Page
-    Sleep     5s     Wait for browser startup
+    Sleep     30s     Wait for browser startup
     Open Browser To Collection Page
     Location Should Be     http://pywb:8080/test/
 
-Clear Any Locks
-    Go To    http://pywb:8080/_locks/clear
+Clear All Locks
+    Go To    http://pywb:8080/_locks/reset
     Location Should Be     http://pywb:8080/_locks
 
 Check Index Page
@@ -26,9 +26,22 @@ Check Playback
     Element Text Should Be    //b[@id='title_or_url']    "The Archival Acid Test"
     [Teardown]    Close Browser
 
-Check Playback Locked
+Check Locks
     Open Browser To Collection Page
+    Go To    http://pywb:8080/_locks
+    Page Should Contain    Sessions and Locks
+    Page Should Contain Element    //li[@class='url-lock']    limit=1
+
+Check Playback Locked
     Go To    http://pywb:8080/test/20180203004147/http://acid.matkelly.com/
     Page Should Contain    Not Allowed
     [Teardown]    Close Browser
+
+Check Lock Expired, Playback Allowed
+    Open Browser To Collection Page
+    Sleep   30s  Wait for lock expiry
+    Go To    http://pywb:8080/test/20180203004147/http://acid.matkelly.com/
+    Wait Until Page Contains Element    //b[@id='title_or_url']    timeout=10s
+    Element Text Should Be    //b[@id='title_or_url']    "The Archival Acid Test"
+ 
 

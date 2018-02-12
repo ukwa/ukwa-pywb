@@ -52,7 +52,7 @@ services:
     environment:
       - "WEBHDFS_USER=hadoop"
       - "REDIS_URL=redis://redis:6379/0"
-      - "SESSION_LOCK_INTERVAL=600"
+      - "SESSION_LOCK_INTERVAL=30"
 
     ports:
       - "8081:8080"
