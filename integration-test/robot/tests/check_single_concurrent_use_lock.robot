@@ -18,6 +18,7 @@ Clear All Locks
 
 Check Index Page
     Go To    http://pywb:8080/test/*/http://acid.matkelly.com
+    Wait Until Page Contains Element    //b[@id='count']
     Element Text Should Be    //b[@id='count']    3 captures
 
 Check Playback
@@ -43,5 +44,21 @@ Check Lock Expired, Playback Allowed
     Go To    http://pywb:8080/test/20180203004147/http://acid.matkelly.com/
     Wait Until Page Contains Element    //b[@id='title_or_url']    timeout=10s
     Element Text Should Be    //b[@id='title_or_url']    "The Archival Acid Test"
- 
+
+Check Playback 2 Logout Release Lock
+    Open Browser To Collection Page
+    Go To    http://pywb:8080/test/20180203004147/http://acid.matkelly.com/
+    Wait Until Page Contains Element    //b[@id='title_or_url']    timeout=10s
+    Element Text Should Be    //b[@id='title_or_url']    "The Archival Acid Test"
+    Go To   http://pywb:8080/_logout
+    Location Should Be     http://pywb:8080/
+    [Teardown]    Close Browser
+
+Check Playback 3
+    Open Browser To Collection Page
+    Go To    http://pywb:8080/test/20180203004147/http://acid.matkelly.com/
+    Wait Until Page Contains Element    //b[@id='title_or_url']    timeout=10s
+    Element Text Should Be    //b[@id='title_or_url']    "The Archival Acid Test"
+    [Teardown]    Close Browser
+
 

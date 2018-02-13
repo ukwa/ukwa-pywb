@@ -4,6 +4,7 @@ import pytest
 import webtest
 import os
 import time
+import base64
 
 from pywb.warcserver.test.testutils import BaseTestClass
 
@@ -19,6 +20,9 @@ class TestSessionLimitApp(BaseTestClass):
         config_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), config_file)
 
         os.environ['SESSION_LOCK_INTERVAL'] = '3'
+        os.environ['LOCKS_USERNAME'] = 'ukwa-admin'
+        os.environ['LOCKS_PASSWORD'] = 'testpass'
+
         import ukwa_pywb.ratelimitapp
         ukwa_pywb.ratelimitapp.StrictRedis = FakeStrictRedis
         app = ukwa_pywb.ratelimitapp.WaybackCli(args=['--debug']).load(config_file=config_file)
@@ -27,6 +31,9 @@ class TestSessionLimitApp(BaseTestClass):
     @classmethod
     def get_session(cls):
         return cls.testapp.cookies['_ukwa_pywb_sesh'].strip('"')
+
+    def get_auth_headers(self):
+        return {'Authorization': 'basic ' + base64.b64encode(b'ukwa-admin:testpass').decode('utf-8')}
 
     @classmethod
     def setup_class(cls):
@@ -127,8 +134,14 @@ class TestSessionLimitApp(BaseTestClass):
         #NOTE: fuzzy redirect to first capture, not closest!
         assert res.location.endswith('/pywb/20140716200243mp_/http://acid.matkelly.com/')
 
+    def test_locks_auth_needed(self):
+        res = self.testapp.get('/_locks', status=401)
+        res = self.testapp.get('/_locks/clear_url/pywb/20180203004147/foobar', status=401)
+        res = self.testapp.get('/_locks/reset', status=401)
+        res = self.testapp.get('/_locks/clear/{0}'.format(self.get_session()), status=401)
+
     def test_locks_view(self):
-        res = self.testapp.get('/_locks')
+        res = self.testapp.get('/_locks', headers=self.get_auth_headers())
 
         assert '/_locks/clear_url/pywb/20180203004147/http://acid.matkelly.com/?_=123' in res.text
         assert '/_locks/clear_url/pywb/20180203004147/http://acid.matkelly.com/' in res.text
@@ -136,14 +149,14 @@ class TestSessionLimitApp(BaseTestClass):
 
     def test_locks_clear_url(self):
         # clear url
-        res = self.testapp.get('/_locks/clear_url/pywb/20180203004147/http://acid.matkelly.com/?_=123', status=302)
-        res = res.follow()
+        res = self.testapp.get('/_locks/clear_url/pywb/20180203004147/http://acid.matkelly.com/?_=123', status=302, headers=self.get_auth_headers())
+        res = res.follow(headers=self.get_auth_headers())
 
         # cleared
         assert '/_locks/clear_url/pywb/20180203004147/http://acid.matkelly.com/?_=123' not in res.text
 
         # non-existant lock clear, just ignore
-        new_res = self.testapp.get('/_locks/clear_url/pywb/20180203004147/foobar', status=302)
+        new_res = self.testapp.get('/_locks/clear_url/pywb/20180203004147/foobar', status=302, headers=self.get_auth_headers())
         assert new_res.location.endswith('/_locks')
 
         # not cleared yet
@@ -152,8 +165,8 @@ class TestSessionLimitApp(BaseTestClass):
 
     def test_clear_sesh(self):
         # clear session
-        res = self.testapp.get('/_locks/clear/{0}'.format(self.get_session()), status=302)
-        res = res.follow()
+        res = self.testapp.get('/_locks/clear/{0}'.format(self.get_session()), status=302, headers=self.get_auth_headers())
+        res = res.follow(headers=self.get_auth_headers())
 
         assert '"/_locks/clear/{0}"'.format(self.get_session()) not in res.text
 
@@ -164,8 +177,8 @@ class TestSessionLimitApp(BaseTestClass):
 
         assert self.redis.smembers('sesh:' + self.get_session()) == {'lock:pywb/20180203004147/http://acid.matkelly.com/'}
 
-        res = self.testapp.get('/_locks/clear', status=302)
-        assert res.location.endswith('/_locks')
+        res = self.testapp.get('/_logout', status=302)
+        assert res.location.endswith('/')
 
         assert self.redis.smembers('sesh:' + self.get_session()) == set()
 
@@ -181,10 +194,15 @@ class TestSessionLimitApp(BaseTestClass):
         assert len(self.redis.keys('sesh:*')) == 3
         assert len(self.redis.keys('lock:*')) == 3
 
-        res = self.testapp.get('/_locks/reset', status=302)
-        res = res.follow()
+        res = self.testapp.get('/_locks/reset', status=302, headers=self.get_auth_headers())
+        res = res.follow(headers=self.get_auth_headers())
 
         assert 'No Session Locks' in res.text
         assert self.redis.keys('*') == []
 
+    def test_no_auth(self):
+        os.environ['LOCKS_USERNAME'] = ''
+        os.environ['LOCKS_PASSWORD'] = ''
+
+        res = self.testapp.get('/_locks', status=200)
 

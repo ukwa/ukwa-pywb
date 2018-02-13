@@ -1,5 +1,6 @@
 from werkzeug.contrib.sessions import SessionMiddleware, SessionStore, Session
 from werkzeug.routing import Map, Rule
+from werkzeug.http import parse_authorization_header
 
 import time
 import os
@@ -27,6 +28,28 @@ except:  #pragma: no cover
     SESSION_TTL = 86400
 
 LOCK_KEY = 'lock:{coll}/{ts}/{url}'
+
+
+# ============================================================================
+def authorize(func):
+    def check_auth(self, environ, *args, **kwargs):
+        LOCKS_USERNAME = os.environ.get('LOCKS_USERNAME', '')
+        LOCKS_PASSWORD = os.environ.get('LOCKS_PASSWORD', '')
+
+        if LOCKS_USERNAME and LOCKS_PASSWORD:
+            allowed = False
+            auth = parse_authorization_header(environ.get('HTTP_AUTHORIZATION'))
+            if auth and auth.username == LOCKS_USERNAME  and auth.password == LOCKS_PASSWORD:
+                allowed = True
+        else:
+            allowed = True
+
+        if allowed:
+            return func(self, environ, *args, **kwargs)
+        else:
+            return WbResponse.text_response('Not Authorized', '401 Not Authorized')
+
+    return check_auth
 
 
 # ============================================================================
@@ -103,10 +126,12 @@ class UKWApp(FrontEndApp):
         super(UKWApp, self)._init_routes()
         self.url_map.add(Rule('/_locks/clear_url/<path:url>', endpoint=self.lock_clear_url))
         self.url_map.add(Rule('/_locks/clear/<id>', endpoint=self.lock_clear_session))
-        self.url_map.add(Rule('/_locks/clear', endpoint=self.lock_log_out))
         self.url_map.add(Rule('/_locks/reset', endpoint=self.lock_clear_all))
         self.url_map.add(Rule('/_locks', endpoint=self.lock_listing))
 
+        self.url_map.add(Rule('/_logout', endpoint=self.log_out))
+
+    @authorize
     def lock_clear_url(self, environ, url):
         if environ.get('QUERY_STRING'):
             url += '?' + environ.get('QUERY_STRING')
@@ -124,6 +149,7 @@ class UKWApp(FrontEndApp):
 
         return WbResponse.redir_response('/_locks')
 
+    @authorize
     def lock_clear_all(self, environ):
         redis = environ[SESSION_KEY].redis
 
@@ -135,15 +161,16 @@ class UKWApp(FrontEndApp):
 
         return WbResponse.redir_response('/_locks')
 
+    @authorize
     def lock_clear_session(self, environ, id):
         self._clear_session(environ, id)
 
         return WbResponse.redir_response('/_locks')
 
-    def lock_log_out(self, environ):
+    def log_out(self, environ):
         self._clear_session(environ)
 
-        return WbResponse.redir_response('/_locks')
+        return WbResponse.redir_response('/')
 
     def _clear_session(self, environ, id_=None):
         redis = environ[SESSION_KEY].redis
@@ -157,6 +184,7 @@ class UKWApp(FrontEndApp):
 
         redis.delete(sesh_key)
 
+    @authorize
     def lock_listing(self, environ):
         lock_view = BaseInsertView(self.rewriterapp.jinja_env, 'locks.html')
 
