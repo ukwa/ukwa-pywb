@@ -19,10 +19,8 @@ ${ERROR URL}         ${APPLICATION}/error.html
 
 *** Keywords ***
 Open Browser To Collection Page
-    Open Browser    ${WELCOME URL}    browser=${BROWSER}    remote_url=${SELENIUM}
-    Maximize Browser Window
-    Set Selenium Speed    ${DELAY}
-    Element Text Should Be     //h2    test Search Page
+    [Arguments]    ${browser}=firefox
+    Open Browser    ${WELCOME URL}    browser=${browser}    remote_url=${SELENIUM}
 
 Open Browser To Login Page
     Open Browser    ${LOGIN URL}    browser=${BROWSER}    remote_url=${SELENIUM}
