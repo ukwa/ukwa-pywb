@@ -114,7 +114,7 @@ class RateLimitRewriterApp(RewriterApp):
         return False
 
     def handle_custom_response(self, environ, wb_url, full_prefix, host_prefix, kwargs):
-        if self.should_lock(wb_url, environ):
+        if kwargs.get('single-use-lock') and self.should_lock(wb_url, environ):
             session = environ[SESSION_KEY]
             lock_key = LOCK_KEY.format(coll=kwargs.get('coll', ''),
                                        ts=wb_url.timestamp,

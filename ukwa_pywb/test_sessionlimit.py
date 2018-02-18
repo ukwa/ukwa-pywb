@@ -38,7 +38,7 @@ class TestSessionLimitApp(BaseTestClass):
     @classmethod
     def setup_class(cls):
         super(TestSessionLimitApp, cls).setup_class()
-        cls.app, cls.testapp = cls.get_test_app('./test_config.yaml')
+        cls.app, cls.testapp = cls.get_test_app('./config_test.yaml')
         cls.redis = FakeStrictRedis(decode_responses=True)
 
     def test_replay_top_frame_no_lock(self):
@@ -89,6 +89,14 @@ class TestSessionLimitApp(BaseTestClass):
         res = self.testapp.get('/pywb/20180203004147mp_/acid.matkelly.com/', status=403)
 
         # not setting cookie until used
+        assert 'Set-Cookie' not in res.headers
+
+    def test_replay_diff_coll_no_locks(self):
+        self.testapp.cookiejar.clear()
+
+        res = self.testapp.get('/pywb-no-locks/20180203004147mp_/acid.matkelly.com/', status=200)
+
+        # not locking,
         assert 'Set-Cookie' not in res.headers
 
     def test_replay_no_lock_different_ts(self):
