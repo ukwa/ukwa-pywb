@@ -48,6 +48,7 @@ services:
     volumes:
       #- ./pywb:/webarchive
       - ./pywb/config.yaml:/webarchive/config.yaml
+      - ./pywb/acl:/webarchive/acl
 
     environment:
       - "WEBHDFS_USER=hadoop"

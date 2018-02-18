@@ -1,0 +1,3 @@
+org,httpbin)/anything/something/else - {"access": "allow"}
+org,httpbin)/ - {"access": "block"}
+com,matkelly,acid)/ - {"access": "allow"}

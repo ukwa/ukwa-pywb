@@ -13,20 +13,41 @@ ${BROWSER}           Firefox
 ${DELAY}             0
 ${VALID USER}        demo
 ${VALID PASSWORD}    mode
-${LOGIN URL}         ${APPLICATION}/_login
 ${WELCOME URL}       ${APPLICATION}/test/
 ${ERROR URL}         ${APPLICATION}/error.html
 
 *** Keywords ***
-Open Browser To Collection Page
-    [Arguments]    ${browser}=firefox
-    Open Browser    ${WELCOME URL}    browser=${browser}    remote_url=${SELENIUM}
+Reset Browsers
+    Log To Console    Waiting for 20s for browser startup
+    Sleep     20s     Wait for browser startup
+    Close All Browsers
 
-Open Browser To Login Page
-    Open Browser    ${LOGIN URL}    browser=${BROWSER}    remote_url=${SELENIUM}
+Open Browser To Collection Page
+    [Arguments]    ${coll}=test    ${browser}=firefox
+    Open Browser    ${APPLICATION}/${coll}/    browser=${browser}    remote_url=${SELENIUM}
+    Set Selenium Speed    ${DELAY}
+
+Open Browser To Home Page
+    Open Browser    ${APPLICATION}/    browser=${BROWSER}    remote_url=${SELENIUM}
     Maximize Browser Window
     Set Selenium Speed    ${DELAY}
-    Login Page Should Be Open
+
+Check Excluded
+    [Arguments]    ${url}
+    Go To   ${url}
+    Page Should Contain    Url Not Found
+
+Check Blocked
+    [Arguments]    ${url}
+    Go To   ${url}
+    Page Should Contain    Access Blocked
+
+Check Allowed
+    [Arguments]    ${url}   ${text}
+    Go To   ${url}
+    Page Should Not Contain    Url Not Found
+    Page Should Not Contain    Access Blocked
+    Page Should Contain    ${text}
 
 Login Page Should Be Open
     Title Should Be    Login Page

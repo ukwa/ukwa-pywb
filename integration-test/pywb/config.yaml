@@ -1,6 +1,28 @@
+INDEX: &INDEX xmlquery+http://cdx:8080/tc
+STORE: &STORE webhdfs://hadoop:50070/
+
 collections:
-    test:
-        index_paths: xmlquery+http://cdx:8080/tc
-        archive_paths: webhdfs://hadoop:50070/
+    # reading room collection (locks and blocks only)
+    reading-room:
+        index_paths: *INDEX
+        archive_paths: *STORE
 
+        single-use-lock: true
+        acl_paths:
+            - ./acl/blocks.aclj
 
+    # open access (with access controls)
+    open-access:
+        index_paths: *INDEX
+        archive_paths: *STORE
+
+        acl_paths:
+            - ./acl/blocks.aclj
+            - ./acl/allows.aclj
+
+        default_access: block
+
+    # QA no access controls
+    qa-access:
+        index_paths: *INDEX
+        archive_paths: *STORE
