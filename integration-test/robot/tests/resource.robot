@@ -8,13 +8,12 @@ Library           SeleniumLibrary
 
 *** Variables ***
 ${SELENIUM}          http://hub:4444/wd/hub
-${APPLICATION}       http://pywb:8080
+${HOST}              http://pywb:8080
 ${BROWSER}           Firefox
 ${DELAY}             0
 ${VALID USER}        demo
 ${VALID PASSWORD}    mode
-${WELCOME URL}       ${APPLICATION}/test/
-${ERROR URL}         ${APPLICATION}/error.html
+${ERROR URL}         ${HOST}/error.html
 
 *** Keywords ***
 Reset Browsers
@@ -24,11 +23,11 @@ Reset Browsers
 
 Open Browser To Collection Page
     [Arguments]    ${coll}=test    ${browser}=firefox
-    Open Browser    ${APPLICATION}/${coll}/    browser=${browser}    remote_url=${SELENIUM}
+    Open Browser    ${HOST}/${coll}/    browser=${browser}    remote_url=${SELENIUM}
     Set Selenium Speed    ${DELAY}
 
 Open Browser To Home Page
-    Open Browser    ${APPLICATION}/    browser=${BROWSER}    remote_url=${SELENIUM}
+    Open Browser    ${HOST}/    browser=${BROWSER}    remote_url=${SELENIUM}
     Maximize Browser Window
     Set Selenium Speed    ${DELAY}
 
@@ -67,6 +66,3 @@ Input Password
 Submit Credentials
     Click Button    login_button
 
-Welcome Page Should Be Open
-    Location Should Be    ${WELCOME URL}
-    Title Should Be    Welcome Page

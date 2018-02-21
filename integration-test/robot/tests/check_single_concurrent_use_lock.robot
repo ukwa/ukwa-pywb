@@ -10,7 +10,6 @@ Suite teardown    Run Keywords    Close All Browsers
 
 
 *** Variables ***
-${HOST}         http://pywb:8080
 ${COLL}         reading-room
 ${HOST_COLL}    ${HOST}/${COLL}
 

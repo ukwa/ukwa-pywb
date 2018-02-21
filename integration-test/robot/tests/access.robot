@@ -4,9 +4,6 @@ Resource          resource.robot
 Suite setup       Run Keywords    Reset Browsers
 Suite teardown    Run Keywords    Close All Browsers
 
-*** Variables ***
-${HOST}         http://pywb:8080
-
 
 *** Test Cases ***
 Open Browser
@@ -35,7 +32,6 @@ Open Access -- Check Excluded (451)
 Open Access -- Check Allowed Explicitly, Sub-path 
     Check Allowed    ${HOST}/open-access/httpbin.org/anything/something/else    text="http://httpbin.org/anything/something/else"
     
-
 Open Access -- Check Blocked By Default (451)
     Check Blocked    ${HOST}/open-access/http://www.cs.odu.edu/~mkelly/acid/externalScript.js
 
