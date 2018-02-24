@@ -49,6 +49,7 @@ services:
       #- ./pywb:/webarchive
       - ./pywb/config.yaml:/webarchive/config.yaml
       - ./pywb/acl:/webarchive/acl
+      - ./pywb/proxy-certs:/webarchive/proxy-certs
 
     environment:
       - "WEBHDFS_USER=hadoop"
@@ -74,6 +75,8 @@ services:
     volumes:
       - ./robot/tests:/tests:ro
       - ./results/locktest:/out:rw
+      - ./robot/make_profile.py:/tmp/make_profile.py
+      - ./pywb/proxy-certs:/tmp/proxy-certs
     depends_on:
       - pywb
       - firefox

@@ -5,6 +5,8 @@ Documentation     A resource file with reusable keywords and variables.
 ...               domain specific language. They utilize keywords provided
 ...               by the imported SeleniumLibrary.
 Library           SeleniumLibrary
+Library           /tmp/make_profile.py
+Library           RequestsLibrary
 
 *** Variables ***
 ${SELENIUM}          http://hub:4444/wd/hub
@@ -14,6 +16,7 @@ ${DELAY}             0
 ${VALID USER}        demo
 ${VALID PASSWORD}    mode
 ${ERROR URL}         ${HOST}/error.html
+${CA_CERTS}          /tmp/proxy-certs/pywb-ca.pem
 
 *** Keywords ***
 Reset Browsers
@@ -31,6 +34,12 @@ Open Browser To Home Page
     Maximize Browser Window
     Set Selenium Speed    ${DELAY}
 
+Open Browser With Proxy
+    [Arguments]    ${coll}=test    ${browser}=firefox
+    ${profile}=    make_profile
+    Open Browser    ${HOST}/    browser=${BROWSER}    remote_url=${SELENIUM}    ff_profile_dir=${profile}
+    Set Selenium Speed    ${DELAY}
+ 
 Check Excluded
     [Arguments]    ${url}
     Go To   ${url}

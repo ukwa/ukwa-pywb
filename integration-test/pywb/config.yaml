@@ -26,3 +26,10 @@ collections:
     qa-access:
         index_paths: *INDEX
         archive_paths: *STORE
+
+proxy:
+    coll: qa-access
+    ca_name: UKWA pywb HTTPS Proxy CA
+    ca_file_cache: ./proxy-certs/pywb-ca.pem
+    recording: false
+
