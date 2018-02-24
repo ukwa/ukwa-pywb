@@ -5,30 +5,57 @@ Documentation     A resource file with reusable keywords and variables.
 ...               domain specific language. They utilize keywords provided
 ...               by the imported SeleniumLibrary.
 Library           SeleniumLibrary
+Library           /tmp/make_profile.py
+Library           RequestsLibrary
 
 *** Variables ***
 ${SELENIUM}          http://hub:4444/wd/hub
-${APPLICATION}       http://pywb:8080
+${HOST}              http://pywb:8080
 ${BROWSER}           Firefox
 ${DELAY}             0
 ${VALID USER}        demo
 ${VALID PASSWORD}    mode
-${LOGIN URL}         ${APPLICATION}/_login
-${WELCOME URL}       ${APPLICATION}/test/
-${ERROR URL}         ${APPLICATION}/error.html
+${ERROR URL}         ${HOST}/error.html
+${CA_CERTS}          /tmp/proxy-certs/pywb-ca.pem
 
 *** Keywords ***
-Open Browser To Collection Page
-    Open Browser    ${WELCOME URL}    browser=${BROWSER}    remote_url=${SELENIUM}
-    Maximize Browser Window
-    Set Selenium Speed    ${DELAY}
-    Element Text Should Be     //h2    test Search Page
+Reset Browsers
+    Log To Console    Waiting for 20s for browser startup
+    Sleep     20s     Wait for browser startup
+    Close All Browsers
 
-Open Browser To Login Page
-    Open Browser    ${LOGIN URL}    browser=${BROWSER}    remote_url=${SELENIUM}
+Open Browser To Collection Page
+    [Arguments]    ${coll}=test    ${browser}=firefox
+    Open Browser    ${HOST}/${coll}/    browser=${browser}    remote_url=${SELENIUM}
+    Set Selenium Speed    ${DELAY}
+
+Open Browser To Home Page
+    Open Browser    ${HOST}/    browser=${BROWSER}    remote_url=${SELENIUM}
     Maximize Browser Window
     Set Selenium Speed    ${DELAY}
-    Login Page Should Be Open
+
+Open Browser With Proxy
+    [Arguments]    ${coll}=test    ${browser}=firefox
+    ${profile}=    make_profile
+    Open Browser    ${HOST}/    browser=${BROWSER}    remote_url=${SELENIUM}    ff_profile_dir=${profile}
+    Set Selenium Speed    ${DELAY}
+ 
+Check Excluded
+    [Arguments]    ${url}
+    Go To   ${url}
+    Page Should Contain    Url Not Found
+
+Check Blocked
+    [Arguments]    ${url}
+    Go To   ${url}
+    Page Should Contain    Access Blocked
+
+Check Allowed
+    [Arguments]    ${url}   ${text}
+    Go To   ${url}
+    Page Should Not Contain    Url Not Found
+    Page Should Not Contain    Access Blocked
+    Page Should Contain    ${text}
 
 Login Page Should Be Open
     Title Should Be    Login Page
@@ -48,6 +75,3 @@ Input Password
 Submit Credentials
     Click Button    login_button
 
-Welcome Page Should Be Open
-    Location Should Be    ${WELCOME URL}
-    Title Should Be    Welcome Page

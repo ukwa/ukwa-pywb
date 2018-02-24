@@ -1,0 +1,3 @@
+org,httpbin)/anything/something - {"access": "exclude", "url": "http://httpbin.org/anything/something"}
+org,httpbin)/anything - {"access": "block", "url": "http://httpbin.org/anything"}
+org,httpbin)/ - {"access": "block", "url": "httpbin.org/"}

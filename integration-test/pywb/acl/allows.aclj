@@ -1,0 +1,2 @@
+org,httpbin)/anything/something/else - {"access": "allow", "url": "http://httpbin.org/anything/something/else"}
+com,matkelly,acid)/ - {"access": "allow", "url": "acid.matkelly.com/"}

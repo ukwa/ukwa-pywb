@@ -1,0 +1,5 @@
+ CDX N b a m s k r M S V g
+org,httpbin)/anything 20180218180526 http://httpbin.org/anything application/json 200 DAT526ULHWDHP5VL5UFKOEZZMDBDTDSN - - 842 842 httpbin-20180218180614.warc.gz
+org,httpbin)/anything/another 20180218180609 http://httpbin.org/anything/another application/json 200 X5DQNEPKPZSWUW6LPCIBPMRN57CTYUYP - - 848 5233 httpbin-20180218180614.warc.gz
+org,httpbin)/anything/something 20180218180534 http://httpbin.org/anything/something application/json 200 VG5DOJ6OX3AIHCIS43YDGPQ7FYTTC5OR - - 848 2293 httpbin-20180218180614.warc.gz
+org,httpbin)/anything/something/else 20180218180543 http://httpbin.org/anything/something/else application/json 200 EUIQWDJGQZZUUHDXGKIAZ43XGXFNBTDG - - 850 3761 httpbin-20180218180614.warc.gz

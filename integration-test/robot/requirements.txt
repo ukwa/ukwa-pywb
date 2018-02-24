@@ -1,1 +1,3 @@
 robotframework-seleniumlibrary==3.0.1
+requests
+robotframework-requests==0.4.7

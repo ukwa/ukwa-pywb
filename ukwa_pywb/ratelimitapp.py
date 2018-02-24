@@ -22,10 +22,12 @@ SESSION_KEY = 'ukwa.pywb.session'
 
 SESH_LIST = 'sesh:{0}'
 
+DEFAULT_TTL = 86400
+
 try:
     SESSION_TTL = int(os.environ.get('SESSION_LOCK_INTERVAL'))
 except:  #pragma: no cover
-    SESSION_TTL = 86400
+    SESSION_TTL = DEFAULT_TTL
 
 LOCK_KEY = 'lock:{coll}/{ts}/{url}'
 
@@ -89,7 +91,14 @@ class LockingSession(Session):
 
         # set both keys to expire at end of the day
         next_day = int(time.time())
-        next_day += SESSION_TTL - (next_day % SESSION_TTL)
+
+        # clamp to exact boundary if set to default (eg. day)
+        # otherwise, expire in TTL seconds
+        if SESSION_TTL == DEFAULT_TTL:
+            next_day += SESSION_TTL - (next_day % SESSION_TTL)
+        else:
+            next_day += SESSION_TTL
+
 
         self.redis.expireat(sesh_list, next_day)
         self.redis.expireat(lock_key, next_day)
@@ -105,7 +114,7 @@ class RateLimitRewriterApp(RewriterApp):
         return False
 
     def handle_custom_response(self, environ, wb_url, full_prefix, host_prefix, kwargs):
-        if self.should_lock(wb_url, environ):
+        if kwargs.get('single-use-lock') and self.should_lock(wb_url, environ):
             session = environ[SESSION_KEY]
             lock_key = LOCK_KEY.format(coll=kwargs.get('coll', ''),
                                        ts=wb_url.timestamp,
