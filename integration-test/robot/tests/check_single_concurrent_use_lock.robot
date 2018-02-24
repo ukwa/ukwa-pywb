@@ -1,6 +1,7 @@
 
 *** Settings ***
-Documentation     A test suite that verifies the behaviour of the single-concurrent-usage lock functionality
+Documentation     A test suite that verifies the behaviour of the single-concurrent-usage lock functionality. 
+...               FIXME Convert to use http://rtomac.github.io/robotframework-selenium2library/doc/Selenium2Library.html#Switch%20Browser
 ...
 ...               This test has a workflow that is created using keywords in
 ...               the imported resource file.
