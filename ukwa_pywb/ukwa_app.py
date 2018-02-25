@@ -214,9 +214,9 @@ class UKWApp(FrontEndApp):
 
 
 #=============================================================================
-class WaybackCli(ReplayCli):
+class UKWACli(ReplayCli):
     def load(self, config_file=None):
-        super(WaybackCli, self).load()
+        super(UKWACli, self).load()
 
         REDIS_URL = os.environ.get('REDIS_URL', 'redis://127.0.0.1:6379/0')
 
@@ -232,13 +232,13 @@ class WaybackCli(ReplayCli):
 
 
 #=============================================================================
-def wayback(args=None):  #pragma: no cover
-    return WaybackCli(args=args,
-                      default_port=8080,
-                      desc='pywb Wayback Machine Server').run()
+def ukwa(args=None):  #pragma: no cover
+    return UKWACli(args=args,
+                   default_port=8080,
+                   desc='UKWA Wayback Machinee Server')
 
 
 # ============================================================================
 if __name__ == "__main__":  #pragma: no cover
-    wayback()
+    ukwa().run()
 
