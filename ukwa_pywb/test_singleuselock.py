@@ -12,7 +12,7 @@ from fakeredis import FakeStrictRedis
 
 
 # ============================================================================
-class TestSessionLimitApp(BaseTestClass):
+class TestSingleUseLock(BaseTestClass):
     sesh_one = None
 
     @classmethod
@@ -23,9 +23,9 @@ class TestSessionLimitApp(BaseTestClass):
         os.environ['LOCKS_USERNAME'] = 'ukwa-admin'
         os.environ['LOCKS_PASSWORD'] = 'testpass'
 
-        import ukwa_pywb.ratelimitapp
-        ukwa_pywb.ratelimitapp.StrictRedis = FakeStrictRedis
-        app = ukwa_pywb.ratelimitapp.WaybackCli(args=['--debug']).load(config_file=config_file)
+        import ukwa_pywb.ukwa_app
+        ukwa_pywb.ukwa_app.StrictRedis = FakeStrictRedis
+        app = ukwa_pywb.ukwa_app.UKWACli(args=['--debug']).load(config_file=config_file)
         return app, webtest.TestApp(app)
 
     @classmethod
@@ -37,7 +37,7 @@ class TestSessionLimitApp(BaseTestClass):
 
     @classmethod
     def setup_class(cls):
-        super(TestSessionLimitApp, cls).setup_class()
+        super(TestSingleUseLock, cls).setup_class()
         cls.app, cls.testapp = cls.get_test_app('./config_test.yaml')
         cls.redis = FakeStrictRedis(decode_responses=True)
 
@@ -83,7 +83,7 @@ class TestSessionLimitApp(BaseTestClass):
         assert len(self.redis.keys('lock:*')) == 2
 
     def test_replay_blocked(self):
-        TestSessionLimitApp.sesh_one = self.redis.keys('sesh:*')[0].split(':')[1]
+        TestSingleUseLock.sesh_one = self.redis.keys('sesh:*')[0].split(':')[1]
         self.testapp.cookiejar.clear()
 
         res = self.testapp.get('/pywb/20180203004147mp_/acid.matkelly.com/', status=403)

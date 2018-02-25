@@ -2,6 +2,14 @@
 
 {% if err_status == 451 %}
 Access Blocked to {{ err_msg }}
+
+{% elif err_status == 401 and err_details == 'not-authorized' %}
+
+Sorry, access not authorized to this resource.
+
+{% elif err_status == 403 and err_details == 'access-locked' %}
+Access to this resource is currently not allowed. Please try again later.
+
 {% else %}
 
 <b>{{ err_msg }}</b>

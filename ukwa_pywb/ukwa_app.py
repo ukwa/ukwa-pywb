@@ -49,7 +49,7 @@ def authorize(func):
         if allowed:
             return func(self, environ, *args, **kwargs)
         else:
-            return WbResponse.text_response('Not Authorized', '401 Not Authorized')
+            raise UpstreamException(401, '', 'not-authorized')
 
     return check_auth
 
@@ -121,8 +121,7 @@ class RateLimitRewriterApp(RewriterApp):
                                        url=wb_url.url)
 
             if not session.lock(lock_key):
-                #raise UpstreamException(403, str(wb_url), 'Sorry, access this url is currently locked')
-                return WbResponse.text_response('Not Allowed', status='403 Locked')
+                raise UpstreamException(403, str(wb_url), 'access-locked')
 
         return super(RateLimitRewriterApp, self).handle_custom_response(environ, wb_url, full_prefix, host_prefix, kwargs)
 

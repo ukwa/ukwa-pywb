@@ -47,13 +47,13 @@ ${HOST_COLL}    ${HOST}/${COLL}
 2nd Browser: Open, Acid Test Page Replay LOCKED
     Open Browser To Collection Page    browser=chrome
     Go To    ${HOST_COLL}/20180203004147/http://acid.matkelly.com/
-    Page Should Contain    Not Allowed
+    Page Should Contain    Access to this resource is currently not allowed.
 
 2nd Browser: Logout Different Session, Replay Still LOCKED
     Go To    ${HOST}/_logout
     Location Should Be     ${HOST}/
     Go To    ${HOST_COLL}/20180203004147/http://acid.matkelly.com/
-    Page Should Contain    Not Allowed
+    Page Should Contain    Access to this resource is currently not allowed.
 
 1st Browser: Acid Test Page Replay UNLOCKED (Original Session)
     Switch Browser    1
