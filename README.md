@@ -6,13 +6,15 @@ This repo represents a customized deployment of [pywb](https://github.com/webrec
 Running with Integration Tests
 ------------------------------
 
-See [integration-tests](integration-tests) for running a full test suite in Docker.
+See [integration-test](integration-test) for more info on running the full test suite in Docker.
+
+After starting the test suite, the UKWA pywb server will be running at `http://localhost:8081/`
 
 
 Running Locally
 ---------------
 
-The deployment can also be run locally using sample data from [integration-tests/test-data](integration-tests/test-data)
+The deployment can also be run locally using sample data from [integration-test/test-data](integration-test/test-data)
 
 1) Install the [UKWA fork of pywb](ukwa/pywb) and run `python setup.py install` in a Python 3 environment.
 
