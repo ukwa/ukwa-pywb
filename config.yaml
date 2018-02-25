@@ -1,11 +1,11 @@
-INDEX: &INDEX xmlquery+http://cdx:8080/tc
-STORE: &STORE webhdfs://hadoop:50070/
+INDEX:   &INDEX ${UKWA_INDEX}
+ARCHIVE: &ARCHIVE ${UKWA_ARCHIVE}
 
 collections:
     # reading room collection (locks and blocks only)
     reading-room:
         index_paths: *INDEX
-        archive_paths: *STORE
+        archive_paths: *ARCHIVE
 
         single-use-lock: true
         acl_paths:
@@ -14,7 +14,7 @@ collections:
     # open access (with access controls)
     open-access:
         index_paths: *INDEX
-        archive_paths: *STORE
+        archive_paths: *ARCHIVE
 
         acl_paths:
             - ./acl/blocks.aclj
@@ -25,7 +25,7 @@ collections:
     # QA no access controls
     qa-access:
         index_paths: *INDEX
-        archive_paths: *STORE
+        archive_paths: *ARCHIVE
 
 proxy:
     coll: qa-access

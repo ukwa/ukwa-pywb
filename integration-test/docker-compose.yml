@@ -42,16 +42,14 @@ services:
     image: redis:3.2.4
 
   pywb:
-    #image: ukwa/pywb
     command: python /ukwa_pywb/ratelimitapp.py --debug
     build: ../
     volumes:
-      #- ./pywb:/webarchive
-      - ./pywb/config.yaml:/webarchive/config.yaml
-      - ./pywb/acl:/webarchive/acl
-      - ./pywb/proxy-certs:/webarchive/proxy-certs
+      - ../:/webarchive
 
     environment:
+      - "UKWA_INDEX=xmlquery+http://cdx:8080/tc"
+      - "UKWA_ARCHIVE=webhdfs://hadoop:50070/"
       - "WEBHDFS_USER=hadoop"
       - "REDIS_URL=redis://redis:6379/0"
       - "SESSION_LOCK_INTERVAL=30"
@@ -76,7 +74,7 @@ services:
       - ./robot/tests:/tests:ro
       - ./results/locktest:/out:rw
       - ./robot/make_profile.py:/tmp/make_profile.py
-      - ./pywb/proxy-certs:/tmp/proxy-certs
+      - ../proxy-certs:/tmp/proxy-certs
     depends_on:
       - pywb
       - firefox
