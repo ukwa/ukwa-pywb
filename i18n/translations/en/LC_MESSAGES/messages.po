@@ -1,0 +1,114 @@
+# English translations for PROJECT.
+# Copyright (C) 2018 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2018.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2018-02-27 08:48-0800\n"
+"PO-Revision-Date: 2018-02-27 08:48-0800\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.5.1\n"
+
+#: /Users/ilya/work/ukwa-pywb/templates/banner.html:5
+msgid "Archived On:"
+msgstr ""
+
+#: /Users/ilya/work/ukwa-pywb/templates/banner.html:6
+msgid "Live On"
+msgstr ""
+
+#: /Users/ilya/work/ukwa-pywb/templates/error.html:1
+msgid "UKWA Error"
+msgstr ""
+
+#: /Users/ilya/work/ukwa-pywb/templates/error.html:4
+#, python-format
+msgid "Access Blocked to %(url)s"
+msgstr ""
+
+#: /Users/ilya/work/ukwa-pywb/templates/error.html:8
+msgid "Sorry, access not authorized to this resource."
+msgstr ""
+
+#: /Users/ilya/work/ukwa-pywb/templates/error.html:11
+msgid "Access to this resource is currently not allowed. Please try again later."
+msgstr ""
+
+#: /Users/ilya/work/ukwa-pywb/templates/error.html:18
+msgid "Error Details:"
+msgstr ""
+
+#: /Users/ilya/work/ukwa-pywb/templates/index.html:3
+msgid "UK Web Archive Access System"
+msgstr ""
+
+#: /Users/ilya/work/ukwa-pywb/templates/index.html:5
+msgid "This web archive contains the following collections:"
+msgstr ""
+
+#: /Users/ilya/work/ukwa-pywb/templates/index.html:15
+msgid "Language:"
+msgstr ""
+
+#: /Users/ilya/work/ukwa-pywb/templates/locks.html:4
+msgid "Single-User Sessions and Locks"
+msgstr ""
+
+#: /Users/ilya/work/ukwa-pywb/templates/locks.html:5
+msgid "Current Session: "
+msgstr ""
+
+#: /Users/ilya/work/ukwa-pywb/templates/locks.html:5
+msgid "(clear current)"
+msgstr ""
+
+#: /Users/ilya/work/ukwa-pywb/templates/locks.html:9
+msgid "(clear session)"
+msgstr ""
+
+#: /Users/ilya/work/ukwa-pywb/templates/locks.html:12
+msgid "(clear url lock)"
+msgstr ""
+
+#: /Users/ilya/work/ukwa-pywb/templates/locks.html:19
+msgid "No Session Locks"
+msgstr ""
+
+#: /Users/ilya/work/ukwa-pywb/templates/not_found.html:1
+msgid "Url Not Found"
+msgstr ""
+
+#: /Users/ilya/work/ukwa-pywb/templates/not_found.html:3
+#, python-format
+msgid "The url <b>%(url)s</b> could not be found in this collection."
+msgstr ""
+
+#: /Users/ilya/work/ukwa-pywb/templates/query.html:12
+msgid "pywb Query Results"
+msgstr ""
+
+#: /Users/ilya/work/ukwa-pywb/templates/search.html:3
+#, python-format
+msgid " %(title)s Search Page "
+msgstr ""
+
+#: /Users/ilya/work/ukwa-pywb/templates/search.html:8
+msgid "Search this collection by url:"
+msgstr ""
+
+#: /Users/ilya/work/ukwa-pywb/templates/search.html:11
+msgid "Search"
+msgstr ""
+
+#~ msgid "Current Session: %(current)s"
+#~ msgstr ""
+

@@ -7,6 +7,11 @@ import os
 
 from redis import StrictRedis
 
+from babel.support import Translations
+from werkzeug.routing import Submount
+
+from pywb.rewrite.templateview import JinjaEnv
+
 from pywb.apps.frontendapp import FrontEndApp
 from pywb.apps.rewriterapp import RewriterApp, UpstreamException
 from pywb.rewrite.templateview import BaseInsertView
@@ -106,7 +111,50 @@ class LockingSession(Session):
 
 
 # ============================================================================
-class RateLimitRewriterApp(RewriterApp):
+class UKWARewriter(RewriterApp):
+    def __init__(self, *args, **kwargs):
+        jinja_env = JinjaEnv(globals={'static_path': 'static'},
+                             extensions=['jinja2.ext.i18n', 'jinja2.ext.with_'])
+
+        kwargs['jinja_env'] = jinja_env
+        super(UKWARewriter, self).__init__(*args, **kwargs)
+
+        self.init_loc(jinja_env)
+
+    def init_loc(self, jinja_env):
+        self.loc_map = {}
+
+        locales = self.config.get('locales')
+        if not locales:
+            return
+
+        for loc in locales:
+            self.loc_map[loc] = Translations.load(os.path.join('i18n', 'translations'), [loc, 'en'])
+            #jinja_env.jinja_env.install_gettext_translations(translations)
+
+        def get_translate(context):
+            loc = context.get('env', {}).get('pywb_lang')
+            return self.loc_map.get(loc)
+
+        def override_func(jinja_env, name):
+            from jinja2 import contextfunction
+
+            @contextfunction
+            def get_override(context, text):
+                translate = get_translate(context)
+                if not translate:
+                    return text
+
+                func = getattr(translate, name)
+                return func(text)
+
+            jinja_env.globals[name] = get_override
+
+        override_func(jinja_env.jinja_env, 'gettext')
+        override_func(jinja_env.jinja_env, 'ngettext')
+
+        jinja_env.jinja_env.globals['locales'] = list(self.loc_map.keys())
+
     def should_lock(self, wb_url, environ):
         if wb_url.mod == 'mp_' and not self.is_ajax(environ):
             return True
@@ -123,12 +171,12 @@ class RateLimitRewriterApp(RewriterApp):
             if not session.lock(lock_key):
                 raise UpstreamException(403, str(wb_url), 'access-locked')
 
-        return super(RateLimitRewriterApp, self).handle_custom_response(environ, wb_url, full_prefix, host_prefix, kwargs)
+        return super(UKWARewriter, self).handle_custom_response(environ, wb_url, full_prefix, host_prefix, kwargs)
 
 
 # ============================================================================
 class UKWApp(FrontEndApp):
-    REWRITER_APP_CLS = RateLimitRewriterApp
+    REWRITER_APP_CLS = UKWARewriter
 
     def _init_routes(self):
         super(UKWApp, self)._init_routes()
@@ -138,6 +186,24 @@ class UKWApp(FrontEndApp):
         self.url_map.add(Rule('/_locks', endpoint=self.lock_listing))
 
         self.url_map.add(Rule('/_logout', endpoint=self.log_out))
+
+    def _init_coll_routes(self, coll_prefix):
+        routes = self._make_coll_routes(coll_prefix)
+
+        # init loc routes, if any
+        loc_keys = list(self.rewriterapp.loc_map.keys())
+        if not loc_keys:
+            return
+
+        routes.append(Rule('/', endpoint=self.serve_home))
+
+        submount_route = ', '.join(loc_keys)
+        submount_route = '/<any({0}):lang>'.format(submount_route)
+
+        self.url_map.add(Submount(submount_route, routes))
+
+        for route in routes:
+            self.url_map.add(route)
 
     @authorize
     def lock_clear_url(self, environ, url):

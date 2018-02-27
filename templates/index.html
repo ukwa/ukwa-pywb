@@ -1,18 +1,22 @@
 {% extends "base.html" %}
 {% block body %}
-<h2>UKWA Access System</h2>
+<h2>{% trans %}UK Web Archive Access System{% endtrans %}</h2>
 
-This archive contains the following collections:
+{% trans %}This web archive contains the following collections:{% endtrans %}
 
 <ul>
 {% for route in routes %}
     <li>
     <a href="{{ '/' + route }}">{{ '/' + route }}</a>
-    {% if all_metadata and all_metadata[route] %}
-      ({{ all_metadata[route].title }})
-    {% endif %}
     </li>
 {% endfor %}
-
 </ul>
+
+<p>{{ _('Language:') }}</p>
+<ul>
+{% for locale in locales %}
+  <li><a href="/{{ locale }}">{{ locale }}</a></li>
+{% endfor %}
+</ul>
+
 {% endblock %}

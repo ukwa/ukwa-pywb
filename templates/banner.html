@@ -1,4 +1,9 @@
 <!-- default banner, create through js -->
 <script src='{{ host_prefix }}/{{ static_path }}/default_banner.js'> </script>
 <link rel='stylesheet' href='{{ host_prefix }}/{{ static_path }}/default_banner.css'/>
-
+<script>
+window.banner_info = {"ARCHIVED_ON": "{{ _('Archived On:') }}",
+                      "LIVE_ON": "{{ _('Live On') }}",
+                      "locale": "{{ env.pywb_lang | default('en') }}"
+                     }
+</script>

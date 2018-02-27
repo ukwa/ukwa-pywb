@@ -1,21 +1,13 @@
 {% if metadata %}
 
-<h2>{{ metadata.title if metadata.title else coll }} Search Page</h2>
-
-<div>
-<table style="text-align: left">
-{% for key, val in metadata.items() %}
-<tr><th>{{ key }}:</th><td>{{ val }}</td>
-{% endfor %}
-</table>
-</div>
+<h2>{% trans title = metadata.title if metadata.title else coll %} {{ title }} Search Page {% endtrans %}</h2>
 
 {% endif %}
 
 <p>
-Search this collection by url:
+{% trans %}Search this collection by url:{% endtrans %}
 <form onsubmit="url = document.getElementById('search').value; if (url != '') { document.location.href = '{{ wb_prefix }}' + '*/' + url; } return false;">
 <input id="search" name="search" placeholder="Enter url to search"/>
-<button type="submit">Search</button>
+<button type="submit">{% trans %}Search{% endtrans %}</button>
 </form>
 </p>

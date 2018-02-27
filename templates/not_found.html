@@ -1,6 +1,6 @@
-<h2>Url Not Found</h2>
+<h2>{% trans %}Url Not Found{% endtrans %}</h2>
 
-The url <b>{{ url }}</b> could not be found in this collection.
+{% trans %}The url <b>{{ url }}</b> could not be found in this collection.{% endtrans %}
 
 {% if wbrequest and wbrequest.env.pywb_proxy_magic and url %}
 <p>

@@ -33,3 +33,7 @@ proxy:
     ca_file_cache: ./proxy-certs/pywb-ca.pem
     recording: false
 
+locales:
+  - en
+  - cy
+

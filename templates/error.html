@@ -1,21 +1,21 @@
-<h2>Pywb Error</h2>
+<h2>{% trans %}UKWA Error{% endtrans %}</h2>
 
 {% if err_status == 451 %}
-Access Blocked to {{ err_msg }}
+{% trans url = err_msg %}Access Blocked to {{ url }}{% endtrans %}
 
 {% elif err_status == 401 and err_details == 'not-authorized' %}
 
-Sorry, access not authorized to this resource.
+{% trans %}Sorry, access not authorized to this resource.{% endtrans %}
 
 {% elif err_status == 403 and err_details == 'access-locked' %}
-Access to this resource is currently not allowed. Please try again later.
+{% trans %}Access to this resource is currently not allowed. Please try again later.{% endtrans %}
 
 {% else %}
 
 <b>{{ err_msg }}</b>
 
 {% if err_details %}
-<p>Error Details:</p>
+<p>{% trans %}Error Details:{% endtrans %}</p>
 <p>
 <pre>
 {{ err_details }}

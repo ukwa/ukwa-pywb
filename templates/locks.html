@@ -1,22 +1,22 @@
 
 <html>
 <body>
-	<h2>Single-User Sessions and Locks</h2>
-        <p>Current Session: {{ current }}</p><a href="/_locks/clear">(clear current)</a>
+	<h2>{% trans %}Single-User Sessions and Locks{% endtrans %}</h2>
+        <p>{% trans %}Current Session: {% endtrans %}{{ current }}</p><a href="/_locks/clear">{% trans %}(clear current){% endtrans %}</a>
 	{% if sessions %}
 	<ul>
 		{% for sesh, locks in sessions.items() %}
-		<li class="session-lock">{{ sesh }}&nbsp;<a href="/_locks/clear/{{ sesh }}">(clear session)</a>
+		<li class="session-lock">{{ sesh }}&nbsp;<a href="/_locks/clear/{{ sesh }}">{% trans %}(clear session){% endtrans %}</a>
 			<ul>
 				{% for lock in locks %}
-				<li class="url-lock">{{ lock }}&nbsp;<a href="/_locks/clear_url/{{ lock }}">(clear url lock)</a></li>
+				<li class="url-lock">{{ lock }}&nbsp;<a href="/_locks/clear_url/{{ lock }}">{% trans %}(clear url lock){% endtrans %}</a></li>
 				{% endfor %}
 			</ul>
 		</li>
 		{% endfor %}
 	</ul>
 	{% else %}
-	<i>No Session Locks</i>
+	<i>{% trans %}No Session Locks{% endtrans %}</i>
 	{% endif %}
 </body>
 </html>
