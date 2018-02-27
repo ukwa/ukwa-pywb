@@ -6,27 +6,13 @@ import os
 import time
 import base64
 
-from pywb.warcserver.test.testutils import BaseTestClass
-
 from fakeredis import FakeStrictRedis
 
+from ukwa_pywb.test.testbase import TestClass
 
 # ============================================================================
-class TestSingleUseLock(BaseTestClass):
+class TestSingleUseLock(TestClass):
     sesh_one = None
-
-    @classmethod
-    def get_test_app(cls, config_file, custom_config=None):
-        config_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), config_file)
-
-        os.environ['SESSION_LOCK_INTERVAL'] = '3'
-        os.environ['LOCKS_USERNAME'] = 'ukwa-admin'
-        os.environ['LOCKS_PASSWORD'] = 'testpass'
-
-        import ukwa_pywb.ukwa_app
-        ukwa_pywb.ukwa_app.StrictRedis = FakeStrictRedis
-        app = ukwa_pywb.ukwa_app.UKWACli(args=['--debug']).load(config_file=config_file)
-        return app, webtest.TestApp(app)
 
     @classmethod
     def get_session(cls):
@@ -38,8 +24,21 @@ class TestSingleUseLock(BaseTestClass):
     @classmethod
     def setup_class(cls):
         super(TestSingleUseLock, cls).setup_class()
-        cls.app, cls.testapp = cls.get_test_app('./config_test.yaml')
+
+        os.environ['SESSION_LOCK_INTERVAL'] = '3'
+        os.environ['LOCKS_USERNAME'] = 'ukwa-admin'
+        os.environ['LOCKS_PASSWORD'] = 'testpass'
+
+        cls.testapp = cls.get_test_app()
+
         cls.redis = FakeStrictRedis(decode_responses=True)
+
+    @classmethod
+    def teardown_class(cls):
+        del os.environ['LOCKS_USERNAME']
+        del os.environ['LOCKS_PASSWORD']
+        del os.environ['SESSION_LOCK_INTERVAL']
+        super(TestSingleUseLock, cls).teardown_class()
 
     def test_replay_top_frame_no_lock(self):
         res = self.testapp.get('/pywb/acid.matkelly.com/', status=200)

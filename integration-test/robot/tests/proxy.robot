@@ -44,7 +44,7 @@ Firefox: HTTP Proxy Load
     Go To    http://acid.matkelly.com/
     Wait Until Page Contains Element    //b[@id='title_or_url']    timeout=10s
     Element Text Should Be    //b[@id='title_or_url']    "The Archival Acid Test"
-    Page Should Contain     Sat, 03 Feb 2018 00:41:47 GMT
+    Page Should Contain     Archived On
 
 Firefox: HTTP Acid Test No Red
     Sleep   1s
@@ -56,7 +56,7 @@ Firefox: HTTPS Proxy Load (Acid-Test)
     Go To    https://acid.matkelly.com/
     Wait Until Page Contains Element    //b[@id='title_or_url']    timeout=10s
     Element Text Should Be    //b[@id='title_or_url']    "The Archival Acid Test"
-    Page Should Contain     Sat, 03 Feb 2018 00:41:47 GMT
+    Page Should Contain     Archived On
 
 Firefox: HTTPS Proxy Load (httpbin)
     Go To    https://httpbin.org/anything/something

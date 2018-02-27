@@ -28,11 +28,13 @@ collections:
         archive_paths: *ARCHIVE
 
 proxy:
+    # collection for proxy mode
     coll: qa-access
     ca_name: UKWA pywb HTTPS Proxy CA
     ca_file_cache: ./proxy-certs/pywb-ca.pem
-    recording: false
 
+
+locales_root_dir: ./i18n/translations/
 locales:
   - en
   - cy

@@ -16,7 +16,7 @@ Running Locally
 
 The deployment can also be run locally using sample data from [integration-test/test-data](integration-test/test-data)
 
-1) Install the [UKWA fork of pywb](ukwa/pywb) and run `python setup.py install` in a Python 3 environment.
+1) Install the [UKWA fork of pywb](https://github.com/ukwa/pywb) and run `python setup.py install` in a Python 3 environment.
 
 2) Run `run-ukwa-pywb.sh`. This will start the server on default port (8080).
 

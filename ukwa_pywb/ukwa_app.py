@@ -29,10 +29,7 @@ SESH_LIST = 'sesh:{0}'
 
 DEFAULT_TTL = 86400
 
-try:
-    SESSION_TTL = int(os.environ.get('SESSION_LOCK_INTERVAL'))
-except:  #pragma: no cover
-    SESSION_TTL = DEFAULT_TTL
+SESSION_TTL = DEFAULT_TTL
 
 LOCK_KEY = 'lock:{coll}/{ts}/{url}'
 
@@ -104,7 +101,6 @@ class LockingSession(Session):
         else:
             next_day += SESSION_TTL
 
-
         self.redis.expireat(sesh_list, next_day)
         self.redis.expireat(lock_key, next_day)
         return True
@@ -124,12 +120,12 @@ class UKWARewriter(RewriterApp):
     def init_loc(self, jinja_env):
         self.loc_map = {}
 
+        locales_root_dir = self.config.get('locales_root_dir')
         locales = self.config.get('locales')
-        if not locales:
-            return
+        locales = locales or []
 
         for loc in locales:
-            self.loc_map[loc] = Translations.load(os.path.join('i18n', 'translations'), [loc, 'en'])
+            self.loc_map[loc] = Translations.load(locales_root_dir, [loc, 'en'])
             #jinja_env.jinja_env.install_gettext_translations(translations)
 
         def get_translate(context):
@@ -192,15 +188,13 @@ class UKWApp(FrontEndApp):
 
         # init loc routes, if any
         loc_keys = list(self.rewriterapp.loc_map.keys())
-        if not loc_keys:
-            return
+        if loc_keys:
+            routes.append(Rule('/', endpoint=self.serve_home))
 
-        routes.append(Rule('/', endpoint=self.serve_home))
+            submount_route = ', '.join(loc_keys)
+            submount_route = '/<any({0}):lang>'.format(submount_route)
 
-        submount_route = ', '.join(loc_keys)
-        submount_route = '/<any({0}):lang>'.format(submount_route)
-
-        self.url_map.add(Submount(submount_route, routes))
+            self.url_map.add(Submount(submount_route, routes))
 
         for route in routes:
             self.url_map.add(route)
@@ -277,23 +271,34 @@ class UKWApp(FrontEndApp):
 
         return WbResponse.text_response(content, content_type='text/html; charset="utf-8"')
 
-
-#=============================================================================
-class UKWACli(ReplayCli):
-    def load(self, config_file=None):
-        super(UKWACli, self).load()
-
+    @classmethod
+    def init_app(cls, config_file=None, extra_config=None):
         REDIS_URL = os.environ.get('REDIS_URL', 'redis://127.0.0.1:6379/0')
+
+        global SESSION_TTL
+
+        try:
+            SESSION_TTL = int(os.environ.get('SESSION_LOCK_INTERVAL'))
+        except:  #pragma: no cover
+            SESSION_TTL = DEFAULT_TTL
 
         r = StrictRedis.from_url(REDIS_URL, decode_responses=True)
 
-        app = UKWApp(config_file=config_file, custom_config=self.extra_config)
+        app = UKWApp(config_file=config_file, custom_config=extra_config)
         app = SessionMiddleware(app, RedisSessionStore(r),
                                 cookie_name=COOKIE_NAME,
                                 environ_key=SESSION_KEY,
                                 cookie_httponly=True,
                                 cookie_age=SESSION_TTL)
         return app
+
+
+#=============================================================================
+class UKWACli(ReplayCli):
+    def load(self):
+        super(UKWACli, self).load()
+
+        return UKWApp.init_app()
 
 
 #=============================================================================

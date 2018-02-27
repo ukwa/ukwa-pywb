@@ -1,9 +1,9 @@
 FROM ukwa/pywb
 
-WORKDIR /pywb
-ADD requirements.txt .
-
 USER root
+WORKDIR /pywb
+
+ADD requirements.txt .
 
 RUN pip install -r requirements.txt
 
