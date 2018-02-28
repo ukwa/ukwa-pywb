@@ -57,21 +57,18 @@ Check Allowed
     Page Should Not Contain    Access Blocked
     Page Should Contain    ${text}
 
-Login Page Should Be Open
-    Title Should Be    Login Page
+Check Response Is Raw
+    [Arguments]    ${resp}    ${path}
+    Should Be Equal As Strings    ${resp.status_code}    200
+    Should Be Equal As Strings    ${resp.url}    ${HOST}${path}
+    Should Be Equal As Strings    ${resp.headers['Preference-Applied']}    raw
+    Should Not Contain    ${resp.text}    wombat.js
 
-Go To Login Page
-    Go To    ${LOGIN URL}
-    Login Page Should Be Open
+Check Response is Rewritten
+    [Arguments]    ${resp}    ${path}
+    Should Be Equal As Strings    ${resp.status_code}    200
+    Should Be Equal As Strings    ${resp.url}    ${HOST}${path}
+    Should be Equal As Strings    ${resp.headers['Preference-Applied']}    rewritten
+    Should Contain    ${resp.text}    wombat.js
 
-Input Username
-    [Arguments]    ${username}
-    Input Text    username_field    ${username}
-
-Input Password
-    [Arguments]    ${password}
-    Input Text    password_field    ${password}
-
-Submit Credentials
-    Click Button    login_button
 

@@ -34,6 +34,16 @@ proxy:
     ca_file_cache: ./proxy-certs/pywb-ca.pem
 
 
+# redirect to exact url behavior
+redirect_to_exact: true
+
+# enable memento
+enable_memento: true
+
+# enable experimental Memento Prefer
+enable_prefer: true
+
+
 locales_root_dir: ./i18n/translations/
 locales:
   - en

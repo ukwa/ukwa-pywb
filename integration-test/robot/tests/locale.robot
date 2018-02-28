@@ -1,5 +1,5 @@
 *** Settings ***
-Documentation     Verify different access settings in reading-room, open-access and qa-access collections
+Documentation     Verify locale-specific routes and localized strings
 Resource          resource.robot
 Suite setup       Run Keywords    Reset Browsers
 Suite teardown    Run Keywords    Close All Browsers
