@@ -11,6 +11,11 @@
 //      //do something custom if url starts with http://example.com, timestamp >= 2012 and user agent matches Firefox
 //   }
 //
+// This script is also injected in proxy mode. Determining if in proxy mode can be done by checking:
+//
+//   if (wbinfo.proxy_magic) {
+//      //do something when in proxy mode
+//   }
 //
 
 
