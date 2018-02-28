@@ -33,6 +33,7 @@ setup(
     setup_requires=[
         'babel',
         ],
+    install_requires=['babel'],
     message_extractors = {
         '.': [
             ('templates/**.html', 'jinja2', {'extensions': 'jinja2.ext.autoescape,jinja2.ext.with_'})
@@ -41,7 +42,7 @@ setup(
     zip_safe=True,
     entry_points="""
         [console_scripts]
-        ukwa_pywb = ukwa_pywb.ukwa_app
+        ukwa_pywb = ukwa_pywb.ukwa_app:main
     """,
     cmdclass={'test': PyTest},
     test_suite='',

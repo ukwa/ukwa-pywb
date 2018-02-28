@@ -309,6 +309,10 @@ def ukwa(args=None):  #pragma: no cover
 
 
 # ============================================================================
-if __name__ == "__main__":  #pragma: no cover
+def main(args=None):  #pragma: no cover
     ukwa().run()
 
+
+# ============================================================================
+if __name__ == "__main__":  #pragma: no cover
+    main()
