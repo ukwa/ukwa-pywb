@@ -1,5 +1,20 @@
 FROM ukwa/pywb
 
-ADD ukwa_pywb /ukwa_pywb
-ADD templates /webarchive/templates
+USER root
 
+WORKDIR /ukwa_pywb
+
+ADD setup.py .
+ADD setup.cfg .
+ADD README.md .
+ADD ukwa_pywb/ ./ukwa_pywb/
+
+RUN python setup.py install
+
+ADD . .
+
+RUN ./i18n/update-loc.sh
+
+USER archivist
+
+CMD ukwa_pywb

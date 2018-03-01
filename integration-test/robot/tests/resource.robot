@@ -19,11 +19,15 @@ ${ERROR URL}         ${HOST}/error.html
 ${CA_CERTS}          /tmp/proxy-certs/pywb-ca.pem
 
 *** Keywords ***
+
+# Browser Reset for each Test Suite
 Reset Browsers
     Log To Console    Waiting for 20s for browser startup
     Sleep     20s     Wait for browser startup
     Close All Browsers
 
+
+# Open Browsers
 Open Browser To Collection Page
     [Arguments]    ${coll}=test    ${browser}=firefox
     Open Browser    ${HOST}/${coll}/    browser=${browser}    remote_url=${SELENIUM}
@@ -39,7 +43,9 @@ Open Browser With Proxy
     ${profile}=    make_profile
     Open Browser    ${HOST}/    browser=${BROWSER}    remote_url=${SELENIUM}    ff_profile_dir=${profile}
     Set Selenium Speed    ${DELAY}
- 
+
+
+# Access Checks
 Check Excluded
     [Arguments]    ${url}
     Go To   ${url}
@@ -57,21 +63,30 @@ Check Allowed
     Page Should Not Contain    Access Blocked
     Page Should Contain    ${text}
 
-Login Page Should Be Open
-    Title Should Be    Login Page
 
-Go To Login Page
-    Go To    ${LOGIN URL}
-    Login Page Should Be Open
+# Prefer Checks
+Check Response Is Raw
+    [Arguments]    ${resp}    ${path}     ${host}=${HOST}
+    Should Be Equal As Strings    ${resp.status_code}    200
+    Should Be Equal As Strings    ${resp.url}    ${host}${path}
+    Should Be Equal As Strings    ${resp.headers['Preference-Applied']}    raw
+    Should Not Contain    ${resp.text}    WB Insert
+    Should Not Contain    ${resp.text}    wombat.js
 
-Input Username
-    [Arguments]    ${username}
-    Input Text    username_field    ${username}
+Check Response Is Banner Only
+    [Arguments]    ${resp}    ${path}    ${host}=${HOST}
+    Should Be Equal As Strings    ${resp.status_code}    200
+    Should Be Equal As Strings    ${resp.url}    ${host}${path}
+    Should Be Equal As Strings    ${resp.headers['Preference-Applied']}    banner-only
+    Should Contain    ${resp.text}    WB Insert
+    Should Not Contain    ${resp.text}    wombat.js
 
-Input Password
-    [Arguments]    ${password}
-    Input Text    password_field    ${password}
+Check Response is Rewritten
+    [Arguments]    ${resp}    ${path}    ${host}=${HOST}
+    Should Be Equal As Strings    ${resp.status_code}    200
+    Should Be Equal As Strings    ${resp.url}    ${host}${path}
+    Should be Equal As Strings    ${resp.headers['Preference-Applied']}    rewritten
+    Should Contain    ${resp.text}    WB Insert
+    Should Contain    ${resp.text}    wombat.js
 
-Submit Credentials
-    Click Button    login_button
 

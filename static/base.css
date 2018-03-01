@@ -1,0 +1,93 @@
+@font-face{
+    font-family: 'Open Sans';
+    font-weight: normal;
+    src: url("/static/fonts/OpenSans-Regular.ttf") format('truetype');
+}
+
+@font-face{
+    font-family: 'Open Sans';
+    font-weight: normal;
+    font-style: italic;
+    src: url("/static/fonts/OpenSans-Italic.ttf") format('truetype');
+}
+
+@font-face{
+    font-family: 'Open Sans';
+    font-weight: bold;
+    src: url("/static/fonts/OpenSans-Bold.ttf") format('truetype');
+}
+
+html, body {
+    margin: 0;
+}
+
+body, header {
+    font-family: 'Open Sans';
+}
+
+header {
+    display: flex;
+    display: -webkit-box;
+    display: -moz-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+
+    justify-content: space-between;
+    -webkit-box-pack: justify;
+    -moz-box-pack: justify;
+    -ms-flex-pack: justify;
+
+    background-color: #2E6DD9;
+}
+
+header .language-select {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: #FFF;
+}
+header .language-select ul {
+    display: inline-block;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+header .language-select ul li {
+    display: inline-block;
+}
+header .language-select ul li:not(:last-child):after {
+    content: ' / ';
+}
+
+header .language-select a:link,
+header .language-select a:visited,
+header .language-select a:active {
+    color: #FFF;
+    text-decoration: none;
+}
+
+header .language-select a:hover {
+    text-decoration: underline;
+}
+
+header a.logo {
+    display: block;
+    padding: 15px;
+}
+header a.logo img {
+    border: none;
+}
+
+section {
+    padding: 0 25px;
+}
+
+#search {
+    font-size: 20px;
+    width: 600px;
+}
+
+button {
+    font-size: 20px;
+}
+

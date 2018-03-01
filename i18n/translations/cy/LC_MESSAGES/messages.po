@@ -1,0 +1,198 @@
+# Welsh translations for ukwa_pywb.
+# Copyright (C) 2018 UKWA
+# This file is distributed under the same license as the ukwa_pywb project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2018.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: ukwa_pywb 1.0\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2018-02-28 22:43-0800\n"
+"PO-Revision-Date: 2018-02-27 11:34-0800\n"
+"Last-Translator: Google Translate\n"
+"Language: cy\n"
+"Language-Team: cy <LL@li.org>\n"
+"Plural-Forms: nplurals=5; plural=(n==1 ? 1 : n==2 ? 2 : n==3 ? 3 : n==6 ?"
+" 4 : 0)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.5.3\n"
+
+#: templates/banner.html:11
+msgid "Archived On:"
+msgstr "Archif Ar:"
+
+#: templates/banner.html:12
+msgid "Calendar icon"
+msgstr ""
+
+#: templates/banner.html:13
+msgid "Back to Calendar"
+msgstr "Yn ôl i'r Calendr"
+
+#: templates/banner.html:14 templates/base.html:21
+msgid "Language:"
+msgstr "Laith:"
+
+#: templates/banner.html:15
+msgid "Live On"
+msgstr ""
+
+#: templates/banner.html:16
+msgid "Loading..."
+msgstr ""
+
+#: templates/banner.html:17
+msgid "UK Web Archive Logo"
+msgstr ""
+
+#: templates/base.html:17
+msgid "UK Web Archive logo"
+msgstr ""
+
+#: templates/base.html:22
+msgid "Language select"
+msgstr ""
+
+#: templates/error.html:4
+msgid "UKWA Error"
+msgstr ""
+
+#: templates/error.html:7
+#, python-format
+msgid "Access Blocked to %(url)s"
+msgstr ""
+
+#: templates/error.html:9
+msgid "Sorry, access not authorized to this resource."
+msgstr ""
+
+#: templates/error.html:11
+msgid "Access to this resource is currently not allowed. Please try again later."
+msgstr ""
+
+#: templates/error.html:16
+msgid "Error Details:"
+msgstr ""
+
+#: templates/index.html:3
+msgid "UK Web Archive Access System"
+msgstr "System Mynediad Archif Gwe'r DU"
+
+#: templates/index.html:5
+msgid "This web archive contains the following collections:"
+msgstr "Mae'r archif we hon yn cynnwys y casgliadau canlynol:"
+
+#: templates/not_found.html:4
+msgid "Url Not Found"
+msgstr ""
+
+#: templates/not_found.html:6
+#, python-format
+msgid "The url <b>%(url)s</b> could not be found in this collection."
+msgstr ""
+
+#: templates/query.html:14
+msgid "January"
+msgstr "Ionawr"
+
+#: templates/query.html:15
+msgid "February"
+msgstr "Chwefror"
+
+#: templates/query.html:16
+msgid "March"
+msgstr "Mawrth"
+
+#: templates/query.html:17
+msgid "April"
+msgstr "Ebrill"
+
+#: templates/query.html:18
+msgid "May"
+msgstr "Mai"
+
+#: templates/query.html:19
+msgid "June"
+msgstr "Mehefin"
+
+#: templates/query.html:20
+msgid "July"
+msgstr "Gorffennaf"
+
+#: templates/query.html:21
+msgid "August"
+msgstr "Awst"
+
+#: templates/query.html:22
+msgid "September"
+msgstr "Medi"
+
+#: templates/query.html:23
+msgid "October"
+msgstr "Hydref"
+
+#: templates/query.html:24
+msgid "November"
+msgstr "Tachwedd"
+
+#: templates/query.html:25
+msgid "December"
+msgstr "Rhagfyr"
+
+#: templates/query.html:27
+msgid "capture"
+msgstr "cipio"
+
+#: templates/query.html:28
+msgid "captures"
+msgstr "cipio"
+
+#: templates/query.html:34
+msgid "Search Results"
+msgstr "Canlyniadau Chwilio"
+
+#: templates/query.html:35
+#, python-format
+msgid " of <b>%(url)s</b>"
+msgstr " o <b>%(url)s</b>"
+
+#: templates/search.html:5
+#, python-format
+msgid " %(title)s Search Page "
+msgstr " Chwilio'r Tudalen %(title)s "
+
+#: templates/search.html:9
+msgid "Search this collection by url:"
+msgstr "Chwiliwch y casgliad hwn yn ôl url:"
+
+#: templates/search.html:11
+msgid "Enter url to search"
+msgstr "Rhowch url i chwilio"
+
+#: templates/search.html:12
+msgid "Search"
+msgstr "Chwilio"
+
+#~ msgid "Single-User Sessions and Locks"
+#~ msgstr ""
+
+#~ msgid "Current Session: "
+#~ msgstr ""
+
+#~ msgid "(clear current)"
+#~ msgstr ""
+
+#~ msgid "(clear session)"
+#~ msgstr ""
+
+#~ msgid "(clear url lock)"
+#~ msgstr ""
+
+#~ msgid "No Session Locks"
+#~ msgstr ""
+
+#~ msgid "pywb Query Results"
+#~ msgstr ""
+

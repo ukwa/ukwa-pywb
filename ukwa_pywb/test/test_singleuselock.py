@@ -6,27 +6,13 @@ import os
 import time
 import base64
 
-from pywb.warcserver.test.testutils import BaseTestClass
-
 from fakeredis import FakeStrictRedis
 
+from ukwa_pywb.test.testbase import TestClass
 
 # ============================================================================
-class TestSessionLimitApp(BaseTestClass):
+class TestSingleUseLock(TestClass):
     sesh_one = None
-
-    @classmethod
-    def get_test_app(cls, config_file, custom_config=None):
-        config_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), config_file)
-
-        os.environ['SESSION_LOCK_INTERVAL'] = '3'
-        os.environ['LOCKS_USERNAME'] = 'ukwa-admin'
-        os.environ['LOCKS_PASSWORD'] = 'testpass'
-
-        import ukwa_pywb.ratelimitapp
-        ukwa_pywb.ratelimitapp.StrictRedis = FakeStrictRedis
-        app = ukwa_pywb.ratelimitapp.WaybackCli(args=['--debug']).load(config_file=config_file)
-        return app, webtest.TestApp(app)
 
     @classmethod
     def get_session(cls):
@@ -37,9 +23,22 @@ class TestSessionLimitApp(BaseTestClass):
 
     @classmethod
     def setup_class(cls):
-        super(TestSessionLimitApp, cls).setup_class()
-        cls.app, cls.testapp = cls.get_test_app('./config_test.yaml')
+        super(TestSingleUseLock, cls).setup_class()
+
+        os.environ['SESSION_LOCK_INTERVAL'] = '3'
+        os.environ['LOCKS_USERNAME'] = 'ukwa-admin'
+        os.environ['LOCKS_PASSWORD'] = 'testpass'
+
+        cls.testapp = cls.get_test_app()
+
         cls.redis = FakeStrictRedis(decode_responses=True)
+
+    @classmethod
+    def teardown_class(cls):
+        del os.environ['LOCKS_USERNAME']
+        del os.environ['LOCKS_PASSWORD']
+        del os.environ['SESSION_LOCK_INTERVAL']
+        super(TestSingleUseLock, cls).teardown_class()
 
     def test_replay_top_frame_no_lock(self):
         res = self.testapp.get('/pywb/acid.matkelly.com/', status=200)
@@ -83,7 +82,7 @@ class TestSessionLimitApp(BaseTestClass):
         assert len(self.redis.keys('lock:*')) == 2
 
     def test_replay_blocked(self):
-        TestSessionLimitApp.sesh_one = self.redis.keys('sesh:*')[0].split(':')[1]
+        TestSingleUseLock.sesh_one = self.redis.keys('sesh:*')[0].split(':')[1]
         self.testapp.cookiejar.clear()
 
         res = self.testapp.get('/pywb/20180203004147mp_/acid.matkelly.com/', status=403)
@@ -154,6 +153,10 @@ class TestSessionLimitApp(BaseTestClass):
         assert '/_locks/clear_url/pywb/20180203004147/http://acid.matkelly.com/?_=123' in res.text
         assert '/_locks/clear_url/pywb/20180203004147/http://acid.matkelly.com/' in res.text
         assert '/_locks/clear_url/pywb/20140716200243/http://acid.matkelly.com/' in res.text
+
+        assert '/_locks/clear/' in res.text
+        assert '/_locks/reset' in res.text
+        assert '/_logout' in res.text
 
     def test_locks_clear_url(self):
         # clear url

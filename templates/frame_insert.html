@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+html, body
+{
+  height: 100%;
+  margin: 0px;
+  padding: 0px;
+  border: 0px;
+  overflow: hidden;
+}
+#_wb_browser_warning {
+    position: fixed;
+    top: 54px;
+    left: 10px;
+    width: 300px;
+    padding: 15px;
+    z-index: 2147483643;
+    border: solid 2px red;
+    background-color: #FFF;
+}
+
+</style>
+<script src='{{ host_prefix }}/{{ static_path }}/wb_frame.js'> </script>
+
+{{ banner_html }}
+
+</head>
+<body style="margin: 0px; padding: 0px;">
+<div id="wb_iframe_div">
+<iframe id="replay_iframe" frameborder="0" seamless="seamless" scrolling="yes" class="wb_iframe"></iframe>
+</div>
+<script>
+  var cframe = new ContentFrame({"url": "{{ url }}" + window.location.hash,
+                                 "prefix": "{{ wb_prefix }}",
+                                 "request_ts": "{{ wb_url.timestamp }}",
+                                 "iframe": "#replay_iframe"});
+
+  function addBrowserWarning() {
+    var _wb_warning = document.createElement("div");
+    _wb_warning.setAttribute("id", "_wb_browser_warning");
+    _wb_warning.innerHTML = decodeURIComponent("{{ _Q('You are using a browser that is out of date and is not supported for this site. Certain portions of this site may not work correctly. Please try to upgrade or use another browser.') }}");
+    setTimeout(function (){ document.getElementById("_wb_browser_warning").style.display = "none"; }, 15000);
+    document.body.appendChild(_wb_warning);
+  }
+
+  if (window.navigator.userAgent.indexOf("IE 10") !== -1) {
+    addBrowserWarning();
+  }
+</script>
+<!--[if lte IE 9]>
+    <script type="text/javascript">addBrowserWarning();</script>
+<![endif]-->
+</body>
+</html>

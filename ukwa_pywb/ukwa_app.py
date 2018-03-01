@@ -4,8 +4,15 @@ from werkzeug.http import parse_authorization_header
 
 import time
 import os
+from urllib.parse import quote
 
 from redis import StrictRedis
+
+from babel.support import Translations
+from jinja2 import contextfunction
+from werkzeug.routing import Submount
+
+from pywb.rewrite.templateview import JinjaEnv
 
 from pywb.apps.frontendapp import FrontEndApp
 from pywb.apps.rewriterapp import RewriterApp, UpstreamException
@@ -24,10 +31,7 @@ SESH_LIST = 'sesh:{0}'
 
 DEFAULT_TTL = 86400
 
-try:
-    SESSION_TTL = int(os.environ.get('SESSION_LOCK_INTERVAL'))
-except:  #pragma: no cover
-    SESSION_TTL = DEFAULT_TTL
+SESSION_TTL = DEFAULT_TTL
 
 LOCK_KEY = 'lock:{coll}/{ts}/{url}'
 
@@ -49,7 +53,7 @@ def authorize(func):
         if allowed:
             return func(self, environ, *args, **kwargs)
         else:
-            return WbResponse.text_response('Not Authorized', '401 Not Authorized')
+            raise UpstreamException(401, '', 'not-authorized')
 
     return check_auth
 
@@ -99,14 +103,76 @@ class LockingSession(Session):
         else:
             next_day += SESSION_TTL
 
-
         self.redis.expireat(sesh_list, next_day)
         self.redis.expireat(lock_key, next_day)
         return True
 
 
 # ============================================================================
-class RateLimitRewriterApp(RewriterApp):
+class UKWARewriter(RewriterApp):
+    def __init__(self, *args, **kwargs):
+        jinja_env = JinjaEnv(globals={'static_path': 'static'},
+                             extensions=['jinja2.ext.i18n', 'jinja2.ext.with_'])
+
+        kwargs['jinja_env'] = jinja_env
+        super(UKWARewriter, self).__init__(*args, **kwargs)
+
+        self.init_loc(jinja_env)
+
+    def init_loc(self, jinja_env):
+        self.loc_map = {}
+
+        locales_root_dir = self.config.get('locales_root_dir')
+        locales = self.config.get('locales')
+        locales = locales or []
+
+        for loc in locales:
+            self.loc_map[loc] = Translations.load(locales_root_dir, [loc, 'en'])
+            #jinja_env.jinja_env.install_gettext_translations(translations)
+
+        def get_translate(context):
+            loc = context.get('env', {}).get('pywb_lang')
+            return self.loc_map.get(loc)
+
+        def override_func(jinja_env, name):
+            @contextfunction
+            def get_override(context, text):
+                translate = get_translate(context)
+                if not translate:
+                    return text
+
+                func = getattr(translate, name)
+                return func(text)
+
+            jinja_env.globals[name] = get_override
+
+        override_func(jinja_env.jinja_env, 'gettext')
+        override_func(jinja_env.jinja_env, 'ngettext')
+
+        @contextfunction
+        def quote_gettext(context, text):
+            translate = get_translate(context)
+            if not translate:
+                return text
+
+            text = translate.gettext(text)
+            return quote(text, safe='/: ')
+
+        jinja_env.jinja_env.globals['locales'] = list(self.loc_map.keys())
+        jinja_env.jinja_env.globals['_Q'] = quote_gettext
+
+        @contextfunction
+        def switch_locale(context, locale):
+            environ = context.get('env')
+            request_uri = environ.get('REQUEST_URI', environ.get('PATH_INFO'))
+            curr_loc = environ.get('pywb_lang', '')
+            if curr_loc:
+                return request_uri.replace(curr_loc, locale, 1)
+            else:
+                return '/' + locale + request_uri
+
+        jinja_env.jinja_env.globals['switch_locale'] = switch_locale
+
     def should_lock(self, wb_url, environ):
         if wb_url.mod == 'mp_' and not self.is_ajax(environ):
             return True
@@ -121,15 +187,14 @@ class RateLimitRewriterApp(RewriterApp):
                                        url=wb_url.url)
 
             if not session.lock(lock_key):
-                #raise UpstreamException(403, str(wb_url), 'Sorry, access this url is currently locked')
-                return WbResponse.text_response('Not Allowed', status='403 Locked')
+                raise UpstreamException(403, str(wb_url), 'access-locked')
 
-        return super(RateLimitRewriterApp, self).handle_custom_response(environ, wb_url, full_prefix, host_prefix, kwargs)
+        return super(UKWARewriter, self).handle_custom_response(environ, wb_url, full_prefix, host_prefix, kwargs)
 
 
 # ============================================================================
 class UKWApp(FrontEndApp):
-    REWRITER_APP_CLS = RateLimitRewriterApp
+    REWRITER_APP_CLS = UKWARewriter
 
     def _init_routes(self):
         super(UKWApp, self)._init_routes()
@@ -139,6 +204,22 @@ class UKWApp(FrontEndApp):
         self.url_map.add(Rule('/_locks', endpoint=self.lock_listing))
 
         self.url_map.add(Rule('/_logout', endpoint=self.log_out))
+
+    def _init_coll_routes(self, coll_prefix):
+        routes = self._make_coll_routes(coll_prefix)
+
+        # init loc routes, if any
+        loc_keys = list(self.rewriterapp.loc_map.keys())
+        if loc_keys:
+            routes.append(Rule('/', endpoint=self.serve_home))
+
+            submount_route = ', '.join(loc_keys)
+            submount_route = '/<any({0}):lang>'.format(submount_route)
+
+            self.url_map.add(Submount(submount_route, routes))
+
+        for route in routes:
+            self.url_map.add(route)
 
     @authorize
     def lock_clear_url(self, environ, url):
@@ -212,17 +293,20 @@ class UKWApp(FrontEndApp):
 
         return WbResponse.text_response(content, content_type='text/html; charset="utf-8"')
 
-
-#=============================================================================
-class WaybackCli(ReplayCli):
-    def load(self, config_file=None):
-        super(WaybackCli, self).load()
-
+    @classmethod
+    def init_app(cls, config_file=None, extra_config=None):
         REDIS_URL = os.environ.get('REDIS_URL', 'redis://127.0.0.1:6379/0')
+
+        global SESSION_TTL
+
+        try:
+            SESSION_TTL = int(os.environ.get('SESSION_LOCK_INTERVAL'))
+        except:  #pragma: no cover
+            SESSION_TTL = DEFAULT_TTL
 
         r = StrictRedis.from_url(REDIS_URL, decode_responses=True)
 
-        app = UKWApp(config_file=config_file, custom_config=self.extra_config)
+        app = UKWApp(config_file=config_file, custom_config=extra_config)
         app = SessionMiddleware(app, RedisSessionStore(r),
                                 cookie_name=COOKIE_NAME,
                                 environ_key=SESSION_KEY,
@@ -232,13 +316,25 @@ class WaybackCli(ReplayCli):
 
 
 #=============================================================================
-def wayback(args=None):  #pragma: no cover
-    return WaybackCli(args=args,
-                      default_port=8080,
-                      desc='pywb Wayback Machine Server').run()
+class UKWACli(ReplayCli):
+    def load(self):
+        super(UKWACli, self).load()
+
+        return UKWApp.init_app()
+
+
+#=============================================================================
+def ukwa(args=None):  #pragma: no cover
+    return UKWACli(args=args,
+                   default_port=8080,
+                   desc='UKWA Wayback Machinee Server')
+
+
+# ============================================================================
+def main(args=None):  #pragma: no cover
+    ukwa().run()
 
 
 # ============================================================================
 if __name__ == "__main__":  #pragma: no cover
-    wayback()
-
+    main()

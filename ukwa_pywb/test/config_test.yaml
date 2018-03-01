@@ -17,4 +17,8 @@ redirect_to_exact: true
 
 enable_memento: true
 
+locales_root_dir: ./i18n/translations/
+locales:
+  - en
+  - cy
 

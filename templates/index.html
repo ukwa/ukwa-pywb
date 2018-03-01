@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block body %}
+<h2>{% trans %}UK Web Archive Access System{% endtrans %}</h2>
+
+{% trans %}This web archive contains the following collections:{% endtrans %}
+
+<ul>
+{% for route in routes %}
+    <li>
+    <a href="{{ route }}">{{ '/' + route }}</a>
+    </li>
+{% endfor %}
+</ul>
+
+{% endblock %}

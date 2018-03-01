@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="{{ env.pywb_lang | default('en') }}">
+    <head>
+        <title>UKWA Pywb Access System</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="shortcut icon" href="/static/images/favicon.png">
+        <link rel="stylesheet" type="text/css" href="/static/base.css">
+        <script src="/static/base.js"> </script>
+
+        {% block head %}
+        {% endblock %}
+    </head>
+    <body>
+        {% block header %}
+        <header>
+            <a href="/{{ env.pywb_lang | default('en') }}/" class="logo">
+                <img src="/static/ukwa-full.svg" width="200" height="133" alt="{{ _('UK Web Archive logo') }}">
+            </a>
+            {% if not no_lang %}
+            <div class="language-select">
+                {{ _('Language:') }}
+                <ul role="listbox" aria-activedescendant="{{ env.pywb_lang | default('en') }}" aria-labelledby="{{ _('Language select') }}">
+                {% for locale in locales %}
+                  <li role="option" id="{{ locale }}"><a href="{{ switch_locale(locale) }}">{{ locale }}</a></li>
+                {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+        </header>
+        {% endblock %}
+
+        <section>
+        {% block body %}
+        {% endblock %}
+        </section>
+    </body>
+</html>
