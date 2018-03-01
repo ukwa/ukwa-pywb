@@ -63,7 +63,7 @@ This file is part of pywb, https://github.com/webrecorder/pywb
         }
 
         var text = "<a href='/" + (window.banner_info.locale ? window.banner_info.locale + '/' : '') + "' class='_wb_linked_logo'><img src='/static/ukwa.svg' alt='" + window.banner_info.logoAlt + "'><img src='/static/ukwa-condensed.svg' class='mobile' alt='" + window.banner_info.logoAlt + "'></a>";
-        text += "<div id='_wb_capture_info'>" + window.banner_info.lodingLabel + "</div>";
+        text += "<div id='_wb_capture_info'>" + window.banner_info.loadingLabel + "</div>";
         // calendar link and language switch
         text += "<div id='_wb_ancillary_links'>"+
                 "<a href='" + window.banner_info.prefix + "*/" + window.activeUrl + "'><img src='/static/calendar.svg' alt='" + window.banner_info.calendarAlt + "'><span class='no-mobile'>&nbsp;" +window.banner_info.calendarLabel + "</span></a>"+

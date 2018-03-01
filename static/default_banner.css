@@ -74,10 +74,10 @@
     margin: 0 15px;
 
     display: flex !important;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -webkit-flex;
-    display: -ms-flexbox;
+    display: -webkit-box !important;
+    display: -moz-box !important;
+    display: -webkit-flex !important;
+    display: -ms-flexbox !important;
 
     flex-direction: column;
     -webkit-box-direction: normal;

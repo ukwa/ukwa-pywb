@@ -1,13 +1,15 @@
-{% if metadata %}
+{% extends 'base.html' %}
 
-<h2>{% trans title = metadata.title if metadata.title else coll %} {{ title }} Search Page {% endtrans %}</h2>
+{% block body %}
+    {% if metadata %}
+        <h2>{% trans title = metadata.title if metadata.title else coll %} {{ title }} Search Page {% endtrans %}</h2>
+    {% endif %}
 
-{% endif %}
-
-<p>
-{% trans %}Search this collection by url:{% endtrans %}
-<form onsubmit="url = document.getElementById('search').value; if (url != '') { document.location.href = '{{ wb_prefix }}' + '*/' + url; } return false;">
-<input id="search" name="search" placeholder="Enter url to search"/>
-<button type="submit">{% trans %}Search{% endtrans %}</button>
-</form>
-</p>
+    <p>
+        {% trans %}Search this collection by url:{% endtrans %}
+        <form onsubmit="url = document.getElementById('search').value; if (url != '') { document.location.href = '{{ wb_prefix }}' + '*/' + url; } return false;">
+            <input id="search" name="search" placeholder="Enter url to search"/>
+            <button type="submit">{% trans %}Search{% endtrans %}</button>
+        </form>
+    </p>
+{% endblock %}

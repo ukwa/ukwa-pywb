@@ -1,6 +1,6 @@
+{% extends 'base.html' %}
 
-<html>
-<body>
+{% block body %}
 	<h2>{% trans %}Single-User Sessions and Locks{% endtrans %}</h2>
         <p>{% trans %}Current Session: {% endtrans %}{{ current }}</p><a href="/_locks/clear">{% trans %}(clear current){% endtrans %}</a>
 	{% if sessions %}
@@ -18,6 +18,4 @@
 	{% else %}
 	<i>{% trans %}No Session Locks{% endtrans %}</i>
 	{% endif %}
-</body>
-</html>
-
+{% endblock %}

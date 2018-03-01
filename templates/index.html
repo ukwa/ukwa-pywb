@@ -12,11 +12,4 @@
 {% endfor %}
 </ul>
 
-<p>{{ _('Language:') }}</p>
-<ul>
-{% for locale in locales %}
-  <li><a href="/{{ locale }}">{{ locale }}</a></li>
-{% endfor %}
-</ul>
-
 {% endblock %}
