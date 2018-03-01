@@ -15,7 +15,7 @@ This file is part of pywb, https://github.com/webrecorder/pywb
 
     You should have received a copy of the GNU General Public License
     along with pywb.  If not, see <http://www.gnu.org/licenses/>.
-   
+
 */
 
 // Creates the default pywb banner.
@@ -52,8 +52,23 @@ This file is part of pywb, https://github.com/webrecorder/pywb
         banner.setAttribute("id", bid);
         banner.setAttribute("lang", window.banner_info.locale);
 
-        var text = "";
-        text += "<span id='_wb_capture_info'>Loading...</span>";
+        var languageOptions = [];
+        if (window.banner_info.locales) {
+            var locales = window.banner_info.locales;
+            for(var i = 0; i < locales.length; i++) {
+                var path = window.location.pathname.replace(/^\/[a-z-]{2,5}\/|^\//i, '')
+                var locale = locales[i];
+                languageOptions.push("<a href='/" + locale + "/" + path + "'>" + locale + "</a>");
+            }
+        }
+
+        var text = "<a href='/" + (window.banner_info.locale ? window.banner_info.locale + '/' : '') + "' class='_wb_linked_logo'><img src='/static/ukwa.svg' alt='" + window.banner_info.logoAlt + "'><img src='/static/ukwa-condensed.svg' class='mobile' alt='" + window.banner_info.logoAlt + "'></a>";
+        text += "<div id='_wb_capture_info'>" + window.banner_info.lodingLabel + "</div>";
+        // calendar link and language switch
+        text += "<div id='_wb_ancillary_links'>"+
+                "<a href='" + window.banner_info.prefix + "*/" + window.activeUrl + "'><img src='/static/calendar.svg' alt='" + window.banner_info.calendarAlt + "'><span class='no-mobile'>&nbsp;" +window.banner_info.calendarLabel + "</span></a>"+
+                ( languageOptions ? "<div><span class='no-mobile'>" + window.banner_info.choiceLabel + '&nbsp;</span>' + languageOptions.join(' / ') + "</div>" : '') +
+                "</div>"
 
         banner.innerHTML = text;
         document.body.insertBefore(banner, document.body.firstChild);
@@ -66,24 +81,25 @@ This file is part of pywb, https://github.com/webrecorder/pywb
             return;
         }
 
+        window.activeUrl = url;
+
         if (title) {
-            capture_str = '"' + title + '"';
+            capture_str = title;
         }  else {
             capture_str = url;
         }
 
-        capture_str = "<b id='title_or_url'>" + capture_str + "</b>";
+        capture_str = "<b id='title_or_url' title='" + capture_str + "'>" + capture_str + "</b>";
 
         var info_msg;
 
         if (is_live) {
             info_msg = window.banner_info.LIVE_ON;
-        } else {
-            info_msg = window.banner_info.ARCHIVED_ON;
         }
 
-        capture_str += "<i>" + info_msg + "&nbsp;</i>";
+        capture_str += "<span class='_wb_catpure_date'>"+ (info_msg ? "<i>" + info_msg + "&nbsp;</i>" : "");
         capture_str += ts_to_date(ts, false);
+        capture_str += "</span>";
 
         document.querySelector("#_wb_capture_info").innerHTML = capture_str;
     }
