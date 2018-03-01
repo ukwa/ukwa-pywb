@@ -19,10 +19,12 @@ Check CY Home Page
 
 Check EN Replay Acid Test
     Go To    ${HOST}/en/qa-access/2018/http://acid.matkelly.com/
-    Wait Until Page Contains    Archived On:    timeout=10s
+    Wait Until Page Contains    Language:    timeout=10s
+    Page Should Contain    Back to Calendar
 
 Check CY Replay Acid Test
     Go To    ${HOST}/cy/qa-access/2018/http://acid.matkelly.com/
-    Wait Until Page Contains    Archif Ar:    timeout=10s
+    Wait Until Page Contains    Laith:    timeout=10s
+    Page Should Contain    Yn ôl i'r Calendr
 
     

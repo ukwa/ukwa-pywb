@@ -8,15 +8,16 @@
 <link rel='stylesheet' href='{{ host_prefix }}/{{ static_path }}/default_banner.css'/>
 <script>
 window.banner_info = {
-    ARCHIVED_ON: "{{ _('Archived On:') }}",
-    calendarAlt: "{{ _('Calendar icon') }}",
-    calendarLabel: "{{ _('Back to Calendar') }}",
-    choiceLabel: "{{ _('Language:') }}",
-    LIVE_ON: "{{ _('Live On') }}",
-    loadingLabel: "{{ _('Loading...') }}",
+    ARCHIVED_ON: decodeURIComponent("{{ _Q('Archived On:') }}"),
+    calendarAlt: decodeURIComponent("{{ _Q('Calendar icon') }}"),
+    calendarLabel: decodeURIComponent("{{ _Q('Back to Calendar') }}"),
+    choiceLabel: decodeURIComponent("{{ _Q('Language:') }}"),
+    LIVE_ON: decodeURIComponent("{{ _Q('Live On') }}"),
+    loadingLabel: decodeURIComponent("{{ _Q('Loading...') }}"),
+    logoAlt: decodeURIComponent("{{ _Q('UK Web Archive Logo') }}"),
+
     locale: "{{ env.pywb_lang | default('en') }}",
     locales: {{ locales }},
-    logoAlt: "{{ _('UK Web Archive Logo') }}",
     prefix: "{{ wb_prefix }}"
 };
 window.activeUrl = "{{ url }}";

@@ -4,10 +4,12 @@ from werkzeug.http import parse_authorization_header
 
 import time
 import os
+from urllib.parse import quote
 
 from redis import StrictRedis
 
 from babel.support import Translations
+from jinja2 import contextfunction
 from werkzeug.routing import Submount
 
 from pywb.rewrite.templateview import JinjaEnv
@@ -133,8 +135,6 @@ class UKWARewriter(RewriterApp):
             return self.loc_map.get(loc)
 
         def override_func(jinja_env, name):
-            from jinja2 import contextfunction
-
             @contextfunction
             def get_override(context, text):
                 translate = get_translate(context)
@@ -149,7 +149,17 @@ class UKWARewriter(RewriterApp):
         override_func(jinja_env.jinja_env, 'gettext')
         override_func(jinja_env.jinja_env, 'ngettext')
 
+        @contextfunction
+        def quote_gettext(context, text):
+            translate = get_translate(context)
+            if not translate:
+                return text
+
+            text = translate.gettext(text)
+            return quote(text, safe='/: ')
+
         jinja_env.jinja_env.globals['locales'] = list(self.loc_map.keys())
+        jinja_env.jinja_env.globals['_Q'] = quote_gettext
 
     def should_lock(self, wb_url, environ):
         if wb_url.mod == 'mp_' and not self.is_ajax(environ):

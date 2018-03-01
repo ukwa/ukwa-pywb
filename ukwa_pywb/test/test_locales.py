@@ -22,12 +22,12 @@ class TestLocale(TestClass):
         res = self.testapp.get('/en/pywb-no-locks/mp_/acid.matkelly.com/')
         res = res.follow()
         assert '"en"' in res.text
-        assert '"Archived On:"' in res.text
+        assert '"Language:"' in res.text
 
     def test_locale_cy_replay_banner(self):
         res = self.testapp.get('/cy/pywb-no-locks/mp_/acid.matkelly.com/')
         res = res.follow()
         assert '"cy"' in res.text
-        assert '"Archif Ar:"' in res.text
+        assert '"Laith:"' in res.text
 
 

@@ -32,7 +32,7 @@ ${HOST_COLL}    ${HOST}/${COLL}
 1st Browser: Acid Test Replay
     Go To    ${HOST_COLL}/20180203004147/http://acid.matkelly.com/
     Wait Until Page Contains Element    //b[@id='title_or_url']    timeout=10s
-    Element Text Should Be    //b[@id='title_or_url']    "The Archival Acid Test"
+    Element Text Should Be    //b[@id='title_or_url']    The Archival Acid Test
 
 1st Browser: Acid Test No Red Dots
     Execute JavaScript    window.scroll(0, 100)
@@ -59,7 +59,7 @@ ${HOST_COLL}    ${HOST}/${COLL}
     Switch Browser    1
     Go To    ${HOST_COLL}/20180203004147/http://acid.matkelly.com/
     Wait Until Page Contains Element    //b[@id='title_or_url']    timeout=10s
-    Element Text Should Be    //b[@id='title_or_url']    "The Archival Acid Test"
+    Element Text Should Be    //b[@id='title_or_url']    The Archival Acid Test
 
 2nd Browser: Wait for Lock Expiry, Acid Test Page Replay UNLOCKED, New Lock Aquired
     Switch Browser    2
@@ -67,7 +67,7 @@ ${HOST_COLL}    ${HOST}/${COLL}
     Sleep   30s  Wait for lock expiry
     Go To    ${HOST_COLL}/20180203004147/http://acid.matkelly.com/
     Wait Until Page Contains Element    //b[@id='title_or_url']    timeout=10s
-    Element Text Should Be    //b[@id='title_or_url']    "The Archival Acid Test"
+    Element Text Should Be    //b[@id='title_or_url']    The Archival Acid Test
 
 2nd Browser: Verify Lock, Logout, Lock Released
     Go To    ${HOST}/_locks
@@ -81,6 +81,6 @@ ${HOST_COLL}    ${HOST}/${COLL}
     Switch Browser    1
     Go To    ${HOST_COLL}/20180203004147/http://acid.matkelly.com/
     Wait Until Page Contains Element    //b[@id='title_or_url']    timeout=10s
-    Element Text Should Be    //b[@id='title_or_url']    "The Archival Acid Test"
+    Element Text Should Be    //b[@id='title_or_url']    The Archival Acid Test
 
 
