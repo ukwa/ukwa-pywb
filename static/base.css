@@ -74,6 +74,9 @@ header a.logo {
     display: block;
     padding: 15px;
 }
+header a.logo img {
+    border: none;
+}
 
 section {
     padding: 0 25px;
