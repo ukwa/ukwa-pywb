@@ -8,11 +8,31 @@
     <script src="{{ host_prefix }}/{{ static_path }}/js/jquery-latest.min.js"></script>
     <script src="{{ host_prefix }}/{{ static_path }}/js/bootstrap.min.js"></script>
     <script src="{{ host_prefix }}/{{ static_path }}/query.js"></script>
+    <script>
+        var Text = {
+          months: {
+           '01': "{{ _('January') }}",
+           '02': "{{ _('February') }}",
+           '03': "{{ _('March') }}",
+           '04': "{{ _('April') }}",
+           '05': "{{ _('May') }}",
+           '06': "{{ _('June') }}",
+           '07': "{{ _('July') }}",
+           '08': "{{ _('August') }}",
+           '09': "{{ _('September') }}",
+           '10': "{{ _('October') }}",
+           '11': "{{ _('November') }}",
+           '12': "{{ _('December') }} }}",
+          },
+          version: "{{ _('capture') }}",
+          versions: "{{ _('captures') }}",
+        };
+    </script>
 {% endblock %}
 
 {% block body %}
-      <h2 class="text-center">{{ _('pywb Query Results') }}</h2>
-      <h3 class="text-center"><b id="count"></b> of <b>{{ url }}</b></h3>
+      <h2 class="text-center">{{ _('Search Results') }}</h2>
+      <h3 class="text-center"><b id="count"></b>{% trans %} of <b>{{ url }}</b>{% endtrans %}</h3>
       <div id="captureYears"></div>
       <script>new RenderCalendar("{{ prefix }}", "{{ url }}");</script>
 {% endblock %}

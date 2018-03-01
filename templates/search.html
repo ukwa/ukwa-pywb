@@ -8,7 +8,7 @@
     <p>
         {% trans %}Search this collection by url:{% endtrans %}
         <form onsubmit="url = document.getElementById('search').value; if (url != '') { document.location.href = '{{ wb_prefix }}' + '*/' + url; } return false;">
-            <input id="search" name="search" placeholder="Enter url to search"/>
+            <input id="search" name="search" placeholder="{{ _('Enter url to search') }}"/>
             <button type="submit">{% trans %}Search{% endtrans %}</button>
         </form>
     </p>

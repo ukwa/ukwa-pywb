@@ -161,6 +161,18 @@ class UKWARewriter(RewriterApp):
         jinja_env.jinja_env.globals['locales'] = list(self.loc_map.keys())
         jinja_env.jinja_env.globals['_Q'] = quote_gettext
 
+        @contextfunction
+        def switch_locale(context, locale):
+            environ = context.get('env')
+            request_uri = environ.get('REQUEST_URI')
+            curr_loc = environ.get('pywb_lang')
+            if curr_loc:
+                return request_uri.replace(curr_loc, locale, 1)
+            else:
+                return '/' + locale + request_uri
+
+        jinja_env.jinja_env.globals['switch_locale'] = switch_locale
+
     def should_lock(self, wb_url, environ):
         if wb_url.mod == 'mp_' and not self.is_ajax(environ):
             return True
