@@ -154,6 +154,10 @@ class TestSingleUseLock(TestClass):
         assert '/_locks/clear_url/pywb/20180203004147/http://acid.matkelly.com/' in res.text
         assert '/_locks/clear_url/pywb/20140716200243/http://acid.matkelly.com/' in res.text
 
+        assert '/_locks/clear/' in res.text
+        assert '/_locks/reset' in res.text
+        assert '/_logout' in res.text
+
     def test_locks_clear_url(self):
         # clear url
         res = self.testapp.get('/_locks/clear_url/pywb/20180203004147/http://acid.matkelly.com/?_=123', status=302, headers=self.get_auth_headers())

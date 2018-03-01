@@ -13,6 +13,8 @@ RUN python setup.py install
 
 ADD . .
 
+RUN ./i18n/update-loc.sh
+
 USER archivist
 
 CMD ukwa_pywb

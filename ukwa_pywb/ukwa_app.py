@@ -164,8 +164,8 @@ class UKWARewriter(RewriterApp):
         @contextfunction
         def switch_locale(context, locale):
             environ = context.get('env')
-            request_uri = environ.get('REQUEST_URI')
-            curr_loc = environ.get('pywb_lang')
+            request_uri = environ.get('REQUEST_URI', environ.get('PATH_INFO'))
+            curr_loc = environ.get('pywb_lang', '')
             if curr_loc:
                 return request_uri.replace(curr_loc, locale, 1)
             else:
