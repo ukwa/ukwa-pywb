@@ -44,8 +44,6 @@ services:
   pywb:
     command: ukwa_pywb --debug
     build: ../
-    volumes:
-      - ../:/webarchive
 
     environment:
       - "UKWA_INDEX=xmlquery+http://cdx:8080/tc"

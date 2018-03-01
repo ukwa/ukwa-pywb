@@ -2,7 +2,7 @@ FROM ukwa/pywb
 
 USER root
 
-WORKDIR /webarchive
+WORKDIR /ukwa_pywb
 
 ADD setup.py .
 ADD setup.cfg .
