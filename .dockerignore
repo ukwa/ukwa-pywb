@@ -1,4 +1,3 @@
-integration-test/
 build/
 dist/
 **/__pycache__/*
