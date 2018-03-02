@@ -108,17 +108,17 @@ This file is part of pywb, https://github.com/webrecorder/pywb
         return;
     }
 
+    document.addEventListener('DOMContentLoaded', function () {
+        init("_wb_frame_top_banner");
+    });
+
     window.addEventListener("load", function() {
         if (window.wbinfo) {
-            init("_wb_plain_banner");
-
             set_banner(window.wbinfo.url,
                        window.wbinfo.timestamp,
                        window.wbinfo.is_live,
                        window.wbinfo.is_framed ? "" : document.title);
         } else {
-            init("_wb_frame_top_banner");
-
             window.addEventListener("message", function(event) {
                 var state = event.data;
                 if (state.wb_type) {
