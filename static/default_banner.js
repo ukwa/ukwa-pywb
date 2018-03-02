@@ -53,8 +53,11 @@ This file is part of pywb, https://github.com/webrecorder/pywb
 
     function changeLanguage(lang, evt) {
         evt.preventDefault();
-        var path = window.location.pathname.replace(/^\/[a-z]{2}\/|^\//i, "");
-        window.location = "/" + lang + "/" + path;
+        var path = window.location.pathname;
+        if (window.banner_info.curr_locale) {
+            path = path.replace(new RegExp("^/"+window.banner_info.curr_locale), "");
+        }
+        window.location = "/" + lang + path;
     }
 
     function init(bid) {
