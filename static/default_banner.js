@@ -46,31 +46,70 @@ This file is part of pywb, https://github.com/webrecorder/pywb
         }
     }
 
+    function backToCalendar(evt) {
+        evt.preventDefault();
+        window.location = window.banner_info.prefix + "*/" + window.activeUrl;
+    }
+
+    function changeLanguage(lang, evt) {
+        evt.preventDefault();
+        var path = window.location.pathname.replace(/^\/[a-z]{2}\/|^\//i, "");
+        window.location = "/" + lang + "/" + path;
+    }
+
     function init(bid) {
         var banner = document.createElement("wb_div", true);
 
         banner.setAttribute("id", bid);
         banner.setAttribute("lang", window.banner_info.locale);
 
-        var languageOptions = [];
-        if (window.banner_info.locales) {
+        var logo = document.createElement("a");
+        logo.setAttribute("href", "/" + (window.banner_info.locale ? window.banner_info.locale + "/" : ""));
+        logo.setAttribute("class", "_wb_linked_logo");
+        logo.innerHTML = "<img src='/static/ukwa.svg' alt='" + window.banner_info.logoAlt + "'><img src='/static/ukwa-condensed.svg' class='mobile' alt='" + window.banner_info.logoAlt + "'>";
+        banner.appendChild(logo);
+
+        var captureInfo = document.createElement("div");
+        captureInfo.setAttribute("id", "_wb_capture_info");
+        captureInfo.innerHTML = window.banner_info.loadingLabel;
+        banner.appendChild(captureInfo);
+
+        var ancillaryLinks = document.createElement("div");
+        ancillaryLinks.setAttribute("id", "_wb_ancillary_links");
+
+        var calendarLink = document.createElement("a");
+        calendarLink.setAttribute("href", "#");
+        calendarLink.addEventListener("click", backToCalendar);
+        calendarLink.innerHTML = "<img src='/static/calendar.svg' alt='" + window.banner_info.calendarAlt + "'><span class='no-mobile'>&nbsp;" +window.banner_info.calendarLabel + "</span>";
+        ancillaryLinks.appendChild(calendarLink);
+
+        if (typeof window.banner_info.locales !== "undefined" && window.banner_info.locales.length) {
             var locales = window.banner_info.locales;
+            var languages = document.createElement("div");
+
+            var label = document.createElement("span");
+            label.setAttribute("class", "no-mobile");
+            label.appendChild(document.createTextNode(window.banner_info.choiceLabel + " "));
+            languages.appendChild(label);
+
             for(var i = 0; i < locales.length; i++) {
-                var path = window.location.pathname.replace(/^\/[a-z-]{2,5}\/|^\//i, '')
                 var locale = locales[i];
-                languageOptions.push("<a href='/" + locale + "/" + path + "'>" + locale + "</a>");
+                var langLink = document.createElement("a");
+                langLink.setAttribute("href", "#");
+                langLink.addEventListener("click", changeLanguage.bind(this, locale));
+                langLink.appendChild(document.createTextNode(locale));
+
+                languages.appendChild(langLink);
+                if (i !== locales.length - 1) {
+                    languages.appendChild(document.createTextNode(" / "));
+                }
             }
+
+            ancillaryLinks.appendChild(languages);
         }
 
-        var text = "<a href='/" + (window.banner_info.locale ? window.banner_info.locale + '/' : '') + "' class='_wb_linked_logo'><img src='/static/ukwa.svg' alt='" + window.banner_info.logoAlt + "'><img src='/static/ukwa-condensed.svg' class='mobile' alt='" + window.banner_info.logoAlt + "'></a>";
-        text += "<div id='_wb_capture_info'>" + window.banner_info.loadingLabel + "</div>";
-        // calendar link and language switch
-        text += "<div id='_wb_ancillary_links'>"+
-                "<a href='" + window.banner_info.prefix + "*/" + window.activeUrl + "'><img src='/static/calendar.svg' alt='" + window.banner_info.calendarAlt + "'><span class='no-mobile'>&nbsp;" +window.banner_info.calendarLabel + "</span></a>"+
-                ( languageOptions ? "<div><span class='no-mobile'>" + window.banner_info.choiceLabel + '&nbsp;</span>' + languageOptions.join(' / ') + "</div>" : '') +
-                "</div>"
+        banner.appendChild(ancillaryLinks);
 
-        banner.innerHTML = text;
         document.body.insertBefore(banner, document.body.firstChild);
     }
 
@@ -97,7 +136,7 @@ This file is part of pywb, https://github.com/webrecorder/pywb
             info_msg = window.banner_info.LIVE_ON;
         }
 
-        capture_str += "<span class='_wb_catpure_date'>"+ (info_msg ? "<i>" + info_msg + "&nbsp;</i>" : "");
+        capture_str += "<span class='_wb_capture_date'>"+ (info_msg ? "<i>" + info_msg + "&nbsp;</i>" : "");
         capture_str += ts_to_date(ts, false);
         capture_str += "</span>";
 
@@ -108,7 +147,7 @@ This file is part of pywb, https://github.com/webrecorder/pywb
         return;
     }
 
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener("DOMContentLoaded", function () {
         init("_wb_frame_top_banner");
     });
 
