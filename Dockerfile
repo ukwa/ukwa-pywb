@@ -30,5 +30,5 @@ ENV PYWB_CONFIG_FILE=/webarchive/config.yaml
 ENV UKWA_INDEX=/webarchive/integration-test/test-data/
 ENV UKWA_ARCHIVE=/webarchive/integration-test/test-data/
 
+CMD uwsgi uwsgi.ini
 
-CMD ukwa_pywb
