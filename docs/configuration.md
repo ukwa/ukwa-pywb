@@ -47,6 +47,19 @@ locales: ['en', 'cy']
 
 See [Localization Docs](localization.md) for more info on localization.
 
+### Single-Concurrent Lock
+
+The single-concurrent lock mode can be enabled per-collection by setting `single-use-lock: true` in the collection config:
+
+```
+collection:
+    ukwa:
+        ...
+        single-use-lock: true
+```
+
+See [Single-Concurrent Lock docs](locks.md) for more info.
+
 
 ### Access Controls
 
