@@ -16,9 +16,9 @@ The following environment variables can be used:
 
 - `REDIS_URL` -- A Redis url (eg. `redis://redis:6379/0`) pointing to a Redis instances for use with the [Single-Concurrent Lock](locks.md) system.
 
-- `SESSION_LOCK_INTERVAL` -- a custom internval to override the concurrent-lock timeout. See [Single-Concurrent Lock](locks.md) for more details.
+- `TEST_SESSION_LOCK_INTERVAL` -- a custom interval to override the concurrent-lock timeout, designed for testing only. See [Single-Concurrent Lock](locks.md) for more details.
 
-- `LOCKS_USERNAME` and `LOCKS_PASSWORD` -- If set, provide Basic Auth access restrictions to all session locks operations. See [Single-Concurrent Lock](locks.md) for more details.
+- `LOCKS_AUTH` -- If set to `username:password`, provides Basic Auth access restrictions to all session locks operations. See [Single-Concurrent Lock](locks.md) for more details.
 
 ### Configuration Format
 
