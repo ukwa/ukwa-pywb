@@ -2,9 +2,29 @@
 
 This repository provides a number of deployment options.
 
+### Local Python Deployment
+
+This repository contains a standalone python package, which can be installed anr run locally:
+
+```
+python setup.py install
+./run-ukwa-pywb.sh [ -p 8080]
+```
+A port can be supplied to start on a different port.
+
+#### Testing
+
+The package includes unit tests for custom functionality, available by running:
+```
+python setup.py test
+```
+
+More thorough testing is performed by the browser-based and network-based [Integration Tests](https://github.com/ukwa/ukwa-pywb/tree/master/integration-test)
+
+
 ### Docker Standalone Deployment
 
-The Dockerfile can be built and deployed as a standalone image:
+The easiest deployment is with the supplied Dockerfile can be built and deployed as a standalone image:
 
 `docker build -t ukwa/ukwa-pywb .; docker run -it -p 8080:8080 ukwa/ukwa-pywb`
 
@@ -39,12 +59,11 @@ pywb:
 This setting is used for the [integration-test](https://github.com/ukwa/ukwa-pywb/tree/master/integration-test) deployment
 and allows for easy testing with different index and archival sources.
 
+This setting leaves the default [config.yaml](https://github.com/ukwa/ukwa-pywb/blob/master/config.yaml) in place.
+
 ### Docker Deployment with Custom Config Directory
 
-The above settings leave the default [config.yaml](https://github.com/ukwa/ukwa-pywb/blob/master/config.yaml) in place.
-
-It's also possible to further customize the deployment by adding a custom config.yaml, with different set of collections,
-different access rules, etc.. This is probably ideal for the production deployment.
+It's also possible to further customize the deployment by adding a custom `config.yaml`, with differnet access rules, collection names, etc...
 
 To add a different config, mount the config directory to the `/webarchive` path as a volume:
 
@@ -58,7 +77,9 @@ pywb:
      ./pywb:/webarchive
 ```
 
-See [Configuration Format](configuration] for more details on setting up the config directory.
+Note that any local paths used in `config.yaml` should be absolute paths in /webarchive as the working directory is not set to `/webarchive`
+
+See [Configuration Format](configuration.md) for more details on setting up the configuration.
 
 ## UWSGI Production Deployment
 
@@ -91,7 +112,7 @@ First, exposing the port in docker-compose.yml:
              - 8080:8080
 ``` 
 
-And adding a following nginx configuration:
+And adding a following Nginx configuration:
 
 ```
 server {
@@ -122,8 +143,8 @@ This configuration sets up nginx to listen on 8100 and forward to uwsgi on 8081.
 
 An additional ptimization is added to allow nginx to serve any static files from the [/static](https://github.com/ukwa/ukwa-pywb/tree/master/static)
 directory in this repository directly. (The above assumes this repository is installed at `/home/ubuntu/ukwa-pywb/`)
-This is not necessary, but should improve performance.
 
+This is recommended to improve performance.
 
 
 
