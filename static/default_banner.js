@@ -119,6 +119,12 @@ This file is part of pywb, https://github.com/webrecorder/pywb
     function set_banner(url, ts, is_live, title) {
         var capture_str;
 
+        if (!url) {
+            document.querySelector("#_wb_capture_info").innerHTML = window.banner_info.loadingLabel;
+            return;
+        }
+
+
         if (!ts) {
             return;
         }
@@ -147,6 +153,16 @@ This file is part of pywb, https://github.com/webrecorder/pywb
     }
 
     if (window.top != window) {
+        // replay frame
+        function notify_unload() {
+            if (window.__WB_top_frame && window.__WB_replay_top == window) {
+                window.__WB_top_frame.postMessage({"wb_type": "unload"}, "*");
+            }
+        }
+
+        window.addEventListener("load", function() {
+            window.addEventListener("unload", notify_unload);
+        });
         return;
     }
 
@@ -163,8 +179,10 @@ This file is part of pywb, https://github.com/webrecorder/pywb
         } else {
             window.addEventListener("message", function(event) {
                 var state = event.data;
-                if (state.wb_type) {
+                if (state.wb_type && state.wb_type != "unload") {
                     set_banner(state.url, state.ts, state.is_live, state.title);
+                } else if (state.wb_type == "unload") {
+                    set_banner(null);
                 }
             });
         }
