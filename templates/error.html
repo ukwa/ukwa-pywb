@@ -3,12 +3,21 @@
 {% block body %}
     <h2>{% trans %}UKWA Error{% endtrans %}</h2>
 
-    {% if err_status == 451 %}
+    {% if err_status == 404 and err_details == 'coll_not_found' %}
+        {% trans %}Collection not found:{% endtrans %} <b>{{ err_msg }}</b>
+
+    {% elif err_status == 404 and err_details == 'static_file_not_found' %}
+        {% trans %}Static file not found:{% endtrans %} <b>{{ err_msg }}</b>
+
+    {% elif err_status == 451 %}
         {% trans url = err_msg %}Access Blocked to {{ url }}{% endtrans %}
+
     {% elif err_status == 401 and err_details == 'not-authorized' %}
         {% trans %}Sorry, access not authorized to this resource.{% endtrans %}
+
     {% elif err_status == 403 and err_details == 'access-locked' %}
         {% trans %}Access to this resource is currently not allowed. Please try again later.{% endtrans %}
+
     {% else %}
         <b>{{ err_msg }}</b>
 
