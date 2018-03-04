@@ -1,7 +1,6 @@
 ## Access Control System
 
-The access controls system allows for a flexible configuration of rules to allow, block or exclude access to individual urls by
-longest-prefix match.
+The access controls system allows for a flexible configuration of rules to allow, block or exclude access to individual urls by longest-prefix match.
 
 ### Access Control Files (.aclj)
 
@@ -25,6 +24,13 @@ Given these rules, a user would:
 - be allowed to visit `http://httpbin.org/anything/something` (allow)
 - but would receive an 'access blocked' error message when viewing `http://httpbin.org/` (block)
 - would receive a 404 not found error when viewing `http://httpbin.org/anything` (exclude)
+
+#### Default .aclj files
+
+A default set of access control files is provided in the [./aclj directory](https://github.com/ukwa/ukwa-pywb/tree/master/acl)
+
+These are in use with the default [config.yaml](https://github.com/ukwa/ukwa-pywb/blob/master/config.yaml)
+
 
 #### Access Types: `allow`, `block`, `exclude`
 
@@ -114,6 +120,15 @@ If omitted, this setting is `default_access: allow`.
 
 Setting `default_access: block` and providing a list of `allow` rules provides a flexible way to allow access
 to only a limited set of resources, and block access to anything out of scope by default.
+
+### Access Error Messages
+
+The special error code 451 is used to indicate that a resource has been blocked (access setting `block`)
+
+The [error.html](https://github.com/ukwa/ukwa-pywb/blob/master/templates/error.html) template contains a special message for this access and can be customized further.
+
+By design, resources that are `exclude`-ed simply appear as 404 not found and no special error is provided.
+
 
 ### Implementation
 
