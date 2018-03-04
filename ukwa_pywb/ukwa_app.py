@@ -39,13 +39,13 @@ LOCK_KEY = 'lock:{coll}/{ts}/{url}'
 # ============================================================================
 def authorize(func):
     def check_auth(self, environ, *args, **kwargs):
-        LOCKS_USERNAME = os.environ.get('LOCKS_USERNAME', '')
-        LOCKS_PASSWORD = os.environ.get('LOCKS_PASSWORD', '')
+        LOCKS_AUTH = os.environ.get('LOCKS_AUTH', '')
 
-        if LOCKS_USERNAME and LOCKS_PASSWORD:
+        if ':' in LOCKS_AUTH:
             allowed = False
             auth = parse_authorization_header(environ.get('HTTP_AUTHORIZATION'))
-            if auth and auth.username == LOCKS_USERNAME  and auth.password == LOCKS_PASSWORD:
+            username, password = LOCKS_AUTH.split(':', 1)
+            if auth and auth.username == username  and auth.password == password:
                 allowed = True
         else:
             allowed = True
@@ -146,9 +146,14 @@ class UKWARewriter(RewriterApp):
 
             jinja_env.globals[name] = get_override
 
+        # standard gettext() translation function
         override_func(jinja_env.jinja_env, 'gettext')
+
+        # single/plural form translation function
         override_func(jinja_env.jinja_env, 'ngettext')
 
+        # Special _Q() function to return %-encoded text, necessary for use
+        # with text in banner
         @contextfunction
         def quote_gettext(context, text):
             translate = get_translate(context)
@@ -190,6 +195,13 @@ class UKWARewriter(RewriterApp):
                 raise UpstreamException(403, str(wb_url), 'access-locked')
 
         return super(UKWARewriter, self).handle_custom_response(environ, wb_url, full_prefix, host_prefix, kwargs)
+
+    def _error_response(self, environ, wbe):
+        response = super(UKWARewriter, self)._error_response(environ, wbe)
+        if wbe.status_code == 401:
+            response.status_headers.headers.append(('WWW-Authenticate', 'Basic realm=Auth Required'))
+
+        return response
 
 
 # ============================================================================
@@ -295,16 +307,20 @@ class UKWApp(FrontEndApp):
 
     @classmethod
     def init_app(cls, config_file=None, extra_config=None):
-        REDIS_URL = os.environ.get('REDIS_URL', 'redis://127.0.0.1:6379/0')
-
         global SESSION_TTL
 
         try:
-            SESSION_TTL = int(os.environ.get('SESSION_LOCK_INTERVAL'))
+            SESSION_TTL = int(os.environ.get('TEST_SESSION_LOCK_INTERVAL'))
         except:  #pragma: no cover
             SESSION_TTL = DEFAULT_TTL
 
-        r = StrictRedis.from_url(REDIS_URL, decode_responses=True)
+        REDIS_URL = os.environ.get('REDIS_URL')
+        if REDIS_URL:
+            r = StrictRedis.from_url(REDIS_URL, decode_responses=True)
+        else:
+            print('WARNING: No REDIS_URL defined.. Using Fake Redis.. Session Locks will not persist on restart')
+            from fakeredis import FakeStrictRedis
+            r = FakeStrictRedis(decode_responses=True)
 
         app = UKWApp(config_file=config_file, custom_config=extra_config)
         app = SessionMiddleware(app, RedisSessionStore(r),

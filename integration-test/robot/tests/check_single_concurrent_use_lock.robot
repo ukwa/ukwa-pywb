@@ -50,6 +50,14 @@ ${HOST_COLL}    ${HOST}/${COLL}
     Select Frame    //iframe
     Page Should Contain    Access to this resource is currently not allowed.
 
+2nd Browser: Acid Test Page Replay LOCKED, Using Different Locales (EN and CY)
+    Go To    ${HOST}/cy/reading-room/20180203004147/http://acid.matkelly.com/
+    Select Frame    //iframe
+    Page Should Contain    Access to this resource is currently not allowed.
+    Go To    ${HOST}/en/reading-room/20180203004147/http://acid.matkelly.com/
+    Select Frame    //iframe
+    Page Should Contain    Access to this resource is currently not allowed.
+
 2nd Browser: Logout Different Session, Replay Still LOCKED
     Go To    ${HOST}/_logout
     Location Should Be     ${HOST}/

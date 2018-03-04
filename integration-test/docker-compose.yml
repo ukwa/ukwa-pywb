@@ -50,7 +50,7 @@ services:
       - "UKWA_ARCHIVE=webhdfs://hadoop:50070/"
       - "WEBHDFS_USER=hadoop"
       - "REDIS_URL=redis://redis:6379/0"
-      - "SESSION_LOCK_INTERVAL=30"
+      - "TEST_SESSION_LOCK_INTERVAL=30"
 
     ports:
       - "8081:8080"

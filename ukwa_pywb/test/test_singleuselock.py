@@ -25,9 +25,8 @@ class TestSingleUseLock(TestClass):
     def setup_class(cls):
         super(TestSingleUseLock, cls).setup_class()
 
-        os.environ['SESSION_LOCK_INTERVAL'] = '3'
-        os.environ['LOCKS_USERNAME'] = 'ukwa-admin'
-        os.environ['LOCKS_PASSWORD'] = 'testpass'
+        os.environ['TEST_SESSION_LOCK_INTERVAL'] = '3'
+        os.environ['LOCKS_AUTH'] = 'ukwa-admin:testpass'
 
         cls.testapp = cls.get_test_app()
 
@@ -35,9 +34,8 @@ class TestSingleUseLock(TestClass):
 
     @classmethod
     def teardown_class(cls):
-        del os.environ['LOCKS_USERNAME']
-        del os.environ['LOCKS_PASSWORD']
-        del os.environ['SESSION_LOCK_INTERVAL']
+        del os.environ['LOCKS_AUTH']
+        del os.environ['TEST_SESSION_LOCK_INTERVAL']
         super(TestSingleUseLock, cls).teardown_class()
 
     def test_replay_top_frame_no_lock(self):
@@ -147,6 +145,8 @@ class TestSingleUseLock(TestClass):
         res = self.testapp.get('/_locks/reset', status=401)
         res = self.testapp.get('/_locks/clear/{0}'.format(self.get_session()), status=401)
 
+        assert res.headers['WWW-Authenticate'] == 'Basic realm=Auth Required'
+
     def test_locks_view(self):
         res = self.testapp.get('/_locks', headers=self.get_auth_headers())
 
@@ -212,8 +212,7 @@ class TestSingleUseLock(TestClass):
         assert self.redis.keys('*') == []
 
     def test_no_auth(self):
-        os.environ['LOCKS_USERNAME'] = ''
-        os.environ['LOCKS_PASSWORD'] = ''
+        os.environ['LOCKS_AUTH'] = ''
 
         res = self.testapp.get('/_locks', status=200)
 
