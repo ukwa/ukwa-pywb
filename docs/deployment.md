@@ -59,7 +59,7 @@ pywb:
 This setting is used for the [integration-test](https://github.com/ukwa/ukwa-pywb/tree/master/integration-test) deployment
 and allows for easy testing with different index and archival sources.
 
-See [Configuration docs](configuration.md) for a full list of environment variables that can be set.
+See [Configuration docs](configuration.md#environment-variables) for a full list of environment variables that can be set.
 
 This setting leaves the default [config.yaml](https://github.com/ukwa/ukwa-pywb/blob/master/config.yaml) in place.
 
