@@ -3,10 +3,12 @@ UKWA PYWB Access System
 
 This repository represents a customized extension of [pywb](https://github.com/webrecorder/pywb) for use with the UK Web Archive. It includes:
 
-- Custom UI for UKWA
+- [Custom UI for UKWA](docs/ui.md)
 - [Single-Concurrent Lock System](docs/locks.md)
 - [Localization](docs/localization.md)
 - [Access Controls](docs/access_controls.md)
+- [HTTP/S Proxy Mode](docs/proxy.md)
+- Memento Prefer Header initial implementation (See [this issue](https://github.com/mementoweb/rfc-extensions/issues/7) for further discussion)
 
 This repository ships a custom package `ukwa_pywb`, which extends the `pywb`.
 
