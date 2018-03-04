@@ -36,7 +36,7 @@ The following scripts are provided for convenience:
 - `i18n/clear-loc.sh` -- re-init localizations. This will clear all current translations!
 
 
-### Eextraction, Updates and Compilation
+### Extraction, Updates and Compilation
 
 Babel is configured to extract text from all [Jinja2](http://jinja.pocoo.org/) [UI Templates](ui.md#ui-templates)
 
