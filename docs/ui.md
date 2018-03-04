@@ -7,6 +7,7 @@ Additionally, links to calendar page and locale switching are provided on all UI
 ### UI Templates
 
 The follow UI templates are provided in the [templates](https://github.com/ukwa/ukwa-pywb/tree/master/templates) directory.
+The templates use the [Jinja2](http://jinja.pocoo.org/) templating system.
 
 - `banner.html` - The main banner inserted into the replay top frame. Most of the banner is created dynamically through the included default_banner.js file.
 
@@ -27,7 +28,7 @@ The follow UI templates are provided in the [templates](https://github.com/ukwa/
 - `search.html` -- The collection search page. Contains a search bar to search the collection by URL.
 
 
-The text in all of the templates is [extracted for localization](localization.md)
+The text in all of the templates is [extracted for localization](https://github.com/ukwa/ukwa-pywb/blob/docs/docs/localization.md#extraction-updates-and-compilation)
 
 ### Static Files
 
