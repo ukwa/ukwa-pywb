@@ -31,6 +31,8 @@ collections:
             - ./acl/blocks.aclj
             - ./acl/allows.aclj
 
+        default_access: block
+
     # QA no access controls
     qa-access:
         index_paths: *INDEX
