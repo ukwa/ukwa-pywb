@@ -22,6 +22,32 @@ collections:
 
         default_access: block
 
+    # open access (with access controls) under /archive/
+    archive:
+        index_paths: *INDEX
+        archive_paths: *ARCHIVE
+
+        acl_paths:
+            - ./acl/blocks.aclj
+            - ./acl/allows.aclj
+
+        default_access: block
+        locales:
+            - en
+
+    # open access (with access controls) under /archive-cy/ set to /cy/
+    archive-cy:
+        index_paths: *INDEX
+        archive_paths: *ARCHIVE
+
+        acl_paths:
+            - ./acl/blocks.aclj
+            - ./acl/allows.aclj
+
+        default_access: block
+        locales:
+            - cy
+
     # QA no access controls
     qa-access:
         index_paths: *INDEX
