@@ -1,5 +1,5 @@
 
-#_wb_plain_banner, #_wb_frame_top_banner
+#_wb_frame_top_banner
 {
     display: block !important;
     top: 0px !important;
@@ -20,13 +20,6 @@
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 100%;
-}
-
-#_wb_plain_banner
-{
-    position: absolute !important;
-    padding: 4px !important;
-    border: 1px solid !important;
 }
 
 #_wb_frame_top_banner
@@ -108,7 +101,7 @@
     -webkit-font-smoothing: antialiased;
 }
 
-._wb_catpure_date
+._wb_capture_date
 {
     font-size: 13px;
 }

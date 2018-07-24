@@ -33,7 +33,11 @@ setup(
     setup_requires=[
         'babel',
         ],
-    install_requires=['babel'],
+    install_requires=[
+        'babel',
+        'uwsgi',
+        'fakeredis'
+    ],
     message_extractors = {
         '.': [
             ('templates/**.html', 'jinja2', {'extensions': 'jinja2.ext.autoescape,jinja2.ext.with_'})

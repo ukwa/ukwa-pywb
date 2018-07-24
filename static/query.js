@@ -64,7 +64,7 @@ function RenderCalendar(prefix, url) {
 
   function init() {
     $.ajax(prefix + "cdx", {
-      data: {"url": url, "output": "json"},
+      data: {"url": url, "output": "json", "allowFuzzy": "false"},
       dataType: "text",
       success: function(data) {
         processAll(data.trim());

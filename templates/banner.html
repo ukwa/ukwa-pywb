@@ -17,6 +17,7 @@ window.banner_info = {
     logoAlt: decodeURIComponent("{{ _Q('UK Web Archive Logo') }}"),
 
     locale: "{{ env.pywb_lang | default('en') }}",
+    curr_locale: "{{ env.pywb_lang }}",
     locales: {{ locales }},
     prefix: "{{ wb_prefix }}"
 };

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ukwa_pywb 1.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2018-02-28 22:43-0800\n"
+"POT-Creation-Date: 2018-03-02 17:30-0800\n"
 "PO-Revision-Date: 2018-02-27 11:34-0800\n"
 "Last-Translator: Google Translate\n"
 "Language: cy\n"
@@ -41,7 +41,7 @@ msgstr ""
 
 #: templates/banner.html:16
 msgid "Loading..."
-msgstr ""
+msgstr "Llwytho ..."
 
 #: templates/banner.html:17
 msgid "UK Web Archive Logo"
@@ -57,23 +57,38 @@ msgstr ""
 
 #: templates/error.html:4
 msgid "UKWA Error"
-msgstr ""
+msgstr "Gwall UKWA"
 
 #: templates/error.html:7
+msgid "Collection not found:"
+msgstr "Casgliad heb ei darganfod:"
+
+#: templates/error.html:10
+msgid "Static file not found:"
+msgstr "Ffeil statig heb ei darganfod:"
+
+#: templates/error.html:13
 #, python-format
 msgid "Access Blocked to %(url)s"
 msgstr ""
 
-#: templates/error.html:9
+#: templates/error.html:16
 msgid "Sorry, access not authorized to this resource."
 msgstr ""
 
-#: templates/error.html:11
+#: templates/error.html:19
 msgid "Access to this resource is currently not allowed. Please try again later."
 msgstr ""
 
-#: templates/error.html:16
+#: templates/error.html:25
 msgid "Error Details:"
+msgstr ""
+
+#: templates/frame_insert.html:44
+msgid ""
+"You are using a browser that is out of date and is not supported for this"
+" site. Certain portions of this site may not work correctly. Please try "
+"to upgrade or use another browser."
 msgstr ""
 
 #: templates/index.html:3
@@ -86,12 +101,12 @@ msgstr "Mae'r archif we hon yn cynnwys y casgliadau canlynol:"
 
 #: templates/not_found.html:4
 msgid "Url Not Found"
-msgstr ""
+msgstr "Ni ddarganfuwyd Url"
 
 #: templates/not_found.html:6
 #, python-format
 msgid "The url <b>%(url)s</b> could not be found in this collection."
-msgstr ""
+msgstr "Ni ellid dod o hyd i'r url <b>%(url)s</b> yn y casgliad hwn."
 
 #: templates/query.html:14
 msgid "January"
