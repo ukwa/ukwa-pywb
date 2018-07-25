@@ -60,6 +60,20 @@ services:
       - hadoop
       - redis
 
+  nginx:
+    image: nginx:1.13-alpine
+
+    volumes:
+      - ./nginx/pywb.conf:/etc/nginx/conf.d/pywb.conf:ro
+      - ../static:/ukwa-pywb-static
+
+    ports:
+      - "8100:8100"
+
+    depends_on:
+      - pywb
+
+
 # -----------------------------------------------------------
 # Automated test engine
 # -----------------------------------------------------------

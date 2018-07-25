@@ -169,14 +169,37 @@ class UKWARewriter(RewriterApp):
         @contextfunction
         def switch_locale(context, locale):
             environ = context.get('env')
-            request_uri = environ.get('REQUEST_URI', environ.get('PATH_INFO'))
             curr_loc = environ.get('pywb_lang', '')
+
+            request_uri = environ.get('REQUEST_URI', environ.get('PATH_INFO'))
+
             if curr_loc:
                 return request_uri.replace(curr_loc, locale, 1)
             else:
-                return '/' + locale + request_uri
+                return environ.get('ORIG_SCRIPT_NAME', '') + '/' + locale + request_uri
+
+        @contextfunction
+        def get_locale_prefixes(context):
+            environ = context.get('env')
+            locale_prefixes = {}
+
+            orig_prefix = environ.get('ORIG_SCRIPT_NAME', '')
+            coll = environ.get('SCRIPT_NAME', '')
+
+            if orig_prefix:
+                coll = coll[len(orig_prefix):]
+
+            curr_loc = environ.get('pywb_lang', '')
+            if curr_loc:
+                coll = coll[len(curr_loc) + 1:]
+
+            for locale in self.loc_map.keys():
+                locale_prefixes[locale] = orig_prefix + '/' + locale + coll + '/'
+
+            return locale_prefixes
 
         jinja_env.jinja_env.globals['switch_locale'] = switch_locale
+        jinja_env.jinja_env.globals['get_locale_prefixes'] = get_locale_prefixes
 
     def should_lock(self, wb_url, environ):
         if wb_url.mod == 'mp_' and not self.is_ajax(environ):

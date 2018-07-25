@@ -1,11 +1,11 @@
 {% if not embed_url %}
 <!-- Custom Fixup Script -->
-<script src="/static/fixup.js"> </script>
+<script src="{{ static_prefix }}/fixup.js"> </script>
 {% endif %}
 
 <!-- default banner, create through js -->
-<script src='{{ host_prefix }}/{{ static_path }}/default_banner.js'> </script>
-<link rel='stylesheet' href='{{ host_prefix }}/{{ static_path }}/default_banner.css'/>
+<script src='{{ static_prefix }}/default_banner.js'> </script>
+<link rel='stylesheet' href='{{ static_prefix }}/default_banner.css'/>
 <script>
 window.banner_info = {
     ARCHIVED_ON: decodeURIComponent("{{ _Q('Archived On:') }}"),
@@ -19,7 +19,9 @@ window.banner_info = {
     locale: "{{ env.pywb_lang | default('en') }}",
     curr_locale: "{{ env.pywb_lang }}",
     locales: {{ locales }},
-    prefix: "{{ wb_prefix }}"
+    locale_prefixes: {{ get_locale_prefixes() | tojson }},
+    prefix: "{{ wb_prefix }}",
+    staticPrefix: "{{ static_prefix }}"
 };
 window.activeUrl = "{{ url }}";
 </script>
