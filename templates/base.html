@@ -3,9 +3,9 @@
     <head>
         <title>UKWA Pywb Access System</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="shortcut icon" href="/static/images/favicon.png">
-        <link rel="stylesheet" type="text/css" href="/static/base.css">
-        <script src="/static/base.js"> </script>
+        <link rel="shortcut icon" href="{{ static_prefix }}/images/favicon.png">
+        <link rel="stylesheet" type="text/css" href="{{ static_prefix }}/base.css">
+        <script src="{{ static_prefix }}/base.js"> </script>
 
         {% block head %}
         {% endblock %}
@@ -13,8 +13,8 @@
     <body>
         {% block header %}
         <header>
-            <a href="/{{ env.pywb_lang | default('en') }}/" class="logo">
-                <img src="/static/ukwa-full.svg" width="200" height="133" alt="{{ _('UK Web Archive logo') }}">
+            <a href="{{ env.ORIG_SCRIPT_NAME }}/{{ env.pywb_lang + '/' if env.pywb_lang else ''}}" class="logo">
+                <img src="{{ static_prefix }}/ukwa-full.svg" width="200" height="133" alt="{{ _('UK Web Archive logo') }}">
             </a>
             {% if not no_lang %}
             <div class="language-select">

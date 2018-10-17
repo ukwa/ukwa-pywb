@@ -53,11 +53,11 @@ This file is part of pywb, https://github.com/webrecorder/pywb
 
     function changeLanguage(lang, evt) {
         evt.preventDefault();
-        var path = window.location.pathname;
-        if (window.banner_info.curr_locale) {
-            path = path.replace(new RegExp("^/"+window.banner_info.curr_locale), "");
+        var path = window.location.href;
+        if (path.indexOf(window.banner_info.prefix) == 0) {
+          path = path.substring(window.banner_info.prefix.length);
+          window.location.pathname = window.banner_info.locale_prefixes[lang] + path;
         }
-        window.location = "/" + lang + path;
     }
 
     function init(bid) {
@@ -69,7 +69,7 @@ This file is part of pywb, https://github.com/webrecorder/pywb
         var logo = document.createElement("a");
         logo.setAttribute("href", "/" + (window.banner_info.locale ? window.banner_info.locale + "/" : ""));
         logo.setAttribute("class", "_wb_linked_logo");
-        logo.innerHTML = "<img src='/static/ukwa.svg' alt='" + window.banner_info.logoAlt + "'><img src='/static/ukwa-condensed.svg' class='mobile' alt='" + window.banner_info.logoAlt + "'>";
+        logo.innerHTML = "<img src='" + window.banner_info.staticPrefix + "/ukwa.svg' alt='" + window.banner_info.logoAlt + "'><img src='" + window.banner_info.staticPrefix + "/ukwa-condensed.svg' class='mobile' alt='" + window.banner_info.logoAlt + "'>";
         banner.appendChild(logo);
 
         var captureInfo = document.createElement("div");
@@ -83,7 +83,7 @@ This file is part of pywb, https://github.com/webrecorder/pywb
         var calendarLink = document.createElement("a");
         calendarLink.setAttribute("href", "#");
         calendarLink.addEventListener("click", backToCalendar);
-        calendarLink.innerHTML = "<img src='/static/calendar.svg' alt='" + window.banner_info.calendarAlt + "'><span class='no-mobile'>&nbsp;" +window.banner_info.calendarLabel + "</span>";
+        calendarLink.innerHTML = "<img src='" + window.banner_info.staticPrefix + "/calendar.svg' alt='" + window.banner_info.calendarAlt + "'><span class='no-mobile'>&nbsp;" +window.banner_info.calendarLabel + "</span>";
         ancillaryLinks.appendChild(calendarLink);
 
         if (typeof window.banner_info.locales !== "undefined" && window.banner_info.locales.length) {
