@@ -58,7 +58,7 @@
 
 #_wb_frame_top_banner ._wb_linked_logo img
 {
-    width: 100%;
+    width: auto;
     height: 100%;
     border: none;
 }

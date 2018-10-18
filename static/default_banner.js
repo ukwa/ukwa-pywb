@@ -69,7 +69,7 @@ This file is part of pywb, https://github.com/webrecorder/pywb
         var logo = document.createElement("a");
         logo.setAttribute("href", "/" + (window.banner_info.locale ? window.banner_info.locale + "/" : ""));
         logo.setAttribute("class", "_wb_linked_logo");
-        logo.innerHTML = "<img src='" + window.banner_info.staticPrefix + "/ukwa-2018-wob-sml.png' alt='" + window.banner_info.logoAlt + "'><img src='" + window.banner_info.staticPrefix + "/ukwa-2018-wob-sml.png' class='mobile' alt='" + window.banner_info.logoAlt + "'>";
+        logo.innerHTML = "<img src='" + window.banner_info.staticPrefix + "/ukwa-2018-w-sml.png' alt='" + window.banner_info.logoAlt + "'><img src='" + window.banner_info.staticPrefix + "/ukwa-2018-w-sml.png' class='mobile' alt='" + window.banner_info.logoAlt + "'>";
         banner.appendChild(logo);
 
         var captureInfo = document.createElement("div");
