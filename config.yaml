@@ -38,21 +38,6 @@ collections:
         index_paths: *INDEX
         archive_paths: *ARCHIVE
 
-    # QA and patch gaps
-    qa-patch:
-        sequence:
-            -
-              index_paths: *INDEX
-              archive_paths: *ARCHIVE
-              name: archived
-            -
-              index: /home/archivist/indexes
-              resource: /home/archivist/data
-              name: local
-            -
-              index: $live
-              name: live
-
 proxy:
     # collection for proxy mode
     coll: qa-access
@@ -68,9 +53,6 @@ enable_memento: true
 
 # enable experimental Memento Prefer
 enable_prefer: true
-
-# allow recording of patch crawled material:
-recorder: live
 
 # i18n
 locales_root_dir: ./i18n/translations/
