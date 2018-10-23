@@ -12,6 +12,32 @@
     {% elif err_status == 451 %}
         {% trans url = err_msg %}Access Blocked to {{ url }}{% endtrans %}
 
+                <h2>Available in Legal Deposit Library Reading Rooms only</h2>
+                <p>This Legal Deposit resource can only be accessed on site in a Legal Deposit Library reading room.</p>
+
+<h3>Next steps</h3>
+
+			<p>
+			If you are in a Legal Deposit Library Reading Room, you should be able to access this resource using a library computer, via the appropriate secure access gateway:
+			</p>
+			<ul>
+			  <li><a href="https://bl.ldls.org.uk/welcome.html?{{ wb_url.timestamp }}/{{ url }}">via the British Library's Secure Gateway</a></li>
+			  <li><a href="https://llgc.ldls.org.uk/welcome.html?{{ wb_url.timestamp }}/{{ url }}">via the National Library of Wales' Secure Gateway</a></li>
+			  <li><a href="https://nls.ldls.org.uk/welcome.html?{{ wb_url.timestamp }}/{{ url }}">via the National Library of Scotland's Secure Gateway</a></li>
+			  <li><a href="https://cam.ldls.org.uk/{{ wb_url.timestamp }}/{{ url }}">via the Cambridge University Library's Secure Gateway</a></li>
+			  <li><a href="https://tcdlibrary.ldls.org.uk/{{ wb_url.timestamp }}/{{ url }}">via the Trinity College Library's Secure Gateway</a></li>
+			  <li><a href="https://bodleian.ldls.org.uk/{{ wb_url.timestamp }}/{{ url }}">via the Bodleian Libraries' Secure Gateway</a></li>
+			</ul>
+
+			<p>
+			You may also wish to try:
+			</p>
+			<ul>
+			  <li><a href="{{ url }}">Visiting the current, live site</a></li>
+			  <li><a href="https://www.webarchive.org.uk/mementos/search/{{ url }}">Seeing if other web archives hold copies of this URL</a></li>
+			</ul>
+
+
     {% elif err_status == 401 and err_details == 'not-authorized' %}
         {% trans %}Sorry, access not authorized to this resource.{% endtrans %}
 
