@@ -1,50 +1,58 @@
 {% extends 'base.html' %}
 
 {% block body %}
-    <h2>{% trans %}UKWA Error{% endtrans %}</h2>
 
     {% if err_status == 404 and err_details == 'coll_not_found' %}
+        <h2>{% trans %}UKWA Error{% endtrans %}</h2>
+
         {% trans %}Collection not found:{% endtrans %} <b>{{ err_msg }}</b>
 
     {% elif err_status == 404 and err_details == 'static_file_not_found' %}
+        <h2>{% trans %}UKWA Error{% endtrans %}</h2>
+        
         {% trans %}Static file not found:{% endtrans %} <b>{{ err_msg }}</b>
 
     {% elif err_status == 451 %}
-        {% trans url = err_msg %}Access Blocked to {{ url }}{% endtrans %}
 
-                <h2>Available in Legal Deposit Library Reading Rooms only</h2>
-                <p>This Legal Deposit resource can only be accessed on site in a Legal Deposit Library reading room.</p>
+        <h2>{% trans %}Available in Legal Deposit Library Reading Rooms only{% endtrans %}</h2>
+        <p>{% trans %}This Legal Deposit resource can only be accessed on site in a Legal Deposit Library reading room.{% endtrans %}</p>
 
-<h3>Next steps</h3>
+        <h3>{% trans %}Next steps{% endtrans %}</h3>
 
-			<p>
-			If you are in a Legal Deposit Library Reading Room, you should be able to access this resource using a library computer, via the appropriate secure access gateway:
-			</p>
-			<ul>
-			  <li><a href="https://bl.ldls.org.uk/welcome.html?20500101120000/{{ url }}">via the British Library's Secure Gateway</a></li>
-			  <li><a href="https://llgc.ldls.org.uk/welcome.html?20500101120000/{{ url }}">via the National Library of Wales' Secure Gateway</a></li>
-			  <li><a href="https://nls.ldls.org.uk/welcome.html?20500101120000/{{ url }}">via the National Library of Scotland's Secure Gateway</a></li>
-			  <li><a href="https://cam.ldls.org.uk/20500101120000/{{ url }}">via the Cambridge University Library's Secure Gateway</a></li>
-			  <li><a href="https://tcdlibrary.ldls.org.uk/20500101120000/{{ url }}">via the Trinity College Library's Secure Gateway</a></li>
-			  <li><a href="https://bodleian.ldls.org.uk/20500101120000/{{ url }}">via the Bodleian Libraries' Secure Gateway</a></li>
-			</ul>
+		<p>
+		{% trans %}If you are in a Legal Deposit Library Reading Room, you should be able to access this resource using a library computer, via the appropriate secure access gateway:{% endtrans %}
+		</p>
+		<ul>
+		  <li><a href="https://bl.ldls.org.uk/welcome.html?20500101120000/{{ url }}">{% trans %}via the British Library's Secure Gateway{% endtrans %}</a></li>
+		  <li><a href="https://llgc.ldls.org.uk/welcome.html?20500101120000/{{ url }}">{% trans %}via the National Library of Wales' Secure Gateway{% endtrans %}</a></li>
+		  <li><a href="https://nls.ldls.org.uk/welcome.html?20500101120000/{{ url }}">{% trans %}via the National Library of Scotland's Secure Gateway{% endtrans %}</a></li>
+		  <li><a href="https://cam.ldls.org.uk/20500101120000/{{ url }}">{% trans %}via the Cambridge University Library's Secure Gateway{% endtrans %}</a></li>
+		  <li><a href="https://tcdlibrary.ldls.org.uk/20500101120000/{{ url }}">{% trans %}via the Trinity College Library's Secure Gateway{% endtrans %}</a></li>
+		  <li><a href="https://bodleian.ldls.org.uk/20500101120000/{{ url }}">{% trans %}via the Bodleian Libraries' Secure Gateway{% endtrans %}</a></li>
+		</ul>
 
-			<p>
-			You may also wish to try:
-			</p>
-			<ul>
-			  <li><a href="{{ url }}">Visiting the current, live site</a></li>
-			  <li><a href="https://www.webarchive.org.uk/mementos/search/{{ url }}">Seeing if other web archives hold copies of this URL</a></li>
-			</ul>
+		<p>
+		{% trans %}You may also wish to try:{% endtrans %}
+		</p>
+		<ul>
+		  <li><a href="{{ url }}">{% trans %}Visiting the current, live site{% endtrans %}</a></li>
+		  <li><a href="https://www.webarchive.org.uk/mementos/search/{{ url }}">{% trans %}Seeing if other web archives hold copies of this URL{% endtrans %}</a></li>
+		</ul>
 
 
     {% elif err_status == 401 and err_details == 'not-authorized' %}
+        <h2>{% trans %}UKWA Error{% endtrans %}</h2>
+        
         {% trans %}Sorry, access not authorized to this resource.{% endtrans %}
 
     {% elif err_status == 403 and err_details == 'access-locked' %}
+        <h2>{% trans %}UKWA Error{% endtrans %}</h2>
+        
         {% trans %}Access to this resource is currently not allowed. Please try again later.{% endtrans %}
 
     {% else %}
+        <h2>{% trans %}UKWA Error{% endtrans %}</h2>
+        
         <b>{{ err_msg }}</b>
 
         {% if err_details %}
