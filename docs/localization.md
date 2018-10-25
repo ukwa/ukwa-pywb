@@ -29,7 +29,7 @@ To have something suitable to sent to translators, we can
 
     pip install translate-toolkit
 
-and then use `po2csv` to generate a spreadsheet for translation data entry:
+and then use [`po2csv`](http://docs.translatehouse.org/projects/translate-toolkit/en/latest/commands/csv2po.html) to generate a spreadsheet for translation data entry:
 
     po2csv i18n/translations/cy/LC_MESSAGES/messages.po i18n/translations/cy/LC_MESSAGES/messages.csv
 
