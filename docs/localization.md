@@ -23,6 +23,17 @@ To update the translated strings, the workflow is as follows:
 
 5) The newly translated strings should now be available for use and loaded in the templates.
 
+### Localization Import/Export
+
+To have something suitable to sent to translators, we can 
+
+    pip install translate-toolkit
+
+and then use `po2csv` to generate a spreadsheet for translation data entry:
+
+    po2csv i18n/translations/cy/LC_MESSAGES/messages.po i18n/translations/cy/LC_MESSAGES/messages.csv
+
+once we have a translation, the `csv2po` utility can be used to convert back into a `.po` file.
 
 ### Localization Setup
 
