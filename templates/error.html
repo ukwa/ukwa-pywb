@@ -1,5 +1,9 @@
 {% extends 'base.html' %}
 
+{% block head %}
+<meta charset="utf-8"/>
+{% endblock %}
+
 {% block body %}
 
     {% if err_status == 404 and err_details == 'coll_not_found' %}
