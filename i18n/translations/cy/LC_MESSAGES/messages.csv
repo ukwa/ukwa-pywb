@@ -1,67 +1,67 @@
-"location","source","target"
-"templates/banner.html:11","Archived On:","Archif Ar:"
-"templates/banner.html:12","Calendar icon",""
-"templates/banner.html:13","Back to Calendar","Yn Ã´l i'r Calendr"
-"templates/banner.html:14 templates/base.html:21","Language:","Laith:"
-"templates/banner.html:15","Live On",""
-"templates/banner.html:16","Loading...","Llwytho ..."
-"templates/banner.html:17","UK Web Archive Logo",""
-"templates/base.html:17","UK Web Archive logo",""
-"templates/base.html:22","Language select",""
-"templates/error.html:6 templates/error.html:11 templates/error.html:44 templates/error.html:49 templates/error.html:54","UKWA Error",""
-"templates/error.html:8","Collection not found:",""
-"templates/error.html:13","Static file not found:",""
-"templates/error.html:17","Available in Legal Deposit Library Reading Rooms only",""
-"templates/error.html:18","This Legal Deposit resource can only be accessed on site in a Legal Deposit Library reading room.",""
-"templates/error.html:20","Next steps",""
-"templates/error.html:23","If you are in a Legal Deposit Library Reading Room, you should be able to access this resource using a library computer, via the appropriate secure access gateway:",""
-"templates/error.html:26","via the British Library's Secure Gateway",""
-"templates/error.html:27","via the National Library of Wales' Secure Gateway",""
-"templates/error.html:28","via the National Library of Scotland's Secure Gateway",""
-"templates/error.html:29","via the Cambridge University Library's Secure Gateway",""
-"templates/error.html:30","via the Trinity College Library's Secure Gateway",""
-"templates/error.html:31","via the Bodleian Libraries' Secure Gateway",""
-"templates/error.html:35","You may also wish to try:",""
-"templates/error.html:38","Visiting the current, live site",""
-"templates/error.html:39","Seeing if other web archives hold copies of this URL",""
-"templates/error.html:46","Sorry, access not authorized to this resource.",""
-"templates/error.html:51","Access to this resource is currently not allowed. Please try again later.",""
-"templates/error.html:59","Error Details:",""
-"templates/frame_insert.html:44","You are using a browser that is out of date and is not supported for this site. Certain portions of this site may not work correctly. Please try to upgrade or use another browser.",""
-"templates/index.html:3","UK Web Archive Access System","System Mynediad Archif Gwe'r DU"
-"templates/index.html:5","This web archive contains the following collections:","Mae'r archif we hon yn cynnwys y casgliadau canlynol:"
-"templates/not_found.html:4","Url Not Found","Ni ddarganfuwyd Url"
-"templates/not_found.html:6","The url <b>%(url)s</b> could not be found in this collection.","Ni ellid dod o hyd i'r url <b>%(url)s</b> yn y casgliad hwn."
-"templates/query.html:14","January","Ionawr"
-"templates/query.html:15","February","Chwefror"
-"templates/query.html:16","March","Mawrth"
-"templates/query.html:17","April","Ebrill"
-"templates/query.html:18","May","Mai"
-"templates/query.html:19","June","Mehefin"
-"templates/query.html:20","July","Gorffennaf"
-"templates/query.html:21","August","Awst"
-"templates/query.html:22","September","Medi"
-"templates/query.html:23","October","Hydref"
-"templates/query.html:24","November","Tachwedd"
-"templates/query.html:25","December","Rhagfyr"
-"templates/query.html:27","capture","cipio"
-"templates/query.html:28","captures","cipio"
-"templates/query.html:38","Search Results","Canlyniadau Chwilio"
-"templates/query.html:39"," of <b>%(url)s</b>"," o <b>%(url)s</b>"
-"templates/search.html:5"," %(title)s Search Page "," Chwilio'r Tudalen %(title)s "
-"templates/search.html:9","Search this collection by url:","Chwiliwch y casgliad hwn yn Ã´l url:"
-"templates/search.html:11","Enter url to search","Rhowch url i chwilio"
-"templates/search.html:12","Search","Chwilio"
-"","Single-User Sessions and Locks",""
-"","Current Session: ",""
-"","(clear current)",""
-"","(clear session)",""
-"","(clear url lock)",""
-"","No Session Locks",""
-"","pywb Query Results",""
-"","UKWA Error","Gwall UKWA"
-"","Collection not found:","Casgliad heb ei darganfod:"
-"","Static file not found:","Ffeil statig heb ei darganfod:"
-"","Access Blocked to %(url)s",""
-"","Sorry, access not authorized to this resource.",""
-"","Error Details:",""
+location,source,target
+templates/banner.html:11,Archived On:,Archifwyd:
+templates/banner.html:12,Calendar icon,Eicon calendr
+templates/banner.html:13,Back to Calendar,Dychwelyd i'r Calendr
+templates/banner.html:14 templates/base.html:21,Language:,Iaith:
+templates/banner.html:15,Live On,Yn fyw
+templates/banner.html:16,Loading...,Llwytho ...
+templates/banner.html:17,UK Web Archive Logo,Logo Archif We y DG
+templates/base.html:17,UK Web Archive logo,Logo Archif We y DG
+templates/base.html:22,Language select,Dewis iaith
+templates/error.html:6 templates/error.html:11 templates/error.html:44 templates/error.html:49 templates/error.html:54,UKWA Error,Gwall UKWA
+templates/error.html:8,Collection not found:,Casgliad heb ei ddarganfod:
+templates/error.html:13,Static file not found:,Ffeil statig heb ei ddarganfod:
+templates/error.html:17,Available in Legal Deposit Library Reading Rooms only,Ar gael yn unig yn Ystafelloedd Darllen y Llyfrgelloedd Adnau Cyfreithiol 
+templates/error.html:18,This Legal Deposit resource can only be accessed on site in a Legal Deposit Library reading room.,Mae'r mynediad i'r adnodd Adnau Cyfreithiol hwn ar gael yn unig yn Ystafell Ddarllen Llyfrgell Adnau Cyfreithiol.
+templates/error.html:20,Next steps,Camau nesaf
+templates/error.html:23,"If you are in a Legal Deposit Library Reading Room, you should be able to access this resource using a library computer, via the appropriate secure access gateway:","Os ydych mewn Ystafell Ddarllen Llyfrgell Adnau Cyfreithiol, dylech allu defnyddio'r adnodd hwn gan ddefnyddio cyfrifiadur llyfrgell, trwy'r porth mynediad diogel priodol:"
+templates/error.html:26,via the British Library's Secure Gateway,trwy borth diogel y Llyfrgell Brydeinig
+templates/error.html:27,via the National Library of Wales' Secure Gateway,trwy borth diogel Llyfrgell Genedlaethol Cymru
+templates/error.html:28,via the National Library of Scotland's Secure Gateway,trwy borth diogel Llyfrgell Genedlaethol yr Alban
+templates/error.html:29,via the Cambridge University Library's Secure Gateway,trwy borth diogel Llyfrgell Prifysgol Caergrawnt
+templates/error.html:30,via the Trinity College Library's Secure Gateway,"trwy borth diogel y Llyfrgell Coleg y Drindod, Dulyn"
+templates/error.html:31,via the Bodleian Libraries' Secure Gateway,trwy borth diogel y Llyfrgell y Bodleian
+templates/error.html:35,You may also wish to try:,Gellir hefyd edrych ar hwn:
+templates/error.html:38,"Visiting the current, live site",Ymweld â safle byw a chyfredol
+templates/error.html:39,Seeing if other web archives hold copies of this URL,Edrych os oes copïau o'r Url hwn gyda archifoedd y we eraill 
+templates/error.html:46,"Sorry, access not authorized to this resource.","Ymddirheuriadau, gwaherddir mynediad i'r adnodd hwn. "
+templates/error.html:51,Access to this resource is currently not allowed. Please try again later.,Ni chaniateir mynediad i'r adnodd hwn ar hyn o bryd. Ceisiwch rhywbryd eto.
+templates/error.html:59,Error Details:,Manylion y gwall:
+templates/frame_insert.html:44,You are using a browser that is out of date and is not supported for this site. Certain portions of this site may not work correctly. Please try to upgrade or use another browser.,Nid adabyddwyd eich porwr gan eich safle hwn oherwydd ei fod yn hen. Bydd adrannau o'r wefan dim yn gweithio.  Diweddarwch neu ddefnyddiwch borwr arall.
+templates/index.html:3,UK Web Archive Access System,System fynediad Archif We y DG
+templates/index.html:5,This web archive contains the following collections:,Mae'r archif we hon yn cynnwys y casgliadau canlynol:
+templates/not_found.html:4,Url Not Found,Ni ddarganfuwyd yr URL
+templates/not_found.html:6,The url <b>%(url)s</b> could not be found in this collection.,Ni ellid dod o hyd i'r url <b>%(url)s</b> yn y casgliad hwn.
+templates/query.html:14,January,Ionawr
+templates/query.html:15,February,Chwefror
+templates/query.html:16,March,Mawrth
+templates/query.html:17,April,Ebrill
+templates/query.html:18,May,Mai
+templates/query.html:19,June,Mehefin
+templates/query.html:20,July,Gorffennaf
+templates/query.html:21,August,Awst
+templates/query.html:22,September,Medi
+templates/query.html:23,October,Hydref
+templates/query.html:24,November,Tachwedd
+templates/query.html:25,December,Rhagfyr
+templates/query.html:27,capture,cipio
+templates/query.html:28,captures,cipiadau
+templates/query.html:38,Search Results,Canlyniadau Chwilio
+templates/query.html:39, of <b>%(url)s</b>, o <b>%(url)s</b>
+templates/search.html:5, %(title)s Search Page , Chwilio'r Tudalen %(title)s 
+templates/search.html:9,Search this collection by url:,Chwiliwch y casgliad hwn yn Ã´l url:
+templates/search.html:11,Enter url to search,Rhowch url i chwilio
+templates/search.html:12,Search,Chwilio
+,Single-User Sessions and Locks,Clo a sesiwn un defnyddiwr ar y tro 
+,Current Session: ,Sesiwn gyfredol
+,(clear current),(clirio manylion cyfredol)
+,(clear session),(clirio sesiwn)
+,(clear url lock),(clirio clo URL)
+,No Session Locks,Dim cloeon i'r sesiwn
+,pywb Query Results,Canlyniadau chwilio pywb 
+,UKWA Error,Gwall UKWA
+,Collection not found:,Heb ddarganfod casgliad:
+,Static file not found:,Heb ddarganfod Ffeil statig:
+,Access Blocked to %(url)s,Gwaheddir mynediad i %(url)s
+,"Sorry, access not authorized to this resource.","Ymddirheuriadau, gwaherddir mynediad i'r adnodd hwn. "
+,Error Details:,Manylion y gwall:

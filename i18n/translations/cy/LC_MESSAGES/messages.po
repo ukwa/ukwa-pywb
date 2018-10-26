@@ -21,23 +21,23 @@ msgstr ""
 
 #: templates/banner.html:11
 msgid "Archived On:"
-msgstr "Archif Ar:"
+msgstr "Archifwyd:"
 
 #: templates/banner.html:12
 msgid "Calendar icon"
-msgstr ""
+msgstr "Eicon calendr"
 
 #: templates/banner.html:13
 msgid "Back to Calendar"
-msgstr "Yn ôl i'r Calendr"
+msgstr "Dychwelyd i'r Calendr"
 
-#: templates/banner.html:14 templates/base.html:21
+#: templates/banner.html:14+templates/base.html:21
 msgid "Language:"
-msgstr "Laith:"
+msgstr "Iaith:"
 
 #: templates/banner.html:15
 msgid "Live On"
-msgstr ""
+msgstr "Yn fyw"
 
 #: templates/banner.html:16
 msgid "Loading..."
@@ -45,108 +45,123 @@ msgstr "Llwytho ..."
 
 #: templates/banner.html:17
 msgid "UK Web Archive Logo"
-msgstr ""
+msgstr "Logo Archif We y DG"
 
 #: templates/base.html:17
 msgid "UK Web Archive logo"
-msgstr ""
+msgstr "Logo Archif We y DG"
 
 #: templates/base.html:22
 msgid "Language select"
-msgstr ""
+msgstr "Dewis iaith"
 
-#: templates/error.html:6 templates/error.html:11 templates/error.html:44
-#: templates/error.html:49 templates/error.html:54
+#: templates/error.html:6+templates/error.html:11+templates/error.html:44+templates/error.html:49+templates/error.html:54
+msgctxt "templates/error.html:6 templates/error.html:11 templates/error.html:44 templates/error.html:49 templates/error.html:54"
 msgid "UKWA Error"
-msgstr ""
+msgstr "Gwall UKWA"
 
 #: templates/error.html:8
+msgctxt "templates/error.html:8"
 msgid "Collection not found:"
-msgstr ""
+msgstr "Casgliad heb ei ddarganfod:"
 
 #: templates/error.html:13
+msgctxt "templates/error.html:13"
 msgid "Static file not found:"
-msgstr ""
+msgstr "Ffeil statig heb ei ddarganfod:"
 
 #: templates/error.html:17
 msgid "Available in Legal Deposit Library Reading Rooms only"
 msgstr ""
+"Ar gael yn unig yn Ystafelloedd Darllen y Llyfrgelloedd Adnau Cyfreithiol "
 
 #: templates/error.html:18
 msgid ""
-"This Legal Deposit resource can only be accessed on site in a Legal "
-"Deposit Library reading room."
+"This Legal Deposit resource can only be accessed on site in a Legal Deposit "
+"Library reading room."
 msgstr ""
+"Mae'r mynediad i'r adnodd Adnau Cyfreithiol hwn ar gael yn unig yn Ystafell "
+"Ddarllen Llyfrgell Adnau Cyfreithiol."
 
 #: templates/error.html:20
 msgid "Next steps"
-msgstr ""
+msgstr "Camau nesaf"
 
 #: templates/error.html:23
 msgid ""
-"If you are in a Legal Deposit Library Reading Room, you should be able to"
-" access this resource using a library computer, via the appropriate "
-"secure access gateway:"
+"If you are in a Legal Deposit Library Reading Room, you should be able to "
+"access this resource using a library computer, via the appropriate secure "
+"access gateway:"
 msgstr ""
+"Os ydych mewn Ystafell Ddarllen Llyfrgell Adnau Cyfreithiol, dylech allu "
+"defnyddio'r adnodd hwn gan ddefnyddio cyfrifiadur llyfrgell, trwy'r porth "
+"mynediad diogel priodol:"
 
 #: templates/error.html:26
 msgid "via the British Library's Secure Gateway"
-msgstr ""
+msgstr "trwy borth diogel y Llyfrgell Brydeinig"
 
 #: templates/error.html:27
 msgid "via the National Library of Wales' Secure Gateway"
-msgstr ""
+msgstr "trwy borth diogel Llyfrgell Genedlaethol Cymru"
 
 #: templates/error.html:28
 msgid "via the National Library of Scotland's Secure Gateway"
-msgstr ""
+msgstr "trwy borth diogel Llyfrgell Genedlaethol yr Alban"
 
 #: templates/error.html:29
 msgid "via the Cambridge University Library's Secure Gateway"
-msgstr ""
+msgstr "trwy borth diogel Llyfrgell Prifysgol Caergrawnt"
 
 #: templates/error.html:30
 msgid "via the Trinity College Library's Secure Gateway"
-msgstr ""
+msgstr "trwy borth diogel y Llyfrgell Coleg y Drindod, Dulyn"
 
 #: templates/error.html:31
 msgid "via the Bodleian Libraries' Secure Gateway"
-msgstr ""
+msgstr "trwy borth diogel y Llyfrgell y Bodleian"
 
 #: templates/error.html:35
 msgid "You may also wish to try:"
-msgstr ""
+msgstr "Gellir hefyd edrych ar hwn:"
 
 #: templates/error.html:38
 msgid "Visiting the current, live site"
-msgstr ""
+msgstr "Ymweld â safle byw a chyfredol"
 
 #: templates/error.html:39
 msgid "Seeing if other web archives hold copies of this URL"
-msgstr ""
+msgstr "Edrych os oes copïau o'r Url hwn gyda archifoedd y we eraill "
 
 #: templates/error.html:46
+msgctxt "templates/error.html:46"
 msgid "Sorry, access not authorized to this resource."
-msgstr ""
+msgstr "Ymddirheuriadau, gwaherddir mynediad i'r adnodd hwn. "
 
 #: templates/error.html:51
-msgid "Access to this resource is currently not allowed. Please try again later."
+msgid ""
+"Access to this resource is currently not allowed. Please try again later."
 msgstr ""
+"Ni chaniateir mynediad i'r adnodd hwn ar hyn o bryd. Ceisiwch rhywbryd eto."
 
 #: templates/error.html:59
+msgctxt "templates/error.html:59"
 msgid "Error Details:"
-msgstr ""
+msgstr "Manylion y gwall:"
 
 #: templates/frame_insert.html:44
 msgid ""
-"You are using a browser that is out of date and is not supported for this"
-" site. Certain portions of this site may not work correctly. Please try "
-"to upgrade or use another browser."
+"You are using a browser that is out of date and is not supported for this "
+"site. Certain portions of this site may not work correctly. Please try to "
+"upgrade or use another browser."
 msgstr ""
+"Nid adabyddwyd eich porwr gan eich safle hwn oherwydd ei fod yn hen. Bydd "
+"adrannau o'r wefan dim yn gweithio.  Diweddarwch neu ddefnyddiwch borwr "
+"arall."
 
 #: templates/index.html:3
 msgid "UK Web Archive Access System"
-msgstr "System Mynediad Archif Gwe'r DU"
+msgstr "System fynediad Archif We y DG"
 
 #: templates/index.html:5
 msgid "This web archive contains the following collections:"
@@ -154,10 +169,9 @@ msgstr "Mae'r archif we hon yn cynnwys y casgliadau canlynol:"
 
 #: templates/not_found.html:4
 msgid "Url Not Found"
-msgstr "Ni ddarganfuwyd Url"
+msgstr "Ni ddarganfuwyd yr URL"
 
 #: templates/not_found.html:6
-#, python-format
 msgid "The url <b>%(url)s</b> could not be found in this collection."
 msgstr "Ni ellid dod o hyd i'r url <b>%(url)s</b> yn y casgliad hwn."
 
@@ -215,25 +229,23 @@ msgstr "cipio"
 
 #: templates/query.html:28
 msgid "captures"
-msgstr "cipio"
+msgstr "cipiadau"
 
 #: templates/query.html:38
 msgid "Search Results"
 msgstr "Canlyniadau Chwilio"
 
 #: templates/query.html:39
-#, python-format
 msgid " of <b>%(url)s</b>"
 msgstr " o <b>%(url)s</b>"
 
 #: templates/search.html:5
-#, python-format
 msgid " %(title)s Search Page "
 msgstr " Chwilio'r Tudalen %(title)s "
 
 #: templates/search.html:9
 msgid "Search this collection by url:"
-msgstr "Chwiliwch y casgliad hwn yn ôl url:"
+msgstr "Chwiliwch y casgliad hwn yn Ã´l url:"
 
 #: templates/search.html:11
 msgid "Enter url to search"
@@ -243,45 +255,46 @@ msgstr "Rhowch url i chwilio"
 msgid "Search"
 msgstr "Chwilio"
 
-#~ msgid "Single-User Sessions and Locks"
-#~ msgstr ""
+msgid "Single-User Sessions and Locks"
+msgstr "Clo a sesiwn un defnyddiwr ar y tro "
 
-#~ msgid "Current Session: "
-#~ msgstr ""
+msgid "Current Session: "
+msgstr "Sesiwn gyfredol"
 
-#~ msgid "(clear current)"
-#~ msgstr ""
+msgid "(clear current)"
+msgstr "(clirio manylion cyfredol)"
 
-#~ msgid "(clear session)"
-#~ msgstr ""
+msgid "(clear session)"
+msgstr "(clirio sesiwn)"
 
-#~ msgid "(clear url lock)"
-#~ msgstr ""
+msgid "(clear url lock)"
+msgstr "(clirio clo URL)"
 
-#~ msgid "No Session Locks"
-#~ msgstr ""
+msgid "No Session Locks"
+msgstr "Dim cloeon i'r sesiwn"
 
-#~ msgid "pywb Query Results"
-#~ msgstr ""
+msgid "pywb Query Results"
+msgstr "Canlyniadau chwilio pywb "
 
-#~ msgid "UKWA Error"
-#~ msgstr "Gwall UKWA"
+msgctxt ""
+msgid "UKWA Error"
+msgstr "Gwall UKWA"
 
-#~ msgid "Collection not found:"
-#~ msgstr "Casgliad heb ei darganfod:"
+msgctxt ""
+msgid "Collection not found:"
+msgstr "Heb ddarganfod casgliad:"
 
-#~ msgid "Static file not found:"
-#~ msgstr "Ffeil statig heb ei darganfod:"
+msgctxt ""
+msgid "Static file not found:"
+msgstr "Heb ddarganfod Ffeil statig:"
 
-#~ msgid "Access Blocked to %(url)s"
-#~ msgstr ""
+msgid "Access Blocked to %(url)s"
+msgstr "Gwaheddir mynediad i %(url)s"
 
-#~ msgid "Sorry, access not authorized to this resource."
-#~ msgstr ""
+msgctxt ""
+msgid "Sorry, access not authorized to this resource."
+msgstr "Ymddirheuriadau, gwaherddir mynediad i'r adnodd hwn. "
 
-#~ msgid ""
-#~ msgstr ""
-
-#~ msgid "Error Details:"
-#~ msgstr ""
-
+msgctxt ""
+msgid "Error Details:"
+msgstr "Manylion y gwall:"
