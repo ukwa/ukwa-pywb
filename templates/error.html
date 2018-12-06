@@ -27,20 +27,20 @@
 		{% trans %}If you are in a Legal Deposit Library Reading Room, you should be able to access this resource using a library computer, via the appropriate secure access gateway:{% endtrans %}
 		</p>
 		<ul>
-		  <li><a href="https://bl.ldls.org.uk/welcome.html?20500101120000/{{ url }}">{% trans %}via the British Library's Secure Gateway{% endtrans %}</a></li>
-		  <li><a href="https://llgc.ldls.org.uk/welcome.html?20500101120000/{{ url }}">{% trans %}via the National Library of Wales' Secure Gateway{% endtrans %}</a></li>
-		  <li><a href="https://nls.ldls.org.uk/welcome.html?20500101120000/{{ url }}">{% trans %}via the National Library of Scotland's Secure Gateway{% endtrans %}</a></li>
-		  <li><a href="https://cam.ldls.org.uk/20500101120000/{{ url }}">{% trans %}via the Cambridge University Library's Secure Gateway{% endtrans %}</a></li>
-		  <li><a href="https://tcdlibrary.ldls.org.uk/20500101120000/{{ url }}">{% trans %}via the Trinity College Library's Secure Gateway{% endtrans %}</a></li>
-		  <li><a href="https://bodleian.ldls.org.uk/20500101120000/{{ url }}">{% trans %}via the Bodleian Libraries' Secure Gateway{% endtrans %}</a></li>
+		  <li><a href="https://bl.ldls.org.uk/welcome.html?20501101120000/{{ err_msg }}">{% trans %}via the British Library's Secure Gateway{% endtrans %}</a></li>
+		  <li><a href="https://llgc.ldls.org.uk/welcome.html?20501101120000/{{ err_msg }}">{% trans %}via the National Library of Wales' Secure Gateway{% endtrans %}</a></li>
+		  <li><a href="https://nls.ldls.org.uk/welcome.html?20501101120000/{{ err_msg }}">{% trans %}via the National Library of Scotland's Secure Gateway{% endtrans %}</a></li>
+		  <li><a href="https://cam.ldls.org.uk/20501101120000/{{ err_msg }}">{% trans %}via the Cambridge University Library's Secure Gateway{% endtrans %}</a></li>
+		  <li><a href="https://tcdlibrary.ldls.org.uk/20501101120000/{{ err_msg }}">{% trans %}via the Trinity College Library's Secure Gateway{% endtrans %}</a></li>
+		  <li><a href="https://bodleian.ldls.org.uk/20501101120000/{{ err_msg }}">{% trans %}via the Bodleian Libraries' Secure Gateway{% endtrans %}</a></li>
 		</ul>
 
 		<p>
 		{% trans %}You may also wish to try:{% endtrans %}
 		</p>
 		<ul>
-		  <li><a href="{{ url }}">{% trans %}Visiting the current, live site{% endtrans %}</a></li>
-		  <li><a href="https://www.webarchive.org.uk/mementos/search/{{ url }}">{% trans %}Seeing if other web archives hold copies of this URL{% endtrans %}</a></li>
+		  <li><a href="{{ err_msg }}">{% trans %}Visiting the current, live site{% endtrans %}</a></li>
+		  <li><a href="https://www.webarchive.org.uk/mementos/search/{{ err_msg }}">{% trans %}Seeing if other web archives hold copies of this URL{% endtrans %}</a></li>
 		</ul>
 
 
