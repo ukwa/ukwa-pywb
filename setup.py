@@ -36,7 +36,8 @@ setup(
     install_requires=[
         'babel',
         'uwsgi',
-        'fakeredis'
+        'fakeredis',
+        'lxml'
     ],
     message_extractors = {
         '.': [
