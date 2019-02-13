@@ -366,7 +366,8 @@ class UKWACli(ReplayCli):
 def ukwa(args=None):  #pragma: no cover
     return UKWACli(args=args,
                    default_port=8080,
-                   desc='UKWA Wayback Machinee Server')
+                   debug=True,
+                   desc='UKWA Wayback Machine Server')
 
 
 # ============================================================================
