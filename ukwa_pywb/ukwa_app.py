@@ -359,6 +359,8 @@ class UKWACli(ReplayCli):
     def load(self):
         super(UKWACli, self).load()
 
+        self.extra_config['debug'] = True
+
         return UKWApp.init_app()
 
 
@@ -366,7 +368,6 @@ class UKWACli(ReplayCli):
 def ukwa(args=None):  #pragma: no cover
     return UKWACli(args=args,
                    default_port=8080,
-                   debug=True,
                    desc='UKWA Wayback Machine Server')
 
 
