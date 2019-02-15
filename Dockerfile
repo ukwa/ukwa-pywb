@@ -1,3 +1,4 @@
+# Based on our pywb fork:
 FROM ukwa/pywb
 
 USER root
