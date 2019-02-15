@@ -3,6 +3,7 @@ FROM ukwa/pywb
 USER root
 WORKDIR /ukwa_pywb
 
+# Add in source files and build:
 ADD setup.py .
 ADD setup.cfg .
 ADD README.md .
