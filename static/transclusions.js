@@ -41,11 +41,15 @@
 
     var video = document.createElement("video");
     video.setAttribute("controls", "true");
+    video.setAttribute("style", "width: 100%; height: 100%");
     //video.setAttribute("autoplay", "true");
     //video.setAttribute("muted", true);
 
     video.oncanplaythrough = function() {
-        video.muted = true;
+        if (!video.hasStarted) {
+          video.muted = true;
+          video.hasStarted = true;
+        }
         video.play();
     }
 
