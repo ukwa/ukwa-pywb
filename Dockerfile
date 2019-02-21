@@ -24,6 +24,7 @@ COPY uwsgi.ini .
 COPY static/ static/
 COPY templates/ templates/
 
+# Run as non-root user:
 USER archivist
 
 COPY config.yaml /webarchive
