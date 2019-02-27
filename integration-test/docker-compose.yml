@@ -51,6 +51,7 @@ services:
       - "WEBHDFS_USER=hadoop"
       - "REDIS_URL=redis://redis:6379/0"
       - "TEST_SESSION_LOCK_INTERVAL=30"
+      - "DEBUG=True"
 
     ports:
       - "8081:8080"
