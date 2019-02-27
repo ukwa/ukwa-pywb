@@ -31,6 +31,7 @@ COPY config.yaml /webarchive
 ADD integration-test/test-data/ /webarchive/integration-test/test-data/
 
 # Define environment variables:
+ENV DEBUG=False
 ENV PYWB_CONFIG_FILE=/webarchive/config.yaml
 ENV UKWA_INDEX=/webarchive/integration-test/test-data/
 ENV UKWA_ARCHIVE=/webarchive/integration-test/test-data/
