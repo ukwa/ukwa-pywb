@@ -24,10 +24,13 @@ COPY uwsgi.ini .
 COPY static/ static/
 COPY templates/ templates/
 
+RUN mkdir /ukwa_pywb/collections && chown archivist /ukwa_pywb/collections
+
 USER archivist
 
 COPY config.yaml /webarchive
 ADD integration-test/test-data/ /webarchive/integration-test/test-data/
+COPY ./video-test/ /ukwa_pywb/collections/video-test
 
 ENV PYWB_CONFIG_FILE=/webarchive/config.yaml
 ENV UKWA_INDEX=/webarchive/integration-test/test-data/

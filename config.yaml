@@ -38,6 +38,18 @@ collections:
         index_paths: *INDEX
         archive_paths: *ARCHIVE
 
+    # QA no access controls
+    vid-qa:
+        index_group:
+          qa: *INDEX
+          vidtest: collections/video-test/indexes
+
+        archive_paths:
+          - *ARCHIVE
+          - collections/video-test/archive/
+
+
+
 proxy:
     # collection for proxy mode
     coll: qa-access
