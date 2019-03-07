@@ -28,7 +28,7 @@
     var selector = json.selector || "object, embed";
     var result = document.querySelector(selector);
     if (!result) {
-      console.warn("No target to add video transclusions");
+      console.warn("No target to add video/audio transclusions");
       return;
     }
 
@@ -39,18 +39,28 @@
       return;
     }
 
-    var video = document.createElement("video");
-    video.setAttribute("controls", "true");
-    video.setAttribute("style", "width: 100%; height: 100%");
-    //video.setAttribute("autoplay", "true");
-    //video.setAttribute("muted", true);
+    var isAudio = false;
 
-    video.oncanplaythrough = function() {
-        if (!video.hasStarted) {
-          video.muted = true;
-          video.hasStarted = true;
+    try {
+      isAudio = json.formats.reduce(function(accum, curr) {
+        return accum && (curr.skip_as_source || (curr && curr.mime && curr.mime.startsWith("audio/")));
+      }, true);
+    } catch (e) {
+      isAudio = false;
+    }
+
+    var media = document.createElement(!isAudio ? "video" : "audio");
+    media.setAttribute("controls", "true");
+    media.setAttribute("style", "width: 100%; height: 100%");
+    //media.setAttribute("autoplay", "true");
+    //media.setAttribute("muted", true);
+
+    media.oncanplaythrough = function() {
+        if (!media.hasStarted) {
+          media.muted = true;
+          media.hasStarted = true;
         }
-        video.play();
+        media.play();
     }
 
     json.formats.forEach(function(data) {
@@ -62,10 +72,10 @@
       if (data.mime) {
         source.type = data.mime;
       }
-      video.appendChild(source);
+      media.appendChild(source);
     });
 
-    parentElem.replaceChild(video, result);
+    parentElem.replaceChild(media, result);
   }
 
 })();
