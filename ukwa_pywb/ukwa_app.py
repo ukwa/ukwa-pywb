@@ -4,6 +4,8 @@ from werkzeug.http import parse_authorization_header
 
 import time
 import os
+import re
+
 from urllib.parse import quote
 
 from redis import StrictRedis
@@ -13,6 +15,7 @@ from jinja2 import contextfunction
 from werkzeug.routing import Submount
 
 from pywb.rewrite.templateview import JinjaEnv
+from pywb.rewrite.wburl import WbUrl
 
 from pywb.apps.frontendapp import FrontEndApp
 from pywb.apps.rewriterapp import RewriterApp, UpstreamException
@@ -79,6 +82,14 @@ class LockingSession(Session):
 
         self.redis = redis
 
+    def is_locked(self, lock_key):
+        res = self.redis.get(lock_key)
+        if not res:
+            return False
+
+        value = self.redis.get(lock_key)
+        return value != self.sid
+
     def lock(self, lock_key):
         if not self.redis.setnx(lock_key, self.sid):
             value = self.redis.get(lock_key)
@@ -110,6 +121,8 @@ class LockingSession(Session):
 
 # ============================================================================
 class UKWARewriter(RewriterApp):
+    WB_URL_RX = re.compile(r'[\d]{1,14}/.*')
+
     def __init__(self, *args, **kwargs):
         jinja_env = JinjaEnv(globals={'static_path': 'static'},
                              extensions=['jinja2.ext.i18n', 'jinja2.ext.with_'])
@@ -176,14 +189,14 @@ class UKWARewriter(RewriterApp):
             if curr_loc:
                 return request_uri.replace(curr_loc, locale, 1)
             else:
-                return environ.get('ORIG_SCRIPT_NAME', '') + '/' + locale + request_uri
+                return environ.get('pywb.app_prefix', '') + '/' + locale + request_uri
 
         @contextfunction
         def get_locale_prefixes(context):
             environ = context.get('env')
             locale_prefixes = {}
 
-            orig_prefix = environ.get('ORIG_SCRIPT_NAME', '')
+            orig_prefix = environ.get('pywb.app_prefix', '')
             coll = environ.get('SCRIPT_NAME', '')
 
             if orig_prefix:
@@ -201,21 +214,49 @@ class UKWARewriter(RewriterApp):
         jinja_env.jinja_env.globals['switch_locale'] = switch_locale
         jinja_env.jinja_env.globals['get_locale_prefixes'] = get_locale_prefixes
 
-    def should_lock(self, wb_url, environ):
-        if wb_url.mod == 'mp_' and not self.is_ajax(environ):
-            return True
+    def get_lock_url(self, wb_url, full_prefix, environ):
+        # don't lock embeds
+        if wb_url.mod != 'mp_':
+            return None
 
-        return False
+        # don't lock ajax
+        if self.is_ajax(environ):
+            return None
+
+        referrer = environ.get('HTTP_REFERER')
+        # if no referrer, probably should lock
+        if not referrer:
+            return wb_url
+
+        # if referrer is a .css, still an embed
+        if referrer.endswith('.css'):
+            return None
+
+        if referrer.startswith(full_prefix):
+            referrer = referrer[len(full_prefix):]
+            m = self.WB_URL_RX.match(referrer)
+            if m:
+                return WbUrl(m.group(0))
+
+        return None
 
     def handle_custom_response(self, environ, wb_url, full_prefix, host_prefix, kwargs):
-        if kwargs.get('single-use-lock') and self.should_lock(wb_url, environ):
-            session = environ[SESSION_KEY]
-            lock_key = LOCK_KEY.format(coll=kwargs.get('coll', ''),
-                                       ts=wb_url.timestamp,
-                                       url=wb_url.url)
+        if kwargs.get('single-use-lock'):
+            lock_wb_url = self.get_lock_url(wb_url, full_prefix, environ)
+            if lock_wb_url:
+                session = environ[SESSION_KEY]
+                curr_key = LOCK_KEY.format(coll=kwargs.get('coll', ''),
+                                           ts=wb_url.timestamp,
+                                           url=wb_url.url)
 
-            if not session.lock(lock_key):
-                raise UpstreamException(403, str(wb_url), 'access-locked')
+                if session.is_locked(curr_key):
+                    raise UpstreamException(403, str(wb_url), 'access-locked')
+
+                lock_key = LOCK_KEY.format(coll=kwargs.get('coll', ''),
+                                           ts=lock_wb_url.timestamp,
+                                           url=lock_wb_url.url)
+
+                session.lock(lock_key)
 
         return super(UKWARewriter, self).handle_custom_response(environ, wb_url, full_prefix, host_prefix, kwargs)
 

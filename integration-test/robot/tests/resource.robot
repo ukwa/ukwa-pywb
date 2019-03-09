@@ -54,13 +54,13 @@ Check Excluded
 Check Blocked
     [Arguments]    ${url}
     Go To   ${url}
-    Page Should Contain    Access Blocked
+    Page Should Contain    Available in Legal Deposit Library Reading Rooms only
 
 Check Allowed
     [Arguments]    ${url}   ${text}
     Go To   ${url}
     Page Should Not Contain    Url Not Found
-    Page Should Not Contain    Access Blocked
+    Page Should Not Contain    Available in Legal Deposit Library Reading Rooms only
     Page Should Contain    ${text}
 
 

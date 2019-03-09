@@ -39,7 +39,7 @@ class TestSingleUseLock(TestClass):
         super(TestSingleUseLock, cls).teardown_class()
 
     def test_replay_top_frame_no_lock(self):
-        res = self.testapp.get('/pywb/acid.matkelly.com/', status=200)
+        res = self.testapp.get('/pywb/acid.matkelly.com/', status=307)
 
         # set not used yet, don't set cookie
         assert 'Set-Cookie' not in res.headers

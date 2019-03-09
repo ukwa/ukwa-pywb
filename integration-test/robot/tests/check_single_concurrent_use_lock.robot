@@ -26,9 +26,8 @@ ${HOST_COLL}    ${HOST}/${COLL}
     Location Should Be     ${HOST}/_locks
 
 1st Browser: Index Page
-    Go To    ${HOST_COLL}/*/http://acid.matkelly.com
-    Wait Until Page Contains Element    //b[@id='count']
-    Element Text Should Be    //b[@id='count']    3 captures
+    Go To    ${HOST_COLL}/*/http://acid.matkelly.com/
+    Wait Until Page Contains    3 captures of http://acid.matkelly.com/
 
 1st Browser: Acid Test Replay
     Go To    ${HOST_COLL}/20180203004147/http://acid.matkelly.com/
@@ -54,7 +53,7 @@ ${HOST_COLL}    ${HOST}/${COLL}
 2nd Browser: Acid Test Page Replay LOCKED, Using Different Locales (EN and CY)
     Go To    ${HOST}/cy/reading-room/20180203004147/http://acid.matkelly.com/
     Select Frame    //iframe
-    Page Should Contain    Access to this resource is currently not allowed.
+    Page Should Contain    Ni chaniateir mynediad i'r adnodd hwn ar hyn o bryd.
     Go To    ${HOST}/en/reading-room/20180203004147/http://acid.matkelly.com/
     Select Frame    //iframe
     Page Should Contain    Access to this resource is currently not allowed.
