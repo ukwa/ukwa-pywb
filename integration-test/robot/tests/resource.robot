@@ -49,7 +49,7 @@ Open Browser With Proxy
 Check Excluded
     [Arguments]    ${url}
     Go To   ${url}
-    Page Should Contain    Url Not Found
+    Page Should Contain    URL Not Found
 
 Check Blocked
     [Arguments]    ${url}

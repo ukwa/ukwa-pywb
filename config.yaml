@@ -66,6 +66,10 @@ enable_memento: true
 # enable experimental Memento Prefer
 enable_prefer: true
 
+
+# enable new video transclusions
+transclusions_version: 2
+
 # i18n
 locales_root_dir: ./i18n/translations/
 locales:
