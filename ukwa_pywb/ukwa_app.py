@@ -188,8 +188,13 @@ class UKWARewriter(RewriterApp):
 
             if curr_loc:
                 return request_uri.replace(curr_loc, locale, 1)
-            else:
-                return environ.get('pywb.app_prefix', '') + '/' + locale + request_uri
+
+            app_prefix = environ.get('pywb.app_prefix', '')
+
+            if app_prefix and request_uri.startswith(app_prefix):
+                request_uri = request_uri.replace(app_prefix, '')
+
+            return app_prefix + '/' + locale + request_uri
 
         @contextfunction
         def get_locale_prefixes(context):
