@@ -6,15 +6,8 @@ import time
 import os
 import re
 
-from urllib.parse import quote
-
 from redis import StrictRedis
 
-from babel.support import Translations
-from jinja2 import contextfunction
-from werkzeug.routing import Submount
-
-from pywb.rewrite.templateview import JinjaEnv
 from pywb.rewrite.wburl import WbUrl
 
 from pywb.apps.frontendapp import FrontEndApp
@@ -123,102 +116,6 @@ class LockingSession(Session):
 class UKWARewriter(RewriterApp):
     WB_URL_RX = re.compile(r'[\d]{1,14}/.*')
 
-    def __init__(self, *args, **kwargs):
-        jinja_env = JinjaEnv(globals={'static_path': 'static'},
-                             extensions=['jinja2.ext.i18n', 'jinja2.ext.with_'])
-
-        kwargs['jinja_env'] = jinja_env
-        super(UKWARewriter, self).__init__(*args, **kwargs)
-
-        self.init_loc(jinja_env)
-
-    def init_loc(self, jinja_env):
-        self.loc_map = {}
-
-        locales_root_dir = self.config.get('locales_root_dir')
-        locales = self.config.get('locales')
-        locales = locales or []
-
-        for loc in locales:
-            self.loc_map[loc] = Translations.load(locales_root_dir, [loc, 'en'])
-            #jinja_env.jinja_env.install_gettext_translations(translations)
-
-        def get_translate(context):
-            loc = context.get('env', {}).get('pywb_lang')
-            return self.loc_map.get(loc)
-
-        def override_func(jinja_env, name):
-            @contextfunction
-            def get_override(context, text):
-                translate = get_translate(context)
-                if not translate:
-                    return text
-
-                func = getattr(translate, name)
-                return func(text)
-
-            jinja_env.globals[name] = get_override
-
-        # standard gettext() translation function
-        override_func(jinja_env.jinja_env, 'gettext')
-
-        # single/plural form translation function
-        override_func(jinja_env.jinja_env, 'ngettext')
-
-        # Special _Q() function to return %-encoded text, necessary for use
-        # with text in banner
-        @contextfunction
-        def quote_gettext(context, text):
-            translate = get_translate(context)
-            if not translate:
-                return text
-
-            text = translate.gettext(text)
-            return quote(text, safe='/: ')
-
-        jinja_env.jinja_env.globals['locales'] = list(self.loc_map.keys())
-        jinja_env.jinja_env.globals['_Q'] = quote_gettext
-
-        @contextfunction
-        def switch_locale(context, locale):
-            environ = context.get('env')
-            curr_loc = environ.get('pywb_lang', '')
-
-            request_uri = environ.get('REQUEST_URI', environ.get('PATH_INFO'))
-
-            if curr_loc:
-                return request_uri.replace(curr_loc, locale, 1)
-
-            app_prefix = environ.get('pywb.app_prefix', '')
-
-            if app_prefix and request_uri.startswith(app_prefix):
-                request_uri = request_uri.replace(app_prefix, '')
-
-            return app_prefix + '/' + locale + request_uri
-
-        @contextfunction
-        def get_locale_prefixes(context):
-            environ = context.get('env')
-            locale_prefixes = {}
-
-            orig_prefix = environ.get('pywb.app_prefix', '')
-            coll = environ.get('SCRIPT_NAME', '')
-
-            if orig_prefix:
-                coll = coll[len(orig_prefix):]
-
-            curr_loc = environ.get('pywb_lang', '')
-            if curr_loc:
-                coll = coll[len(curr_loc) + 1:]
-
-            for locale in self.loc_map.keys():
-                locale_prefixes[locale] = orig_prefix + '/' + locale + coll + '/'
-
-            return locale_prefixes
-
-        jinja_env.jinja_env.globals['switch_locale'] = switch_locale
-        jinja_env.jinja_env.globals['get_locale_prefixes'] = get_locale_prefixes
-
     def get_lock_url(self, wb_url, full_prefix, environ):
         # don't lock embeds
         if wb_url.mod != 'mp_':
@@ -285,22 +182,6 @@ class UKWApp(FrontEndApp):
         self.url_map.add(Rule('/_locks', endpoint=self.lock_listing))
 
         self.url_map.add(Rule('/_logout', endpoint=self.log_out))
-
-    def _init_coll_routes(self, coll_prefix):
-        routes = self._make_coll_routes(coll_prefix)
-
-        # init loc routes, if any
-        loc_keys = list(self.rewriterapp.loc_map.keys())
-        if loc_keys:
-            routes.append(Rule('/', endpoint=self.serve_home))
-
-            submount_route = ', '.join(loc_keys)
-            submount_route = '/<any({0}):lang>'.format(submount_route)
-
-            self.url_map.add(Submount(submount_route, routes))
-
-        for route in routes:
-            self.url_map.add(route)
 
     @authorize
     def lock_clear_url(self, environ, url):

@@ -12,11 +12,14 @@
 <link rel='stylesheet' href='{{ static_prefix }}/default_banner.css'/>
 <script>
 window.banner_info = {
-    ARCHIVED_ON: decodeURIComponent("{{ _Q('Archived On:') }}"),
+    is_gmt: false,
+    logoImg: "{{ static_prefix }}/ukwa-2018-w-sml.png",
+
+    liveMsg: decodeURIComponent("{{ _Q('Live On') }}"),
+
     calendarAlt: decodeURIComponent("{{ _Q('Calendar icon') }}"),
     calendarLabel: decodeURIComponent("{{ _Q('Back to Calendar') }}"),
     choiceLabel: decodeURIComponent("{{ _Q('Language:') }}"),
-    LIVE_ON: decodeURIComponent("{{ _Q('Live On') }}"),
     loadingLabel: decodeURIComponent("{{ _Q('Loading...') }}"),
     logoAlt: decodeURIComponent("{{ _Q('UK Web Archive Logo') }}"),
 
