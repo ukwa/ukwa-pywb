@@ -45,6 +45,9 @@ services:
     #command: ukwa_pywb --debug
     build: ../
 
+    volumes:
+      - ../integration-test/test-data/video-test/:/ukwa_pywb/collections/video-test:ro
+
     environment:
       - "UKWA_INDEX=xmlquery+http://cdx:8080/tc"
       - "UKWA_ARCHIVE=webhdfs://hadoop:50070/"

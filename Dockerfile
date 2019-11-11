@@ -30,7 +30,6 @@ RUN mkdir /ukwa_pywb/collections
 
 COPY config.yaml /webarchive
 ADD integration-test/test-data/ /webarchive/integration-test/test-data/
-COPY ./integration-test/test-data/video-test/ /ukwa_pywb/collections/video-test
 
 ENV PYWB_CONFIG_FILE=/webarchive/config.yaml
 ENV UKWA_INDEX=/webarchive/integration-test/test-data/
