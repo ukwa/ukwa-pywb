@@ -46,6 +46,7 @@ services:
     build: ../
 
     volumes:
+      - ../integration-test/test-data/:/webarchive/integration-test/test-data:ro
       - ../integration-test/test-data/video-test/:/ukwa_pywb/collections/video-test:ro
 
     environment:
