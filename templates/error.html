@@ -46,9 +46,10 @@
         {% trans %}Sorry, access not authorized to this resource.{% endtrans %}
 
     {% elif err_status == 403 and err_details == 'access-locked' %}
-        <h2>{% trans %}UKWA Error{% endtrans %}</h2>
-        
-        {% trans %}Access to this resource is currently not allowed. Please try again later.{% endtrans %}
+        <h2>{% trans %}Archived Web Page Locked{% endtrans %}</h2>
+        <p> 
+        {% trans %}The page you have requested is currently in use. Please try again later.{% endtrans %}
+        </p>
 
     {% else %}
         <h2>{% trans %}UKWA Error{% endtrans %}</h2>
