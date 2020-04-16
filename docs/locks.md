@@ -103,7 +103,7 @@ to a designated page.
 collection:
     ukwa:
         ...
-        content_type_overrides:
+        content_type_redirects:
             'text/rtf': 'https://example.com/viewer?{query}'
             'application/pdf': 'https://example.com/viewer?{query}'
             'application/': 'https://example.com/blocked?{query}'
@@ -119,12 +119,12 @@ For example, a request to `https://myarchive.example.com/ukwa/2020010203mp_/http
 If an exact match is not found, the MIME prefix, such as `application/` is also checked to allow for restricting a class of mime types.
 
 
-To prevent arbitrary downloads, the `<any-download>` match is made for any request that contains a `Conteent-Disposition: attachment...` regardless of mime type.
+To prevent arbitrary downloads, the `<any-download>` match is made for any response that contains a `Conteent-Disposition: attachment...` regardless of mime type.
 For example, a `text/plain` document with `Content-Dispositon` would get redirected to `https://example.com/blocked?...`
 
 The `content_type_redirects` field is available to all collections, not only those that have `single-use-lock: true` set.
 
-The single-use lock does apply to the initial url, and will result in a 403 instead of a redirect if the lock can not be acquired.
+The single-use lock does apply to the initial url, and will result in a 403 instead of a redirect if the lock can not be acquired. The lock will last for the full session expiry time (end of the day), as there is no client-side ping happening for redirects.
 
 
 
