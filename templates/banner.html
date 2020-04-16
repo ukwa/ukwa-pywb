@@ -1,9 +1,28 @@
 {% if not embed_url %}
+
 <!-- Custom Fixup Script -->
 <script src="{{ static_prefix }}/fixup.js"> </script>
 
+{# NPLD Addition for content frame #}
+{% if env.single_use_lock %}
+<script src="{{ static_prefix }}/selection-limits.js"> </script>
+<script>
+__WB_initSelectionLimit({{ env.select_word_limit }});
+</script>
+{% endif %}
+
 <!-- Video Transclusions -->
 <script src="{{ static_prefix }}/transclusions.js"> </script>
+
+{% else %}
+
+{# NPLD Addition for top-frame #}
+{% if env.single_use_lock %}
+<script>
+  setInterval(function () { window.fetch("/_locks/ping"); }, {{env.lock_ping_interval}});
+</script>
+{% endif %}
+
 
 {% endif %}
 

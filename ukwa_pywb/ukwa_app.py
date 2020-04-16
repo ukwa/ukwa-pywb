@@ -8,6 +8,8 @@ import re
 
 from redis import StrictRedis
 
+import urllib.parse
+
 from pywb.rewrite.wburl import WbUrl
 
 from pywb.apps.frontendapp import FrontEndApp
@@ -24,6 +26,8 @@ COOKIE_NAME = '_ukwa_pywb_sesh'
 SESSION_KEY = 'ukwa.pywb.session'
 
 SESH_LIST = 'sesh:{0}'
+
+LOCK_PING_EXPIRE = None
 
 DEFAULT_TTL = 86400
 
@@ -136,7 +140,7 @@ class UKWARewriter(RewriterApp):
 
         if referrer.startswith(full_prefix):
             referrer = referrer[len(full_prefix):]
-            m = self.WB_URL_RX.match(referrer)
+            m = self.WB_URL_RX.search(referrer)
             if m:
                 return WbUrl(m.group(0))
 
@@ -144,6 +148,10 @@ class UKWARewriter(RewriterApp):
 
     def handle_custom_response(self, environ, wb_url, full_prefix, host_prefix, kwargs):
         if kwargs.get('single-use-lock'):
+            environ['single_use_lock'] = True
+            environ['select_word_limit'] = SELECT_WORD_LIMIT
+            environ['lock_ping_interval'] = LOCK_PING_INTERVAL * 1000
+
             lock_wb_url = self.get_lock_url(wb_url, full_prefix, environ)
             if lock_wb_url:
                 session = environ[SESSION_KEY]
@@ -169,19 +177,95 @@ class UKWARewriter(RewriterApp):
 
         return response
 
+    def render_content(self, wb_url_str, coll_config, environ):
+        default_response = super(UKWARewriter, self).render_content(wb_url_str, coll_config, environ)
+
+        add_headers = coll_config.get('add_headers') or {}
+        for header in add_headers:
+            default_response.status_headers[header] = add_headers[header]
+
+        ct_redirects = coll_config.get('content_type_redirects')
+        if not ct_redirects:
+            return default_response
+
+        # not an actual response
+        if not default_response.status_headers.get('memento-datetime'):
+            return default_response
+
+        # don't redirect raw responses, needed for viewer access
+        if default_response.status_headers.get('preference-applied') == 'raw':
+            return default_response
+
+        content_type = default_response.status_headers.get("content-type")
+
+        redirect_url = None
+
+        if content_type:
+            content_type = content_type.split(";", 1)[0]
+            redirect_url = ct_redirects.get(content_type)
+            if redirect_url is None:
+                redirect_url = ct_redirects.get(content_type.split("/")[0] + "/")
+
+        # if no content-type match, check content-disposition
+        if not redirect_url:
+            content_disp = default_response.status_headers.get("content-disposition")
+            if content_disp and 'attachment' in content_disp:
+                redirect_url = ct_redirects.get('<any-download>')
+
+        if not redirect_url:
+            return default_response
+
+        wb_url = WbUrl(wb_url_str)
+        wb_url.mod = 'id_'
+        loc = self.get_full_prefix(environ) + str(wb_url)
+
+        query = urllib.parse.urlencode({'url': loc})
+        final_url = redirect_url.format(query=query)
+        return WbResponse.redir_response(final_url)
+
 
 # ============================================================================
 class UKWApp(FrontEndApp):
     REWRITER_APP_CLS = UKWARewriter
+
+    REFER_WB_URL_RX = re.compile(r'(\w+)/([\d]{1,14}(?:\w\w_)?/.*)')
 
     def _init_routes(self):
         super(UKWApp, self)._init_routes()
         self.url_map.add(Rule('/_locks/clear_url/<path:url>', endpoint=self.lock_clear_url))
         self.url_map.add(Rule('/_locks/clear/<id>', endpoint=self.lock_clear_session))
         self.url_map.add(Rule('/_locks/reset', endpoint=self.lock_clear_all))
+        self.url_map.add(Rule('/_locks/ping', endpoint=self.lock_ping_reset))
         self.url_map.add(Rule('/_locks', endpoint=self.lock_listing))
 
         self.url_map.add(Rule('/_logout', endpoint=self.log_out))
+
+    def lock_ping_reset(self, environ):
+        referrer = environ.get('HTTP_REFERER')
+        if not referrer:
+            return WbResponse.json_response({})
+
+        full_prefix = self.rewriterapp.get_full_prefix(environ)
+
+        if not referrer.startswith(full_prefix):
+            return WbResponse.json_response({})
+
+        referrer = referrer[len(full_prefix):]
+        m = self.REFER_WB_URL_RX.match(referrer)
+        if not m:
+            return WbResponse.json_response({})
+
+        wb_url = WbUrl(m.group(2))
+
+        lock_key = LOCK_KEY.format(coll=m.group(1),
+                                   ts=wb_url.timestamp,
+                                   url=wb_url.url)
+
+        session = environ[SESSION_KEY]
+        if self.lock_ping_extend_time and not session.is_locked(lock_key):
+            res = session.redis.expire(lock_key, self.lock_ping_extend_time)
+
+        return WbResponse.json_response({})
 
     @authorize
     def lock_clear_url(self, environ, url):
@@ -263,6 +347,18 @@ class UKWApp(FrontEndApp):
             SESSION_TTL = int(os.environ.get('TEST_SESSION_LOCK_INTERVAL'))
         except:  #pragma: no cover
             SESSION_TTL = DEFAULT_TTL
+
+        # ping extend time
+        cls.lock_ping_extend_time = int(os.environ.get('LOCK_PING_EXTEND_TIME', 0))
+
+        # ping every interval seconds
+        global LOCK_PING_INTERVAL
+        LOCK_PING_INTERVAL = int(os.environ.get('LOCK_PING_INTERVAL', 10))
+
+        # select word limit
+        global SELECT_WORD_LIMIT
+        SELECT_WORD_LIMIT = int(os.environ.get('SELECT_WORD_LIMIT', 0))
+
 
         REDIS_URL = os.environ.get('REDIS_URL')
         if REDIS_URL:

@@ -18,7 +18,7 @@ class PyTest(TestCommand):
         import pytest
         import sys
         import os
-        errcode = pytest.main(['--cov', 'ukwa_pywb', '-v', 'ukwa_pywb/test/'])
+        errcode = pytest.main(['--cov', 'ukwa_pywb', '-vv', 'ukwa_pywb/test/'])
         sys.exit(errcode)
 
 setup(

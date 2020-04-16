@@ -8,6 +8,16 @@ collections:
 
         single-use-lock: true
 
+        add_headers:
+          Cache-Control: 'max-age=0, no-cache, must-revalidate, proxy-revalidate, private'
+          Expires: 'Thu, 01 Jan 1970 00:00:00 GMT'
+
+        content_type_redirects:
+          'text/rtf': 'https://example.com/viewer?{query}'
+          'application/pdf': 'https://example.com/viewer?{query}'
+          'application/': 'https://example.com/blocked?{query}'
+          '<any-download>': 'https://example.com/blocked?{query}'
+
     pywb-no-locks:
         index_paths: ./integration-test/test-data/
         archive_paths: ./integration-test/test-data/
@@ -16,6 +26,9 @@ collections:
 redirect_to_exact: true
 
 enable_memento: true
+
+enable_prefer: true
+
 
 locales_root_dir: ./i18n/translations/
 locales:

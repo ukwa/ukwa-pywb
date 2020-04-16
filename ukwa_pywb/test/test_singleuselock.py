@@ -25,8 +25,11 @@ class TestSingleUseLock(TestClass):
     def setup_class(cls):
         super(TestSingleUseLock, cls).setup_class()
 
-        os.environ['TEST_SESSION_LOCK_INTERVAL'] = '3'
+        os.environ['TEST_SESSION_LOCK_INTERVAL'] = '5'
+        os.environ['LOCK_PING_EXTEND_TIME'] = '2'
+        os.environ['LOCK_PING_INTERVAL'] = '10'
         os.environ['LOCKS_AUTH'] = 'ukwa-admin:testpass'
+        os.environ['SELECT_WORD_LIMIT'] = '20'
 
         cls.testapp = cls.get_test_app()
 
@@ -46,6 +49,11 @@ class TestSingleUseLock(TestClass):
 
         assert self.redis.keys('*') == []
 
+        res = res.follow()
+
+        # ensure ping is added
+        assert 'setInterval(function () { window.fetch("/_locks/ping"); }, 10000);' in res.text
+
     def test_replay_1_lock(self):
         res = self.testapp.get('/pywb/mp_/acid.matkelly.com/', status=307)
 
@@ -57,6 +65,10 @@ class TestSingleUseLock(TestClass):
 
         res = res.follow()
         assert 'Set-Cookie' not in res.headers
+
+        # ensure selection limit is added
+        print(res.text)
+        assert '__WB_initSelectionLimit(20);' in res.text
 
         sesh_keys = self.redis.keys('sesh:*')
         assert len(sesh_keys) == 1
@@ -72,6 +84,7 @@ class TestSingleUseLock(TestClass):
 
     def test_replay_no_lock_embed(self):
         res = self.testapp.get('/pywb/im_/acid.matkelly.com/pixel.png')
+        assert res.headers['Cache-Control'] == 'max-age=0, no-cache, must-revalidate, proxy-revalidate, private'
         assert not self.redis.exists('lock:pywb//http://acid.matkelly.com/pixel.png')
 
     def test_replay_again_same_session(self):
@@ -79,11 +92,38 @@ class TestSingleUseLock(TestClass):
 
         assert len(self.redis.keys('lock:*')) == 2
 
+    def test_replay_content_type_redirect_viewer(self):
+        res = self.testapp.get('/pywb/20200415232829mp_/https://example.com/TestDocument.rtf', status=302)
+        assert res.location == 'https://example.com/viewer?url=http%3A%2F%2Flocalhost%3A80%2Fpywb%2F20200415232829id_%2Fhttps%3A%2F%2Fexample.com%2FTestDocument.rtf'
+
+        res = self.testapp.get('/pywb/20200415232829id_/https://example.com/TestDocument.rtf', status=200)
+        assert res.headers['Cache-Control'] == 'max-age=0, no-cache, must-revalidate, proxy-revalidate, private'
+
+    def test_replay_content_type_redirect_blocked(self):
+        res = self.testapp.get('/pywb/20200415232823mp_/https://example.com/TestDocument.docx', status=302)
+        assert res.location == 'https://example.com/blocked?url=http%3A%2F%2Flocalhost%3A80%2Fpywb%2F20200415232823id_%2Fhttps%3A%2F%2Fexample.com%2FTestDocument.docx'
+
+        res = self.testapp.get('/pywb/20200415232823id_/https://example.com/TestDocument.docx', status=200)
+        assert res.headers['Cache-Control'] == 'max-age=0, no-cache, must-revalidate, proxy-revalidate, private'
+
+    def test_replay_content_disposition_redirect_blocked(self):
+        res = self.testapp.get('/pywb/20200416010916mp_/https://example.com/download/afile', status=302)
+        assert res.location == 'https://example.com/blocked?url=http%3A%2F%2Flocalhost%3A80%2Fpywb%2F20200416010916id_%2Fhttps%3A%2F%2Fexample.com%2Fdownload%2Fafile'
+
+        res = self.testapp.get('/pywb/20200416010916id_/https://example.com/download/afile', status=200)
+        assert res.headers['Content-Type'] == 'text/plain'
+        assert res.headers['Cache-Control'] == 'max-age=0, no-cache, must-revalidate, proxy-revalidate, private'
+        assert res.headers['Content-Disposition'] == 'attachment; filename="somefile.txt"'
+
+
     def test_replay_blocked(self):
         TestSingleUseLock.sesh_one = self.redis.keys('sesh:*')[0].split(':')[1]
         self.testapp.cookiejar.clear()
 
         res = self.testapp.get('/pywb/20180203004147mp_/acid.matkelly.com/', status=403)
+        res = self.testapp.get('/pywb/20200415232823mp_/https://example.com/TestDocument.docx', status=403)
+        res = self.testapp.get('/pywb/20200415232829mp_/https://example.com/TestDocument.rtf', status=403)
+        res = self.testapp.get('/pywb/20200416010916mp_/https://example.com/download/afile', status=403)
 
         # not setting cookie until used
         assert 'Set-Cookie' not in res.headers
@@ -118,8 +158,16 @@ class TestSingleUseLock(TestClass):
         self.testapp.get('/pywb/20140716200243mp_/acid.matkelly.com/', status=403)
         self.testapp.get('/pywb/20180203004147mp_/acid.matkelly.com/', status=200)
 
+    def test_ping_lock(self):
+        self.testapp.get('/_locks/ping',
+            headers={'Referer': 'http://localhost:80/pywb/20180203004147mp_/acid.matkelly.com/'}, status=200)
+
+        res = self.redis.ttl('lock:pywb/20180203004147/http://acid.matkelly.com/')
+        assert res > 0 and res <= 2
+        assert self.redis.ttl('lock:pywb/20140716200243/http://acid.matkelly.com/') > 2
+
     def test_replay_expired(self):
-        time.sleep(3)
+        time.sleep(5)
 
         assert not self.redis.exists('lock:pywb//http://acid.matkelly.com/')
         assert not self.redis.exists('lock:pywb/20180203004147/http://acid.matkelly.com/')
@@ -130,7 +178,7 @@ class TestSingleUseLock(TestClass):
 
         # cookie hasn't expired yet, so refresh the expiry for another interval
         assert '=' + self.sesh_one in res.headers['Set-Cookie']
-        assert 'Max-Age=3' in res.headers['Set-Cookie']
+        assert 'Max-Age=5' in res.headers['Set-Cookie']
 
     def test_replay_cookie_already_set(self):
         res = self.testapp.get('/pywb/20180203004147mp_/acid.matkelly.com/?_=123', status=307)
