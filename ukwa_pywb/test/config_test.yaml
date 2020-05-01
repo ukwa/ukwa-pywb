@@ -13,10 +13,18 @@ collections:
           Expires: 'Thu, 01 Jan 1970 00:00:00 GMT'
 
         content_type_redirects:
+          'text/': 'allow'
+          'image/': 'allow'
+          'video/': 'allow'
+          'audio/': 'allow'
+
           'text/rtf': 'https://example.com/viewer?{query}'
           'application/pdf': 'https://example.com/viewer?{query}'
           'application/': 'https://example.com/blocked?{query}'
+
+          # default redirects
           '<any-download>': 'https://example.com/blocked?{query}'
+          '*': 'https://example.com/blocked?{query}'
 
     pywb-no-locks:
         index_paths: ./integration-test/test-data/

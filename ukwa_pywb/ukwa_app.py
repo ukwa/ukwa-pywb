@@ -196,25 +196,33 @@ class UKWARewriter(RewriterApp):
         if default_response.status_headers.get('preference-applied') == 'raw':
             return default_response
 
-        content_type = default_response.status_headers.get("content-type")
 
         redirect_url = None
 
-        if content_type:
-            content_type = content_type.split(";", 1)[0]
-            redirect_url = ct_redirects.get(content_type)
-            if redirect_url is None:
-                redirect_url = ct_redirects.get(content_type.split("/")[0] + "/")
+        # if we have a content-disposition, takes precedence using the <any-download> option
+        content_disp = default_response.status_headers.get("content-disposition")
+        if content_disp and 'attachment' in content_disp:
+            redirect_url = ct_redirects.get('<any-download>')
 
-        # if no content-type match, check content-disposition
-        if not redirect_url:
-            content_disp = default_response.status_headers.get("content-disposition")
-            if content_disp and 'attachment' in content_disp:
-                redirect_url = ct_redirects.get('<any-download>')
+        # attempt to find rule by content-type
+        if redirect_url is None:
+            content_type = default_response.status_headers.get("content-type")
+            if content_type:
+                content_type = content_type.split(";", 1)[0]
+                redirect_url = ct_redirects.get(content_type)
+                # find by content-type prefix, eg: text/
+                if redirect_url is None:
+                    redirect_url = ct_redirects.get(content_type.split("/")[0] + "/")
 
-        if not redirect_url:
+        # default rule if no other matches
+        if redirect_url is None:
+            redirect_url = ct_redirects.get('*')
+
+        # if no redirect or rule is 'allow', then continue
+        if not redirect_url or redirect_url == 'allow':
             return default_response
 
+        # otherwise, redirect to specified url
         wb_url = WbUrl(wb_url_str)
         wb_url.mod = 'id_'
         loc = self.get_full_prefix(environ) + str(wb_url)
