@@ -1,4 +1,4 @@
-from werkzeug.contrib.sessions import SessionMiddleware, SessionStore, Session
+from secure_cookie.session import SessionMiddleware, SessionStore, Session
 from werkzeug.routing import Map, Rule
 from werkzeug.http import parse_authorization_header
 
