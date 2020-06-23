@@ -26,7 +26,6 @@ COPY templates/ templates/
 
 # Run as non-root user:
 USER archivist
-RUN mkdir /ukwa_pywb/collections && chown archivist /ukwa_pywb/collections
 
 COPY config.yaml /webarchive
 ADD integration-test/test-data/ /webarchive/integration-test/test-data/
