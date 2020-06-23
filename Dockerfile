@@ -26,12 +26,15 @@ COPY templates/ templates/
 
 RUN mkdir /ukwa_pywb/collections && chown archivist /ukwa_pywb/collections
 
+# Run as non-root user:
 USER archivist
 
 COPY config.yaml /webarchive
 ADD integration-test/test-data/ /webarchive/integration-test/test-data/
 COPY ./integration-test/test-data/video-test/ /ukwa_pywb/collections/video-test
 
+# Define environment variables:
+ENV DEBUG=False
 ENV PYWB_CONFIG_FILE=/webarchive/config.yaml
 ENV UKWA_INDEX=/webarchive/integration-test/test-data/
 ENV UKWA_ARCHIVE=/webarchive/integration-test/test-data/
