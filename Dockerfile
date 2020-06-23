@@ -24,10 +24,9 @@ COPY uwsgi.ini .
 COPY static/ static/
 COPY templates/ templates/
 
+USER archivist
+
 RUN mkdir /ukwa_pywb/collections
-
-#USER archivist
-
 COPY config.yaml /webarchive
 #ADD integration-test/test-data/ /webarchive/integration-test/test-data/
 
