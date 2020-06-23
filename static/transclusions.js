@@ -11,7 +11,7 @@
   });
 
   function loadTransclusions() {
-    var viUrl = window.location.href.replace("mp_", "vi_");
+    var viUrl = window.location.href.replace("mp_/", "id_/urn:embeds:");
 
     window.fetch(viUrl)
       .then(function(response) {
