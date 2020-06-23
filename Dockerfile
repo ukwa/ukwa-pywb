@@ -24,7 +24,7 @@ COPY uwsgi.ini .
 COPY static/ static/
 COPY templates/ templates/
 
-USER archivist
+#USER archivist
 
 RUN mkdir /ukwa_pywb/collections
 COPY config.yaml /webarchive
