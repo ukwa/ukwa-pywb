@@ -393,9 +393,10 @@ class UKWACli(ReplayCli):
         # Optional debug mode:
         DEBUG = os.environ.get('DEBUG', False)
         if DEBUG:
+            print("WARNING: DEBUG MODE ENABLED")
             self.extra_config['debug'] = True
 
-        return UKWApp.init_app()
+        return UKWApp.init_app(extra_config=self.extra_config)
 
 
 #=============================================================================
