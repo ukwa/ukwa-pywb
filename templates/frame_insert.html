@@ -4,10 +4,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@UKWebArchive">
-<meta name="twitter:title" content="Archived version of {{ url }} from {{ timestamp | format_ts('%Y') }}">
-<meta name="twitter:description" content="Archived version of {{ url }} as of {{ timestamp | format_ts('%c') }}. Preserved by the UK Web Archive.">
+<meta name="og:site" content="UK Web Archive">
+<meta name="og:url" content="{{ wb_prefix }}{{ timestamp }}/{{ url }}">
+<meta name="og:title" content="Archived version of {{ url }} from {{ timestamp | format_ts('%Y') }}">
+<meta name="og:description" content="Archived version of {{ url }} as of {{ timestamp | format_ts('%c') }}. Preserved by the UK Web Archive.">
 <!-- Twitter summary_large_image uses a 2:1 aspect ratio -->
-<meta name="twitter:image" content="/api/iiif/2/urn:pwid:webarchive.org.uk:{{ timestamp | format_ts('%Y:%m:%dT%H:%M:%SZ') }}:page:{{ url | urlencode | replace("/", "%2F") }}/0,0,1024,512/600,/0/default.png">
+<meta name="og:image" content="/api/iiif/2/urn:pwid:webarchive.org.uk:{{ timestamp | format_ts('%Y:%m:%dT%H:%M:%SZ') }}:page:{{ url | urlencode | replace("/", "%2F") }}/0,0,1024,512/600,/0/default.png">
 <style>
 html, body
 {
