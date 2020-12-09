@@ -4,8 +4,8 @@ services:
 
   cdx:
     image: ukwa/tinycdxserver:ukwa-production
-    ports:
-      - "9090:8080"
+    #ports:
+    #  - "9090:8080"
   
   hadoop:
     build: ./hadoop/
@@ -42,9 +42,11 @@ services:
     image: redis:3.2.4
 
   pywb:
-    #command: ukwa_pywb --debug
-    build: ../
-
+    build:
+      context: ..
+      args:
+        http_proxy: ${HTTP_PROXY}
+        https_proxy: ${HTTPS_PROXY}
     volumes:
       - ../integration-test/test-data/:/webarchive/integration-test/test-data:ro
       - ../integration-test/test-data/video-test/:/ukwa_pywb/collections/video-test:ro
@@ -58,7 +60,7 @@ services:
       - "DEBUG=True"
 
     ports:
-      - "8081:8080"
+      - "8082:8080"
 
     depends_on:
       - cdx

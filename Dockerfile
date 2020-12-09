@@ -25,7 +25,8 @@ COPY static/ static/
 COPY templates/ templates/
 
 # Run as non-root user:
-USER archivist
+# USER archivist
+# Parent image no longer uses this user.
 
 RUN mkdir /ukwa_pywb/collections
 COPY config.yaml /webarchive
