@@ -36,8 +36,9 @@ setup(
     install_requires=[
         'babel',
         'uwsgi',
-        'fakeredis',
-        'secure-cookie'
+        'fakeredis<1.0',
+        'secure-cookie',
+        'pywb'
     ],
     message_extractors = {
         '.': [

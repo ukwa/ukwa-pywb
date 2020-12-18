@@ -8,7 +8,11 @@ services:
     #  - "9090:8080"
   
   hadoop:
-    build: ./hadoop/
+    build:
+      context: ./hadoop/
+      args:
+        http_proxy: ${HTTP_PROXY}
+        https_proxy: ${HTTPS_PROXY}
     command: "/etc/bootstrap.sh -d"
     ports:
       - "50070:50070"
@@ -86,7 +90,11 @@ services:
 # -----------------------------------------------------------
 
   test:
-    build: robot
+    build:
+      context: ./robot/
+      args:
+        http_proxy: ${HTTP_PROXY}
+        https_proxy: ${HTTPS_PROXY}
     #command: -v BROWSER:ff --outputdir /out /tests
     command: --outputdir /out /tests
     volumes:

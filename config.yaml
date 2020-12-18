@@ -69,6 +69,13 @@ collections:
           - *ARCHIVE
           - collections/video-test/archive/
 
+    in-test:
+        index:
+          type: cdx
+          api_url: "http://cdx.api.wa.bl.uk/data-heritrix?url={url}&closest={closest}&sort=closest&filter=!statuscode:429&filter=!mimetype:warc/revisit"
+          replay_url: ""
+        archive_paths: "webhdfs://hdfs.api.wa.bl.uk"
+
 
 
 proxy:
