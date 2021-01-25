@@ -20,6 +20,9 @@ from pywb.apps.cli import ReplayCli
 
 from pywb.apps.wbrequestresponse import WbResponse
 
+# ============================================================================
+# Monkeypatch pywb to accept schemes with colons:
+WbUrl.SCHEME_RX = re.compile('[a-zA-Z0-9+-.:]+(:/)')
 
 # ============================================================================
 COOKIE_NAME = '_ukwa_pywb_sesh'
