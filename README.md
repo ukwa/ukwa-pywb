@@ -10,9 +10,7 @@ This repository represents a customized extension of [pywb](https://github.com/w
 - [HTTP/S Proxy Mode](docs/proxy.md)
 - Memento Prefer Header initial implementation (See [this issue](https://github.com/mementoweb/rfc-extensions/issues/7) for further discussion)
 
-This repository ships a custom package `ukwa_pywb`, which extends the `pywb`.
-
-Currently, it is to be used with the [ukwa/pywb fork of pywb](https://github.com/ukwa/pywb) until this fork is merged into a future pywb release.
+This repository ships a custom package `ukwa_pywb`, which extends the offical `pywb` release. Where additional functionality is to be developed and then fed back to the upstream project, the [ukwa/pywb fork of pywb](https://github.com/ukwa/pywb) can be used.
 
 ## Development Setup
 
