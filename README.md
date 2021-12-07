@@ -10,7 +10,15 @@ This repository represents a customized extension of [pywb](https://github.com/w
 - [HTTP/S Proxy Mode](docs/proxy.md)
 - Memento Prefer Header initial implementation (See [this issue](https://github.com/mementoweb/rfc-extensions/issues/7) for further discussion)
 
-This repository ships a custom package `ukwa_pywb`, which extends the offical `pywb` release. Where additional functionality is to be developed and then fed back to the upstream project, the [ukwa/pywb fork of pywb](https://github.com/ukwa/pywb) can be used.
+This repository builds an `ukwa-pywb` container image, which extends the offical `pywb` container image release. 
+
+In the past, additional PyWB functionality has been developed on the [ukwa/pywb fork of pywb](https://github.com/ukwa/pywb), but this has now all been merged upstream. This allows us to depend on PyWB directly rather than our own release.
+
+## Upgrading PyWB
+
+Assuming there are no breaking changes upstream, this project can be upgraded by simply updating the version of the PyWB docker container (referred to in the Dockerfile](https://github.com/ukwa/ukwa-pywb/blob/master/Dockerfile#L2-L3).  The new image can be built and tested as outlined below.
+
+Once tested, the version can be tagged, using the PyWB version as a base. i.e. the version of `ukwa/ukwa-pywb` based on `webrecorder/pywb:2.6.2` should be `2.6.2`. If any further releases are required to resolve unexpected problems, while sticking to the same version of PyWB, a point suffix can be added, e.g. `2.6.2.1`, `2.6.2.2` and so on.
 
 ## Development Setup
 
