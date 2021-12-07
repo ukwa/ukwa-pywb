@@ -1,6 +1,29 @@
 {% if not embed_url %}
+
 <!-- Custom Fixup Script -->
 <script src="{{ static_prefix }}/fixup.js"> </script>
+
+{# NPLD Addition for content frame #}
+{% if env.single_use_lock %}
+<script src="{{ static_prefix }}/selection-limits.js"> </script>
+<script>
+__WB_initSelectionLimit({{ env.select_word_limit }});
+</script>
+{% endif %}
+
+<!-- Video Transclusions -->
+<script src="{{ static_prefix }}/transclusions.js"> </script>
+
+{% else %}
+
+{# NPLD Addition for top-frame #}
+{% if env.single_use_lock %}
+<script>
+  setInterval(function () { window.fetch("/_locks/ping"); }, {{env.lock_ping_interval}});
+</script>
+{% endif %}
+
+
 {% endif %}
 
 <!-- default banner, create through js -->
@@ -8,11 +31,14 @@
 <link rel='stylesheet' href='{{ static_prefix }}/default_banner.css'/>
 <script>
 window.banner_info = {
-    ARCHIVED_ON: decodeURIComponent("{{ _Q('Archived On:') }}"),
+    is_gmt: false,
+    logoImg: "{{ static_prefix }}/ukwa-2018-w-sml.png",
+
+    liveMsg: decodeURIComponent("{{ _Q('Live On') }}"),
+
     calendarAlt: decodeURIComponent("{{ _Q('Calendar icon') }}"),
     calendarLabel: decodeURIComponent("{{ _Q('Back to Calendar') }}"),
     choiceLabel: decodeURIComponent("{{ _Q('Language:') }}"),
-    LIVE_ON: decodeURIComponent("{{ _Q('Live On') }}"),
     loadingLabel: decodeURIComponent("{{ _Q('Loading...') }}"),
     logoAlt: decodeURIComponent("{{ _Q('UK Web Archive Logo') }}"),
 

@@ -10,10 +10,10 @@ Open Browser
     Open Browser To Home Page
 
 
-Reading Room -- Check Blocked (404)
+Reading Room -- Check Blocked (451)
     Check Blocked    ${HOST}/reading-room/httpbin.org/anything
 
-Reading Room -- Check Excluded (451)
+Reading Room -- Check Excluded (404)
     Check Excluded    ${HOST}/reading-room/httpbin.org/anything/something
 
 Reading Room -- Check Excluded, Sub-Path
@@ -23,10 +23,10 @@ Reading Room -- Check Allowed, Different Script
     Check Allowed    ${HOST}/reading-room/http://www.cs.odu.edu/~mkelly/acid/externalScript.js    text=wombat
 
 
-Open Access -- Check Blocked (404)
+Open Access -- Check Blocked (451)
     Check Blocked    ${HOST}/open-access/httpbin.org/anything
 
-Open Access -- Check Excluded (451)
+Open Access -- Check Excluded (404)
     Check Excluded    ${HOST}/open-access/httpbin.org/anything/something
 
 Open Access -- Check Allowed Explicitly, Sub-path 

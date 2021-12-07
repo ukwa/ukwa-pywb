@@ -15,7 +15,7 @@ Check EN Home Page
 
 Check CY Home Page
     Go To    ${HOST}/cy
-    Page Should Contain    System Mynediad Archif Gwe'r DU
+    Page Should Contain    System fynediad Archif We y DG
 
 Check EN Replay Acid Test
     Go To    ${HOST}/en/qa-access/2018/http://acid.matkelly.com/
@@ -24,7 +24,7 @@ Check EN Replay Acid Test
 
 Check CY Replay Acid Test
     Go To    ${HOST}/cy/qa-access/2018/http://acid.matkelly.com/
-    Wait Until Page Contains    Laith:    timeout=10s
-    Page Should Contain    Yn ôl i'r Calendr
+    Wait Until Page Contains    Iaith:    timeout=10s
+    Page Should Contain    Dychwelyd i'r Calendr
 
     

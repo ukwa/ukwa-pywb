@@ -1,18 +1,16 @@
-from werkzeug.contrib.sessions import SessionMiddleware, SessionStore, Session
+from secure_cookie.session import SessionMiddleware, SessionStore, Session
 from werkzeug.routing import Map, Rule
 from werkzeug.http import parse_authorization_header
 
 import time
 import os
-from urllib.parse import quote
+import re
 
 from redis import StrictRedis
 
-from babel.support import Translations
-from jinja2 import contextfunction
-from werkzeug.routing import Submount
+import urllib.parse
 
-from pywb.rewrite.templateview import JinjaEnv
+from pywb.rewrite.wburl import WbUrl
 
 from pywb.apps.frontendapp import FrontEndApp
 from pywb.apps.rewriterapp import RewriterApp, UpstreamException
@@ -22,12 +20,17 @@ from pywb.apps.cli import ReplayCli
 
 from pywb.apps.wbrequestresponse import WbResponse
 
+# ============================================================================
+# Monkeypatch pywb to accept schemes with colons:
+WbUrl.SCHEME_RX = re.compile('[a-zA-Z0-9+-.:]+(:/)')
 
 # ============================================================================
 COOKIE_NAME = '_ukwa_pywb_sesh'
 SESSION_KEY = 'ukwa.pywb.session'
 
 SESH_LIST = 'sesh:{0}'
+
+LOCK_PING_EXPIRE = None
 
 DEFAULT_TTL = 86400
 
@@ -79,6 +82,14 @@ class LockingSession(Session):
 
         self.redis = redis
 
+    def is_locked(self, lock_key):
+        res = self.redis.get(lock_key)
+        if not res:
+            return False
+
+        value = self.redis.get(lock_key)
+        return value != self.sid
+
     def lock(self, lock_key):
         if not self.redis.setnx(lock_key, self.sid):
             value = self.redis.get(lock_key)
@@ -110,112 +121,55 @@ class LockingSession(Session):
 
 # ============================================================================
 class UKWARewriter(RewriterApp):
-    def __init__(self, *args, **kwargs):
-        jinja_env = JinjaEnv(globals={'static_path': 'static'},
-                             extensions=['jinja2.ext.i18n', 'jinja2.ext.with_'])
+    WB_URL_RX = re.compile(r'[\d]{1,14}/.*')
 
-        kwargs['jinja_env'] = jinja_env
-        super(UKWARewriter, self).__init__(*args, **kwargs)
+    def get_lock_url(self, wb_url, full_prefix, environ):
+        # don't lock embeds
+        if wb_url.mod != 'mp_':
+            return None
 
-        self.init_loc(jinja_env)
+        # don't lock ajax
+        if self.is_ajax(environ):
+            return None
 
-    def init_loc(self, jinja_env):
-        self.loc_map = {}
+        referrer = environ.get('HTTP_REFERER')
+        # if no referrer, probably should lock
+        if not referrer:
+            return wb_url
 
-        locales_root_dir = self.config.get('locales_root_dir')
-        locales = self.config.get('locales')
-        locales = locales or []
+        # if referrer is a .css, still an embed
+        if referrer.endswith('.css'):
+            return None
 
-        for loc in locales:
-            self.loc_map[loc] = Translations.load(locales_root_dir, [loc, 'en'])
-            #jinja_env.jinja_env.install_gettext_translations(translations)
+        if referrer.startswith(full_prefix):
+            referrer = referrer[len(full_prefix):]
+            m = self.WB_URL_RX.search(referrer)
+            if m:
+                return WbUrl(m.group(0))
 
-        def get_translate(context):
-            loc = context.get('env', {}).get('pywb_lang')
-            return self.loc_map.get(loc)
-
-        def override_func(jinja_env, name):
-            @contextfunction
-            def get_override(context, text):
-                translate = get_translate(context)
-                if not translate:
-                    return text
-
-                func = getattr(translate, name)
-                return func(text)
-
-            jinja_env.globals[name] = get_override
-
-        # standard gettext() translation function
-        override_func(jinja_env.jinja_env, 'gettext')
-
-        # single/plural form translation function
-        override_func(jinja_env.jinja_env, 'ngettext')
-
-        # Special _Q() function to return %-encoded text, necessary for use
-        # with text in banner
-        @contextfunction
-        def quote_gettext(context, text):
-            translate = get_translate(context)
-            if not translate:
-                return text
-
-            text = translate.gettext(text)
-            return quote(text, safe='/: ')
-
-        jinja_env.jinja_env.globals['locales'] = list(self.loc_map.keys())
-        jinja_env.jinja_env.globals['_Q'] = quote_gettext
-
-        @contextfunction
-        def switch_locale(context, locale):
-            environ = context.get('env')
-            curr_loc = environ.get('pywb_lang', '')
-
-            request_uri = environ.get('REQUEST_URI', environ.get('PATH_INFO'))
-
-            if curr_loc:
-                return request_uri.replace(curr_loc, locale, 1)
-            else:
-                return environ.get('ORIG_SCRIPT_NAME', '') + '/' + locale + request_uri
-
-        @contextfunction
-        def get_locale_prefixes(context):
-            environ = context.get('env')
-            locale_prefixes = {}
-
-            orig_prefix = environ.get('ORIG_SCRIPT_NAME', '')
-            coll = environ.get('SCRIPT_NAME', '')
-
-            if orig_prefix:
-                coll = coll[len(orig_prefix):]
-
-            curr_loc = environ.get('pywb_lang', '')
-            if curr_loc:
-                coll = coll[len(curr_loc) + 1:]
-
-            for locale in self.loc_map.keys():
-                locale_prefixes[locale] = orig_prefix + '/' + locale + coll + '/'
-
-            return locale_prefixes
-
-        jinja_env.jinja_env.globals['switch_locale'] = switch_locale
-        jinja_env.jinja_env.globals['get_locale_prefixes'] = get_locale_prefixes
-
-    def should_lock(self, wb_url, environ):
-        if wb_url.mod == 'mp_' and not self.is_ajax(environ):
-            return True
-
-        return False
+        return None
 
     def handle_custom_response(self, environ, wb_url, full_prefix, host_prefix, kwargs):
-        if kwargs.get('single-use-lock') and self.should_lock(wb_url, environ):
-            session = environ[SESSION_KEY]
-            lock_key = LOCK_KEY.format(coll=kwargs.get('coll', ''),
-                                       ts=wb_url.timestamp,
-                                       url=wb_url.url)
+        if kwargs.get('single-use-lock'):
+            environ['single_use_lock'] = True
+            environ['select_word_limit'] = SELECT_WORD_LIMIT
+            environ['lock_ping_interval'] = LOCK_PING_INTERVAL * 1000
 
-            if not session.lock(lock_key):
-                raise UpstreamException(403, str(wb_url), 'access-locked')
+            lock_wb_url = self.get_lock_url(wb_url, full_prefix, environ)
+            if lock_wb_url:
+                session = environ[SESSION_KEY]
+                curr_key = LOCK_KEY.format(coll=kwargs.get('coll', ''),
+                                           ts=wb_url.timestamp,
+                                           url=wb_url.url)
+
+                if session.is_locked(curr_key):
+                    raise UpstreamException(403, str(wb_url), 'access-locked')
+
+                lock_key = LOCK_KEY.format(coll=kwargs.get('coll', ''),
+                                           ts=lock_wb_url.timestamp,
+                                           url=lock_wb_url.url)
+
+                session.lock(lock_key)
 
         return super(UKWARewriter, self).handle_custom_response(environ, wb_url, full_prefix, host_prefix, kwargs)
 
@@ -226,35 +180,103 @@ class UKWARewriter(RewriterApp):
 
         return response
 
+    def render_content(self, wb_url_str, coll_config, environ):
+        default_response = super(UKWARewriter, self).render_content(wb_url_str, coll_config, environ)
+
+        add_headers = coll_config.get('add_headers') or {}
+        for header in add_headers:
+            default_response.status_headers[header] = add_headers[header]
+
+        ct_redirects = coll_config.get('content_type_redirects')
+        if not ct_redirects:
+            return default_response
+
+        # not an actual response
+        if not default_response.status_headers.get('memento-datetime'):
+            return default_response
+
+        # don't redirect raw responses, needed for viewer access
+        if default_response.status_headers.get('preference-applied') == 'raw':
+            return default_response
+
+
+        redirect_url = None
+
+        # if we have a content-disposition, takes precedence using the <any-download> option
+        content_disp = default_response.status_headers.get("content-disposition")
+        if content_disp and 'attachment' in content_disp:
+            redirect_url = ct_redirects.get('<any-download>')
+
+        # attempt to find rule by content-type
+        if redirect_url is None:
+            content_type = default_response.status_headers.get("content-type")
+            if content_type:
+                content_type = content_type.split(";", 1)[0]
+                redirect_url = ct_redirects.get(content_type)
+                # find by content-type prefix, eg: text/
+                if redirect_url is None:
+                    redirect_url = ct_redirects.get(content_type.split("/")[0] + "/")
+
+        # default rule if no other matches
+        if redirect_url is None:
+            redirect_url = ct_redirects.get('*')
+
+        # if no redirect or rule is 'allow', then continue
+        if not redirect_url or redirect_url == 'allow':
+            return default_response
+
+        # otherwise, redirect to specified url
+        wb_url = WbUrl(wb_url_str)
+        wb_url.mod = 'id_'
+        loc = self.get_full_prefix(environ) + str(wb_url)
+
+        query = urllib.parse.urlencode({'url': loc})
+        final_url = redirect_url.format(query=query)
+        return WbResponse.redir_response(final_url)
+
 
 # ============================================================================
 class UKWApp(FrontEndApp):
     REWRITER_APP_CLS = UKWARewriter
+
+    REFER_WB_URL_RX = re.compile(r'(\w+)/([\d]{1,14}(?:\w\w_)?/.*)')
 
     def _init_routes(self):
         super(UKWApp, self)._init_routes()
         self.url_map.add(Rule('/_locks/clear_url/<path:url>', endpoint=self.lock_clear_url))
         self.url_map.add(Rule('/_locks/clear/<id>', endpoint=self.lock_clear_session))
         self.url_map.add(Rule('/_locks/reset', endpoint=self.lock_clear_all))
+        self.url_map.add(Rule('/_locks/ping', endpoint=self.lock_ping_reset))
         self.url_map.add(Rule('/_locks', endpoint=self.lock_listing))
 
         self.url_map.add(Rule('/_logout', endpoint=self.log_out))
 
-    def _init_coll_routes(self, coll_prefix):
-        routes = self._make_coll_routes(coll_prefix)
+    def lock_ping_reset(self, environ):
+        referrer = environ.get('HTTP_REFERER')
+        if not referrer:
+            return WbResponse.json_response({})
 
-        # init loc routes, if any
-        loc_keys = list(self.rewriterapp.loc_map.keys())
-        if loc_keys:
-            routes.append(Rule('/', endpoint=self.serve_home))
+        full_prefix = self.rewriterapp.get_full_prefix(environ)
 
-            submount_route = ', '.join(loc_keys)
-            submount_route = '/<any({0}):lang>'.format(submount_route)
+        if not referrer.startswith(full_prefix):
+            return WbResponse.json_response({})
 
-            self.url_map.add(Submount(submount_route, routes))
+        referrer = referrer[len(full_prefix):]
+        m = self.REFER_WB_URL_RX.match(referrer)
+        if not m:
+            return WbResponse.json_response({})
 
-        for route in routes:
-            self.url_map.add(route)
+        wb_url = WbUrl(m.group(2))
+
+        lock_key = LOCK_KEY.format(coll=m.group(1),
+                                   ts=wb_url.timestamp,
+                                   url=wb_url.url)
+
+        session = environ[SESSION_KEY]
+        if self.lock_ping_extend_time and not session.is_locked(lock_key):
+            res = session.redis.expire(lock_key, self.lock_ping_extend_time)
+
+        return WbResponse.json_response({})
 
     @authorize
     def lock_clear_url(self, environ, url):
@@ -336,6 +358,18 @@ class UKWApp(FrontEndApp):
             SESSION_TTL = int(os.environ.get('TEST_SESSION_LOCK_INTERVAL'))
         except:  #pragma: no cover
             SESSION_TTL = DEFAULT_TTL
+
+        # ping extend time
+        cls.lock_ping_extend_time = int(os.environ.get('LOCK_PING_EXTEND_TIME', 0))
+
+        # ping every interval seconds
+        global LOCK_PING_INTERVAL
+        LOCK_PING_INTERVAL = int(os.environ.get('LOCK_PING_INTERVAL', 10))
+
+        # select word limit
+        global SELECT_WORD_LIMIT
+        SELECT_WORD_LIMIT = int(os.environ.get('SELECT_WORD_LIMIT', 0))
+
 
         REDIS_URL = os.environ.get('REDIS_URL')
         if REDIS_URL:

@@ -1,6 +1,6 @@
 
-# Based on our pywb fork:
-FROM ukwa/pywb
+# Based on standard pywb fork
+FROM webrecorder/pywb:2.5.0
 
 USER root
 WORKDIR /ukwa_pywb
@@ -25,10 +25,12 @@ COPY static/ static/
 COPY templates/ templates/
 
 # Run as non-root user:
-USER archivist
+# USER archivist
+# Parent image no longer uses this user.
 
+RUN mkdir /ukwa_pywb/collections
 COPY config.yaml /webarchive
-ADD integration-test/test-data/ /webarchive/integration-test/test-data/
+#ADD integration-test/test-data/ /webarchive/integration-test/test-data/
 
 # Define environment variables:
 ENV DEBUG=False
@@ -36,5 +38,5 @@ ENV PYWB_CONFIG_FILE=/webarchive/config.yaml
 ENV UKWA_INDEX=/webarchive/integration-test/test-data/
 ENV UKWA_ARCHIVE=/webarchive/integration-test/test-data/
 
-CMD uwsgi uwsgi.ini
+CMD ["uwsgi", "uwsgi.ini"]
 

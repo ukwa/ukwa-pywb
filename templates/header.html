@@ -1,0 +1,16 @@
+        <header>
+            <a href="{{ env['pywb.app_prefix'] }}/{{ env.pywb_lang + '/' if env.pywb_lang else ''}}" class="logo">
+                <img src="{{ static_prefix }}/ukwa-2018-w-med.png" width="200" height="122" alt="{{ _('UK Web Archive logo') }}">
+            </a>
+            {% if not no_lang %}
+            <div class="language-select">
+                {{ _('Language:') }}
+                <ul role="listbox" aria-activedescendant="{{ env.pywb_lang | default('en') }}" aria-labelledby="{{ _('Language select') }}">
+                {% for locale in locales %}
+                  <li role="option" id="{{ locale }}"><a href="{{ switch_locale(locale) }}">{{ locale }}</a></li>
+                {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+        </header>
+

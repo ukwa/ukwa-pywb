@@ -16,7 +16,7 @@ class TestLocale(TestClass):
     def test_locale_cy_home(self):
         res = self.testapp.get('/cy/')
 
-        assert "System Mynediad Archif Gwe'r DU" in res.text
+        assert "System fynediad Archif We y DG" in res.text
 
     def test_locale_en_replay_banner(self):
         res = self.testapp.get('/en/pywb-no-locks/mp_/acid.matkelly.com/')
@@ -28,6 +28,6 @@ class TestLocale(TestClass):
         res = self.testapp.get('/cy/pywb-no-locks/mp_/acid.matkelly.com/')
         res = res.follow()
         assert '"cy"' in res.text
-        assert '"Laith:"' in res.text
+        assert '"Iaith:"' in res.text
 
 

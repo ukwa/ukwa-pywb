@@ -1,20 +1,20 @@
 @font-face{
     font-family: 'Open Sans';
     font-weight: normal;
-    src: url("/static/fonts/OpenSans-Regular.ttf") format('truetype');
+    src: url("./fonts/OpenSans-Regular.ttf") format('truetype');
 }
 
 @font-face{
     font-family: 'Open Sans';
     font-weight: normal;
     font-style: italic;
-    src: url("/static/fonts/OpenSans-Italic.ttf") format('truetype');
+    src: url("./fonts/OpenSans-Italic.ttf") format('truetype');
 }
 
 @font-face{
     font-family: 'Open Sans';
     font-weight: bold;
-    src: url("/static/fonts/OpenSans-Bold.ttf") format('truetype');
+    src: url("./fonts/OpenSans-Bold.ttf") format('truetype');
 }
 
 html, body {
@@ -22,7 +22,7 @@ html, body {
 }
 
 body, header {
-    font-family: 'Open Sans';
+    font-family: 'Open Sans', sans-serif;
 }
 
 header {

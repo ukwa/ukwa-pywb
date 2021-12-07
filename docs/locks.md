@@ -44,13 +44,90 @@ redis:
    image: redis:3.2.4
 ```
 
-## Session Expiry Time
+## Default Session Expiry Time
 
 Redis automatically handles the expiration of session keys, clearing the locks. The expiry time is rounded up to the end of the next day by default.
 For testing, it is possible to set a shorter expiry time by setting `TEST_SESSION_LOCK_INTERVAL` environment variable.
 For example, it is set to `TEST_SESSION_LOCK_INTERVAL=30` to allow for testing expiry after 30 seconds.
 
 This environment variable should not be set for production.
+
+## Ping Session Refresh
+
+The locks can be expired more quickly via a client-side ping mechanism.
+
+A client-side ping to `/_locks/ping` is made to reset the expiry for the current page, based on the referrer.
+
+If the `LOCK_PING_EXPIRE` env var is set, and the current session owns the referring page, the expiry is set
+to `LOCK_PING_EXPIRE` seconds into the future.
+
+The client-side ping is performed every `LOCK_PING_INTERVAL` seconds (defaulting to 30)
+
+
+## Select/Copy Restrictions
+
+The `SELECT_WORD_LIMIT` env variable can be set to limit selection to a specified number of words
+to restrict clipboard copying.
+
+On modern browsers that support the Clipboard APIs, the restriction is made at the time of copying the text.
+
+As a fallback and on other browsers, a restriction is applied when selecting the text. In this mode,
+the selection is shrunk until it is no more than `SELECT_WORD_LIMIT` words.
+
+As a worse case, the clipboard copy operation fails altogether instead of allowing unrestricted copy.
+
+
+## Add Extra Headers
+
+Extra headers can be added to all responses via the main `config.yaml`
+
+
+```yaml
+collection:
+    ukwa:
+        ...
+        add_headers:
+            Cache-Control: 'max-age=0, no-cache, must-revalidate, proxy-revalidate, private'
+            Expires: 'Thu, 01 Jan 1970 00:00:00 GMT'
+```
+
+This option can apply to all collections, not only those that have `single-use-lock: true` set.
+
+
+## Content-Type and Download Redirects
+
+The following config option allows for intercepting certain content types and issueing a redirect
+to a designated page.
+
+```yaml
+collection:
+    ukwa:
+        ...
+        content_type_redirects:
+            'text/rtf': 'https://example.com/viewer?{query}'
+            'application/pdf': 'https://example.com/viewer?{query}'
+            'application/': 'https://example.com/blocked?{query}'
+            '<any-download>': 'https://example.com/blocked?{query}'
+```
+
+With this config, any `text/rtf` resource or `application/pdf` resources encountered during replay are redirected to `https://example.com/viewer?{query}`,
+where the `{query}` expands to the pywb url for downloading the raw/identity resource (with the `id_` modifier).
+(The raw urls are not redirected to allow a viewer to access the data).
+
+For example, a request to `https://myarchive.example.com/ukwa/2020010203mp_/http://example.com/myfile.rtf` might result in a redirect to `http://example.com/viewer?url=http://myarchive.example.com/ukwa/2020010203id_/http://example.com/myfile.rtf`
+
+If an exact match is not found, the MIME prefix, such as `application/` is also checked to allow for restricting a class of mime types.
+
+
+To prevent arbitrary downloads, the `<any-download>` match is made for any response that contains a `Conteent-Disposition: attachment...` regardless of mime type.
+For example, a `text/plain` document with `Content-Dispositon` would get redirected to `https://example.com/blocked?...`
+
+The `content_type_redirects` field is available to all collections, not only those that have `single-use-lock: true` set.
+
+The single-use lock does apply to the initial url, and will result in a 403 instead of a redirect if the lock can not be acquired. The lock will last for the full session expiry time (end of the day), as there is no client-side ping happening for redirects.
+
+
+
 
 ## Admin Page and API
 

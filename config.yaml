@@ -11,6 +11,27 @@ collections:
         acl_paths:
             - ./acl/blocks.aclj
 
+        add_headers:
+          Cache-Control: 'max-age=0, no-cache, must-revalidate, proxy-revalidate, private'
+          Expires: 'Thu, 01 Jan 1970 00:00:00 GMT'
+
+        content_type_redirects:
+          # allows
+          'text/': 'allow'
+          'image/': 'allow'
+          'video/': 'allow'
+          'audio/': 'allow'
+          'application/javascript': 'allow'
+
+          'text/rtf': 'https://example.com/viewer?{query}'
+          'application/pdf': 'https://example.com/viewer?{query}'
+          'application/': 'https://example.com/blocked?{query}'
+
+          # default redirects
+          '<any-download>': 'https://example.com/blocked?{query}'
+          '*': 'https://example.com/blocked?{query}'
+
+
     # open access (with access controls)
     open-access:
         index_paths: *INDEX
@@ -38,6 +59,28 @@ collections:
         index_paths: *INDEX
         archive_paths: *ARCHIVE
 
+    # QA no access controls
+    vid-qa:
+        index_group:
+          qa: *INDEX
+          vidtest: collections/video-test/indexes
+
+        archive_paths:
+          - *ARCHIVE
+          - collections/video-test/archive/
+
+    in-test:
+        index:
+          type: cdx
+          api_url: "http://cdx.api.wa.bl.uk/data-heritrix?url={url}&closest={closest}&sort=closest&filter=!statuscode:429&filter=!mimetype:warc/revisit"
+          replay_url: ""
+        archive_paths: "webhdfs://hdfs.api.wa.bl.uk"
+
+    live:
+        index: $live
+
+
+
 proxy:
     # collection for proxy mode
     coll: qa-access
@@ -46,7 +89,7 @@ proxy:
 
 
 # redirect to exact url behavior
-redirect_to_exact: true
+redirect_to_exact: false
 
 # enable memento
 enable_memento: true

@@ -1,0 +1,3 @@
+com,example)/testdocument.docx 20200415232823 {"mime":"application/zip","filename":"test-docs.warc.gz","digest":"IMS3SGZQZEYWSCGSFJABG6HNFPB27Q7A","url":"https://example.com/TestDocument.docx","offset":"274","length":"5728"}
+com,example)/testdocument.pdf 20200415232900 {"mime":"application/pdf","filename":"test-docs.warc.gz","digest":"OFTGOAXKBRP53ULSOVZMVNZTQ3AHOMET","url":"https://example.com/TestDocument.pdf","offset":"8240","length":"10697"}
+com,example)/testdocument.rtf 20200415232829 {"mime":"text/rtf","filename":"test-docs.warc.gz","digest":"FFQI2NTDXRWJJTLQW3OAZYES62AUZENV","url":"https://example.com/TestDocument.rtf","offset":"6002","length":"2238"}
