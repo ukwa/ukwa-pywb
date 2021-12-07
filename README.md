@@ -16,7 +16,7 @@ In the past, additional PyWB functionality has been developed on the [ukwa/pywb 
 
 ## Upgrading PyWB
 
-Assuming there are no breaking changes upstream, this project can be upgraded by simply updating the version of the PyWB docker container (referred to in the Dockerfile](https://github.com/ukwa/ukwa-pywb/blob/master/Dockerfile#L2-L3).  The new image can be built and tested as outlined below.
+Assuming there are no breaking changes upstream, this project can be upgraded by simply updating the version of the PyWB docker container [referred to in the Dockerfile](https://github.com/ukwa/ukwa-pywb/blob/master/Dockerfile#L2-L3).  The new image can be built and tested as outlined below.
 
 Once tested, the version can be tagged, using the PyWB version as a base. i.e. the version of `ukwa/ukwa-pywb` based on `webrecorder/pywb:2.6.2` should be `2.6.2`. If any further releases are required to resolve unexpected problems, while sticking to the same version of PyWB, a point suffix can be added, e.g. `2.6.2.1`, `2.6.2.2` and so on.
 
