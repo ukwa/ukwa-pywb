@@ -20,6 +20,8 @@ Assuming there are no breaking changes upstream, this project can be upgraded by
 
 Once tested, the version can be tagged, using the PyWB version as a base. i.e. the version of `ukwa/ukwa-pywb` based on `webrecorder/pywb:2.6.2` should be `2.6.2`. If any further releases are required to resolve unexpected problems, while sticking to the same version of PyWB, a point suffix can be added, e.g. `2.6.2.1`, `2.6.2.2` and so on.
 
+Once the image has been built, it should be rolled out across the relevant [ukwa-services](https://github.com/ukwa/ukwa-services). This includes the website, w3act and reading room service stacks.
+
 ## Development Setup
 
 To build and run from a checked-out repository, you can use the integration test setup.  First
