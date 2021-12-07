@@ -76,6 +76,9 @@ collections:
           replay_url: ""
         archive_paths: "webhdfs://hdfs.api.wa.bl.uk"
 
+    live:
+        index: $live
+
 
 
 proxy:
