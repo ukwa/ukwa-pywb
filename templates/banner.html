@@ -1,3 +1,4 @@
+{% autoescape false %}
 {% if not embed_url %}
 
 <!-- Custom Fixup Script -->
@@ -61,4 +62,4 @@ window.activeUrl = "{{ url }}";
 
   gtag('config', 'UA-7571526-1');
 </script>
-
+{% endautoescape %}
