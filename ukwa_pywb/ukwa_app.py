@@ -1,4 +1,4 @@
-from werkzeug.contrib.sessions import SessionMiddleware, SessionStore, Session
+from secure_cookie.session import SessionMiddleware, SessionStore, Session
 from werkzeug.routing import Map, Rule
 from werkzeug.http import parse_authorization_header
 
@@ -20,6 +20,9 @@ from pywb.apps.cli import ReplayCli
 
 from pywb.apps.wbrequestresponse import WbResponse
 
+# ============================================================================
+# Monkeypatch pywb to accept schemes with colons:
+WbUrl.SCHEME_RX = re.compile('[a-zA-Z0-9+-.:]+(:/)')
 
 # ============================================================================
 COOKIE_NAME = '_ukwa_pywb_sesh'
@@ -393,9 +396,10 @@ class UKWACli(ReplayCli):
         # Optional debug mode:
         DEBUG = os.environ.get('DEBUG', False)
         if DEBUG:
+            print("WARNING: DEBUG MODE ENABLED")
             self.extra_config['debug'] = True
 
-        return UKWApp.init_app()
+        return UKWApp.init_app(extra_config=self.extra_config)
 
 
 #=============================================================================

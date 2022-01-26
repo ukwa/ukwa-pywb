@@ -145,6 +145,9 @@
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
     overflow: hidden;
+    /* Adding these two to try to make scrolling work on iOS */
+    -webkit-overflow-scrolling: touch !important;
+  	overflow-y: scroll !important;
 }
 
 .wb_iframe

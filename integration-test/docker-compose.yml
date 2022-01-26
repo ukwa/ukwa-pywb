@@ -4,11 +4,15 @@ services:
 
   cdx:
     image: ukwa/tinycdxserver:ukwa-production
-    ports:
-      - "9090:8080"
+    #ports:
+    #  - "9090:8080"
   
   hadoop:
-    build: ./hadoop/
+    build:
+      context: ./hadoop/
+      args:
+        http_proxy: ${HTTP_PROXY}
+        https_proxy: ${HTTPS_PROXY}
     command: "/etc/bootstrap.sh -d"
     ports:
       - "50070:50070"
@@ -42,9 +46,11 @@ services:
     image: redis:3.2.4
 
   pywb:
-    #command: ukwa_pywb --debug
-    build: ../
-
+    build:
+      context: ..
+      args:
+        http_proxy: ${HTTP_PROXY}
+        https_proxy: ${HTTPS_PROXY}
     volumes:
       - ../integration-test/test-data/:/webarchive/integration-test/test-data:ro
       - ../integration-test/test-data/video-test/:/ukwa_pywb/collections/video-test:ro
@@ -55,9 +61,10 @@ services:
       - "WEBHDFS_USER=hadoop"
       - "REDIS_URL=redis://redis:6379/0"
       - "TEST_SESSION_LOCK_INTERVAL=30"
+      - "DEBUG=True"
 
     ports:
-      - "8081:8080"
+      - "8082:8080"
 
     depends_on:
       - cdx
@@ -83,7 +90,11 @@ services:
 # -----------------------------------------------------------
 
   test:
-    build: robot
+    build:
+      context: ./robot/
+      args:
+        http_proxy: ${HTTP_PROXY}
+        https_proxy: ${HTTPS_PROXY}
     #command: -v BROWSER:ff --outputdir /out /tests
     command: --outputdir /out /tests
     volumes:
