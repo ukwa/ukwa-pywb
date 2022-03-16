@@ -273,7 +273,8 @@ class UKWApp(FrontEndApp):
                                    url=wb_url.url)
 
         session = environ[SESSION_KEY]
-        if self.lock_ping_extend_time and session.is_locked(lock_key):
+        # If there is an extend-time set, then modify locks if NOT locked to another session:
+        if self.lock_ping_extend_time and not session.is_locked(lock_key):
             res = session.redis.expire(lock_key, self.lock_ping_extend_time)
 
         return WbResponse.json_response({})
