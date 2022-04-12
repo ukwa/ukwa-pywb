@@ -1,6 +1,6 @@
 
 # Based on standard pywb fork
-FROM webrecorder/pywb:2.6.4
+FROM webrecorder/pywb:2.6.6
 
 USER root
 WORKDIR /ukwa_pywb
