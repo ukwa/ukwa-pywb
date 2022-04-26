@@ -15,6 +15,9 @@ collections:
           Cache-Control: 'max-age=0, no-cache, must-revalidate, proxy-revalidate, private'
           Expires: 'Thu, 01 Jan 1970 00:00:00 GMT'
 
+        ext_redirects:
+          'epub': '/static/viewers/epub_viewer/index.html?bookPath={0}'
+
         content_type_redirects:
           # allows
           'text/': 'allow'
@@ -23,13 +26,14 @@ collections:
           'audio/': 'allow'
           'application/javascript': 'allow'
 
-          'text/rtf': 'https://example.com/viewer?{query}'
-          'application/pdf': 'https://example.com/viewer?{query}'
-          'application/': 'https://example.com/blocked?{query}'
+          'text/rtf': 'https://example.com/viewer?{0}'
+          'application/pdf': '/static/viewers/pdf_viewer/web/viewer.html?file={0}'
+
+          'application/': 'allowed'
 
           # default redirects
-          '<any-download>': 'https://example.com/blocked?{query}'
-          '*': 'https://example.com/blocked?{query}'
+          '<any-download>': 'https://example.com/blocked?url={0}'
+          '*': 'https://example.com/blocked?url={0}'
 
 
     # open access (with access controls)
@@ -60,14 +64,14 @@ collections:
         archive_paths: *ARCHIVE
 
     # QA no access controls
-    vid-qa:
-        index_group:
-          qa: *INDEX
-          vidtest: collections/video-test/indexes
+    #vid-qa:
+    #    index_group:
+    #      qa: *INDEX
+    #      vidtest: collections/video-test/indexes
 
-        archive_paths:
-          - *ARCHIVE
-          - collections/video-test/archive/
+    #    archive_paths:
+    #      - *ARCHIVE
+    #      - collections/video-test/archive/
 
     in-test:
         index:

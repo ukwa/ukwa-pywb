@@ -199,12 +199,22 @@ class UKWARewriter(RewriterApp):
         if default_response.status_headers.get('preference-applied') == 'raw':
             return default_response
 
+        # extension-specific redirects
+        ext_redirects = coll_config.get("ext_redirects") or {}
 
+        wb_url = WbUrl(wb_url_str)
         redirect_url = None
 
-        # if we have a content-disposition, takes precedence using the <any-download> option
+        # attempt to find by extension
+        if redirect_url is None:
+            redirect_url = ext_redirects.get(wb_url.url.rsplit(".", 1)[-1])
+
+        # if we have a content-disposition, look at the extension of the download
         content_disp = default_response.status_headers.get("content-disposition")
         if content_disp and 'attachment' in content_disp:
+            default_response.status_headers.remove_header("content-disposition")
+            #ext = content_disp.rsplit(".", 1)[-1]
+            #redirect_url = ext_redirects.get(ext)
             redirect_url = ct_redirects.get('<any-download>')
 
         # attempt to find rule by content-type
@@ -213,9 +223,10 @@ class UKWARewriter(RewriterApp):
             if content_type:
                 content_type = content_type.split(";", 1)[0]
                 redirect_url = ct_redirects.get(content_type)
-                # find by content-type prefix, eg: text/
-                if redirect_url is None:
-                    redirect_url = ct_redirects.get(content_type.split("/")[0] + "/")
+
+        # find by content-type prefix, eg. application/
+        if redirect_url is None:
+            redirect_url = ct_redirects.get(content_type.split("/")[0] + "/")
 
         # default rule if no other matches
         if redirect_url is None:
@@ -226,12 +237,16 @@ class UKWARewriter(RewriterApp):
             return default_response
 
         # otherwise, redirect to specified url
-        wb_url = WbUrl(wb_url_str)
-        wb_url.mod = 'id_'
+        wb_url.mod = 'ir_'
+
+        # remove scheme from rewritten url as it can confuse certain viewers (eg. epub.js)
+        wb_url.url = wb_url.url.split(":", 1)[1]
+        # full location url
         loc = self.get_full_prefix(environ) + str(wb_url)
 
-        query = urllib.parse.urlencode({'url': loc})
-        final_url = redirect_url.format(query=query)
+        #query = urllib.parse.urlencode({'url': loc})
+        #final_url = redirect_url.format(query=query)
+        final_url=redirect_url.format(urllib.parse.quote(loc))
         return WbResponse.redir_response(final_url)
 
 
