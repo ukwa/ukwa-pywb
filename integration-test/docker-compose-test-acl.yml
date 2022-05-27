@@ -9,8 +9,8 @@ services:
       context: ..
 
     volumes:
-      - ../integration-test/test-data/:/webarchive/integration-test/test-data:ro
-      - ../integration-test/test-data/video-test/:/ukwa_pywb/collections/video-test:ro
+      - ./test-data/:/webarchive/integration-test/test-data/:ro
+      - ./test-data/video-test:/ukwa_pywb/collections/video-test:ro
 
     environment:
       - "UKWA_INDEX=/webarchive/integration-test/test-data/"

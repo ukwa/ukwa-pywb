@@ -29,6 +29,7 @@ COPY templates/ templates/
 # Parent image no longer uses this user.
 
 RUN mkdir /ukwa_pywb/collections
+RUN mkdir -p /webarchive
 COPY config.yaml /webarchive
 #ADD integration-test/test-data/ /webarchive/integration-test/test-data/
 
