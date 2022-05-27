@@ -150,6 +150,17 @@ class UKWARewriter(RewriterApp):
         return None
 
     def handle_custom_response(self, environ, wb_url, full_prefix, host_prefix, kwargs):
+
+        access_user = environ.get("ACCESS_USER")
+        # for internal user, check auth token
+        if access_user == "internal":
+            environ["HTTP_X_PYWB_ACL_USER"] = "" if environ.get("ACCESS_GRANTED") == "yes" else "blocked"
+
+        # otherwise, always blocked
+        else:
+            environ["HTTP_X_PYWB_ACL_USER"] = "blocked"
+
+
         if kwargs.get('single-use-lock'):
             environ['single_use_lock'] = True
             environ['select_word_limit'] = SELECT_WORD_LIMIT

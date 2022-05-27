@@ -1,0 +1,39 @@
+version: '2'
+
+services:
+  redis:
+    image: redis
+
+  pywb:
+    build:
+      context: ..
+
+    volumes:
+      - ../integration-test/test-data/:/webarchive/integration-test/test-data:ro
+      - ../integration-test/test-data/video-test/:/ukwa_pywb/collections/video-test:ro
+
+    environment:
+      - "UKWA_INDEX=/webarchive/integration-test/test-data/"
+      - "UKWA_ARCHIVE=/webarchive/integration-test/test-data/"
+      - "REDIS_URL=redis://redis:6379/0"
+      - "TEST_SESSION_LOCK_INTERVAL=30"
+      - "DEBUG=True"
+
+    ports:
+      - "8082:8080"
+
+    depends_on:
+      - redis
+
+  nginx:
+    image: nginx:1.13-alpine
+
+    volumes:
+      - ./nginx/pywb.conf:/etc/nginx/conf.d/pywb.conf:ro
+      - ../static:/ukwa-pywb-static
+
+    ports:
+      - "8100:8100"
+
+    depends_on:
+      - pywb
