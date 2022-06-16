@@ -23,7 +23,7 @@
               if (document.readyState == "complete") {
                 window.reader = ePubReader("https://s3.amazonaws.com/moby-dick/", {
                    restore: true,
-                   contained: true
+                   openAs: "epub"
                  });
               }
             };
