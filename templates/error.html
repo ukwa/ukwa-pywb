@@ -12,6 +12,12 @@
         
         {% trans %}Static file not found:{% endtrans %} <b>{{ err_msg }}</b>
 
+    {% elif err_status == 451 and env.ACCESS_USER == 'internal' %}
+    {% set uri = env.REQUEST_URI %}
+
+    <h2>{% trans %}Available via Custom Viewer{% endtrans %}</h2>
+    <p>{% trans %}Click <a href="npld-viewer:/{{ uri }}">here</a> to load this page in a custom viewer.{% endtrans %}</p>
+
     {% elif err_status == 451 %}
 
         <h2>{% trans %}Available in Legal Deposit Library Reading Rooms only{% endtrans %}</h2>
