@@ -11,8 +11,6 @@ on:
 jobs:
   run_docker_build_workflow:
     uses: ukwa/ukwa-services/.github/workflows/push-to-docker-hub.yml@master
-    with:
-      image_name: ukwa/warc-server
     secrets:
       DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
       DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
