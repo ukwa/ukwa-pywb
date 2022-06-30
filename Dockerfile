@@ -5,6 +5,10 @@ FROM webrecorder/pywb:2.6.8-work
 USER root
 WORKDIR /ukwa_pywb
 
+# Grab any security updates:
+RUN apt-get update && apt-get upgrade -y \
+  && rm -rf /var/lib/apt/lists/*
+
 # Add in source files and build:
 ADD setup.py .
 ADD setup.cfg .
