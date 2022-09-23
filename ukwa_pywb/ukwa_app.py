@@ -153,8 +153,8 @@ class UKWARewriter(RewriterApp):
         # if acl user starts with "no_auth:x", set to "x", and set var to indicate auth needed
         # in error.html, a custom error page with npld+player:// link will be shown
         acl_user = environ.get("HTTP_X_PYWB_ACL_USER")
-        if acl_user and acl_user.startswith("no_auth:"):
-            environ["HTTP_X_PYWB_ACL_USER"] = acl_user[len("no_auth:"):]
+        if acl_user and acl_user.startswith("need-auth:"):
+            environ["HTTP_X_PYWB_ACL_USER"] = acl_user[len("need-auth:"):]
             environ["ACCESS_AUTH_NEEDED"] = "1"
 
         if kwargs.get('single-use-lock'):

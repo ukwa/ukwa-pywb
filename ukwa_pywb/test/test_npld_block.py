@@ -15,6 +15,8 @@ class TestNPLDBlockPage:
     @classmethod
     def teardown_class(cls):
         cls.proc.terminate()
+        subprocess.run(["docker-compose", "-f", "./docker-compose-test-acl.yml", "kill"], cwd=TEST_CWD)
+        subprocess.run(["docker-compose", "-f", "./docker-compose-test-acl.yml", "rm", "-f"], cwd=TEST_CWD)
 
     def test_blocked_no_date(self):
         resp = requests.get("http://localhost:8100/reading-room/https://idpf.github.io/epub3-samples/30/samples.html")

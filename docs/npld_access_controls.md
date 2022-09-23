@@ -15,8 +15,6 @@ Added new Rule:
 
 This rule signifies that `https://example.com/` will be blocked if the user is set to `public`.
 
-This deployment adds additional rules for handling of `internal` and `public` users.
-
 
 ## Nginx Filtering
 
@@ -72,15 +70,17 @@ uwsgi {
 
 ### IP + Header Based Filtering
 
-The above operations are part of standard pywb.
+IP and Header based checks can be combined to create more complex rules, as illustrated below
 
-This deployment adds special handling if the provided user starts with `no_auth:`, the prefix
-is removed, and a custom error page is shown with a special `npld-viewer://` link to load the URL
-via the NPLD Player.
+- If accessed from the wrong IP range, the request is treated as `public`.
 
-For example, with the following rules, all requests from public IPs are marked as 'public'.
+- If accessed from the correct IP range, the request may be treated `internal` only if correct
+header value is also provided.
 
-For internal IPs, the rule is set to `no_auth:public` unless the header is set to the correct value.
+- Otherwise, the user access token is set to a third state, `need-auth:public`.
+
+The special user `need-auth:public` to indicate that a custom error page should be shown,
+requesting authentication.
 
 This can be set through several nginx `map` rules.
 
@@ -104,10 +104,19 @@ map $http_x_npld_player_auth_token $token {
 
 map $access-$token $user_access {
   internal-allowed      "internal";
-  internal-not-allowed  "no_auth:public";
+  internal-not-allowed  "need-auth:public";
   default               "public";
 }
 ```
+
+## UKWA Pywb Specific Changes
+
+Most of the above functionality is part of standard pywb.
+
+The UKWA Pywb implementation adds special handling of a user with `need-auth:` prefix.
+
+The authentication is performed after dropping this prefix, and if the request is blocked, a special error
+page including an `npld-viewer://` link is provided to load the same URL via a previously installed NPLD Player.
 
 ## Testing Block Rules
 
@@ -116,5 +125,7 @@ the nginx config in `nginx/pywb.conf`, and the block rules in `./acl/blocks.aclj
 
 A test is provided for verifying the application of the block rules
 
-Running `py.test -vv ukwa_pywb/test/test_npld_block.py` will launch docker-compose with nginx and pywb to perform the tests.
+Running `py.test -s -vv ukwa_pywb/test/test_npld_block.py` will launch docker-compose to build the local image, and orchestrate with an instance of nginx to perform these tests.
+
+(Docker Compose should be installed before running this test).
 
