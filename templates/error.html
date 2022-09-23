@@ -12,7 +12,7 @@
         
         {% trans %}Static file not found:{% endtrans %} <b>{{ err_msg }}</b>
 
-    {% elif err_status == 451 and env.ACCESS_USER == 'internal' %}
+    {% elif err_status == 451 and env.ACCESS_AUTH_NEEDED == '1' %}
     {% set uri = env.REQUEST_URI %}
 
     <h2>{% trans %}Available via Custom Viewer{% endtrans %}</h2>

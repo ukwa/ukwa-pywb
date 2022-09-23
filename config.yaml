@@ -100,7 +100,9 @@ proxy:
 
 
 # redirect to exact url behavior
-redirect_to_exact: false
+# note: changed to true to ensure access control check is performed on top-frame, not just on replay frame
+# (otherwise, need change in pywb to make that happen w/o redirects)
+redirect_to_exact: true
 
 # enable memento
 enable_memento: true
