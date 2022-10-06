@@ -8,6 +8,7 @@ This repository represents a customized extension of [pywb](https://github.com/w
 - [Localization](docs/localization.md)
 - [Access Controls](docs/access_controls.md)
 - [HTTP/S Proxy Mode](docs/proxy.md)
+- [NPLD Viewer Access Control Setup](docs/npld_access_controls.md)
 - Memento Prefer Header initial implementation (See [this issue](https://github.com/mementoweb/rfc-extensions/issues/7) for further discussion)
 
 This repository builds an `ukwa-pywb` container image, which extends the offical `pywb` container image release. 

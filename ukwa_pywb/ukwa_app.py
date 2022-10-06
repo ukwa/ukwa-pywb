@@ -150,16 +150,12 @@ class UKWARewriter(RewriterApp):
         return None
 
     def handle_custom_response(self, environ, wb_url, full_prefix, host_prefix, kwargs):
-
-        access_user = environ.get("ACCESS_USER")
-        # for internal user, check auth token
-        if access_user == "internal":
-            environ["HTTP_X_PYWB_ACL_USER"] = "" if environ.get("ACCESS_GRANTED") == "yes" else "blocked"
-
-        # otherwise, always blocked
-        else:
-            environ["HTTP_X_PYWB_ACL_USER"] = "blocked"
-
+        # if acl user starts with "no_auth:x", set to "x", and set var to indicate auth needed
+        # in error.html, a custom error page with npld+player:// link will be shown
+        acl_user = environ.get("HTTP_X_PYWB_ACL_USER")
+        if acl_user and acl_user.startswith("need-auth:"):
+            environ["HTTP_X_PYWB_ACL_USER"] = acl_user[len("need-auth:"):]
+            environ["ACCESS_AUTH_NEEDED"] = "1"
 
         if kwargs.get('single-use-lock'):
             environ['single_use_lock'] = True
@@ -180,7 +176,7 @@ class UKWARewriter(RewriterApp):
                                            ts=lock_wb_url.timestamp,
                                            url=lock_wb_url.url)
 
-                session.lock(lock_key)
+                environ[LOCK_KEY] = lock_key
 
         return super(UKWARewriter, self).handle_custom_response(environ, wb_url, full_prefix, host_prefix, kwargs)
 
@@ -193,6 +189,12 @@ class UKWARewriter(RewriterApp):
 
     def render_content(self, wb_url_str, coll_config, environ):
         default_response = super(UKWARewriter, self).render_content(wb_url_str, coll_config, environ)
+
+        # setting lock here -- only get here if not access control blocked, don't set lock if blocked by access control
+        lock_key = environ.get(LOCK_KEY)
+        if lock_key:
+            session = environ[SESSION_KEY]
+            session.lock(lock_key)
 
         add_headers = coll_config.get('add_headers') or {}
         for header in add_headers:
