@@ -27,11 +27,21 @@ Once the image has been built, it should be rolled out across the relevant [ukwa
 
 ## Development Setup
 
-To build and run from a checked-out repository, you can use the integration test setup.  First
+To build and run from a checked-out repository, you can set up a virtualenv (or similar) using Python 3.7 or later. Install the dependencies e.g.
+
+    python setup.py install
+
+Then run 
+
+    uwsgi uwsgi.ini
+
+And `ukwa-pywb` should start using the configuration in `uwsgi.ini`, i.e. available on port 8080, and using the CDX and WARC files in `./integration-test/test-data/`. If the port is in use, create a copy of the `uwsgi.ini` file configuring alternative port(s) and use that instead.
+
+To perform more complex testing that includes additional services (like Redis), you can use the integration test setup.  First
 
     cd integration-test/
 
-Then you can use this to re-build the containerised version locally:
+Then you can use this to re-build the containerized version locally:
 
     docker-compose build pywb
 

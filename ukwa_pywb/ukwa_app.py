@@ -260,6 +260,7 @@ class UKWARewriter(RewriterApp):
         #query = urllib.parse.urlencode({'url': loc})
         #final_url = redirect_url.format(query=query)
         final_url=redirect_url.format(urllib.parse.quote(loc))
+        #print(f"FINAL {final_url} {loc}")
         return WbResponse.redir_response(final_url)
 
 

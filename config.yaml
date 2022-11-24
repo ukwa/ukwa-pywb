@@ -23,7 +23,8 @@ collections:
           Expires: 'Thu, 01 Jan 1970 00:00:00 GMT'
 
         ext_redirects:
-          'epub': '/static/viewers/epub_viewer/index.html?bookPath={0}'
+          #'epub': '/static/viewers/epub_viewer/index.html?bookPath={0}'
+          'epub': '/static/viewers/vivliostyle/viewer/index.html#src={0}'
 
         content_type_redirects:
           # allows
@@ -34,8 +35,8 @@ collections:
           'application/javascript': 'allow'
 
           'text/rtf': 'https://example.com/viewer?{0}'
+          'application/epub+zip': '/static/viewers/vivliostyle/viewer/index.html#src={0}'
           'application/pdf': '/static/viewers/pdf_viewer/web/viewer.html?file={0}'
-
           'application/': 'allowed'
 
           # default redirects
