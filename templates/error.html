@@ -52,7 +52,7 @@
         {% trans %}Sorry, access not authorized to this resource.{% endtrans %}
 
     {% elif err_status == 403 and err_details == 'access-locked' %}
-        <h2>{% trans %}Archived Web Page Locked{% endtrans %}</h2>
+        <h2>{% trans %}Page Locked{% endtrans %}</h2>
         <p> 
         {% trans %}The page you have requested is currently in use. Please try again later.{% endtrans %}
         </p>
