@@ -98,7 +98,7 @@ proxy:
 
 
 # redirect to exact url behavior
-redirect_to_exact: false
+redirect_to_exact: true
 
 # enable memento
 enable_memento: true
