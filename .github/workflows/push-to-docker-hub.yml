@@ -7,6 +7,7 @@ on:
     branches:
       - master
       - custom-viewers
+      - '2.7.*'
 
 jobs:
   push_to_docker_hub:
