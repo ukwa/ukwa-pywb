@@ -62,9 +62,10 @@ services:
       - "REDIS_URL=redis://redis:6379/0"
       - "TEST_SESSION_LOCK_INTERVAL=30"
       - "DEBUG=True"
-
+      - "HTTP_PROXY=${HTTP_PROXY}"
+      - "HTTPS_PROXY=${HTTPS_PROXY}"
     ports:
-      - "8082:8080"
+      - "8090:8080"
 
     depends_on:
       - cdx

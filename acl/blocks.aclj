@@ -1,3 +1,5 @@
 org,httpbin)/anything/something - {"access": "exclude", "url": "http://httpbin.org/anything/something"}
 org,httpbin)/anything - {"access": "block", "url": "http://httpbin.org/anything"}
 org,httpbin)/ - {"access": "block", "url": "httpbin.org/"}
+io,github,idpf)/epub3-samples/30/samples.html - {"access": "block", "user": "public", "url": "https://idpf.github.io/epub3-samples/30/samples.html"}
+edu,africau)/images/default/sample.pdf - {"access": "block", "user": "public", "url": "http://www.africau.edu/images/default/sample.pdf"}

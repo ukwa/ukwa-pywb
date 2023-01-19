@@ -150,6 +150,13 @@ class UKWARewriter(RewriterApp):
         return None
 
     def handle_custom_response(self, environ, wb_url, full_prefix, host_prefix, kwargs):
+        # if acl user starts with "no_auth:x", set to "x", and set var to indicate auth needed
+        # in error.html, a custom error page with npld+player:// link will be shown
+        acl_user = environ.get("HTTP_X_PYWB_ACL_USER")
+        if acl_user and acl_user.startswith("need-auth:"):
+            environ["HTTP_X_PYWB_ACL_USER"] = acl_user[len("need-auth:"):]
+            environ["ACCESS_AUTH_NEEDED"] = "1"
+
         if kwargs.get('single-use-lock'):
             environ['single_use_lock'] = True
             environ['select_word_limit'] = SELECT_WORD_LIMIT
@@ -169,7 +176,7 @@ class UKWARewriter(RewriterApp):
                                            ts=lock_wb_url.timestamp,
                                            url=lock_wb_url.url)
 
-                session.lock(lock_key)
+                environ[LOCK_KEY] = lock_key
 
         return super(UKWARewriter, self).handle_custom_response(environ, wb_url, full_prefix, host_prefix, kwargs)
 
@@ -182,6 +189,12 @@ class UKWARewriter(RewriterApp):
 
     def render_content(self, wb_url_str, coll_config, environ):
         default_response = super(UKWARewriter, self).render_content(wb_url_str, coll_config, environ)
+
+        # setting lock here -- only get here if not access control blocked, don't set lock if blocked by access control
+        lock_key = environ.get(LOCK_KEY)
+        if lock_key:
+            session = environ[SESSION_KEY]
+            session.lock(lock_key)
 
         add_headers = coll_config.get('add_headers') or {}
         for header in add_headers:
@@ -199,12 +212,22 @@ class UKWARewriter(RewriterApp):
         if default_response.status_headers.get('preference-applied') == 'raw':
             return default_response
 
+        # extension-specific redirects
+        ext_redirects = coll_config.get("ext_redirects") or {}
 
+        wb_url = WbUrl(wb_url_str)
         redirect_url = None
 
-        # if we have a content-disposition, takes precedence using the <any-download> option
+        # attempt to find by extension
+        if redirect_url is None:
+            redirect_url = ext_redirects.get(wb_url.url.rsplit(".", 1)[-1])
+
+        # if we have a content-disposition, look at the extension of the download
         content_disp = default_response.status_headers.get("content-disposition")
         if content_disp and 'attachment' in content_disp:
+            default_response.status_headers.remove_header("content-disposition")
+            #ext = content_disp.rsplit(".", 1)[-1]
+            #redirect_url = ext_redirects.get(ext)
             redirect_url = ct_redirects.get('<any-download>')
 
         # attempt to find rule by content-type
@@ -213,9 +236,10 @@ class UKWARewriter(RewriterApp):
             if content_type:
                 content_type = content_type.split(";", 1)[0]
                 redirect_url = ct_redirects.get(content_type)
-                # find by content-type prefix, eg: text/
-                if redirect_url is None:
-                    redirect_url = ct_redirects.get(content_type.split("/")[0] + "/")
+
+        # find by content-type prefix, eg. application/
+        if redirect_url is None:
+            redirect_url = ct_redirects.get(content_type.split("/")[0] + "/")
 
         # default rule if no other matches
         if redirect_url is None:
@@ -226,12 +250,17 @@ class UKWARewriter(RewriterApp):
             return default_response
 
         # otherwise, redirect to specified url
-        wb_url = WbUrl(wb_url_str)
-        wb_url.mod = 'id_'
+        wb_url.mod = 'ir_'
+
+        # remove scheme from rewritten url as it can confuse certain viewers (eg. epub.js)
+        wb_url.url = wb_url.url.split(":", 1)[1]
+        # full location url
         loc = self.get_full_prefix(environ) + str(wb_url)
 
-        query = urllib.parse.urlencode({'url': loc})
-        final_url = redirect_url.format(query=query)
+        #query = urllib.parse.urlencode({'url': loc})
+        #final_url = redirect_url.format(query=query)
+        final_url=redirect_url.format(urllib.parse.quote(loc))
+        #print(f"FINAL {final_url} {loc}")
         return WbResponse.redir_response(final_url)
 
 
