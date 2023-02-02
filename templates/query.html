@@ -5,7 +5,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@UKWebArchive">
 <meta name="og:site" content="UK Web Archive">
-<meta name="og:url" content="{{ wb_prefix }}/*?url={{ url }}">
+<meta name="og:url" content="{{ prefix }}/*?url={{ url }}">
 <meta name="og:title" content="Search results for {{ url }}">
 <meta name="og:description" content="Search results for {{ url }} preserved by the UK Web Archive.">
 <style>
@@ -129,7 +129,7 @@ html, body
 <div id="app" style="width: 100%; height: 100%"></div>
 
 <script>
-  VueUI.main("{{ static_prefix }}", "{{ url }}", "{{ wb_prefix }}", undefined, "{{ ui.logo }}", "{{ ui.navbar_background_hex | default('f8f9fa') }}", "{{ ui.navbar_color_hex | default('212529') }}", "{{ ui.navbar_light_buttons }}", "{{ env.pywb_lang | default('en') }}",
+  VueUI.main("{{ static_prefix }}", "{{ url }}", "{{ prefix }}", undefined, "{{ ui.logo }}", "{{ ui.navbar_background_hex | default('f8f9fa') }}", "{{ ui.navbar_color_hex | default('212529') }}", "{{ ui.navbar_light_buttons }}", "{{ env.pywb_lang | default('en') }}",
       allLocales, i18nStrings);
 </script>
 
