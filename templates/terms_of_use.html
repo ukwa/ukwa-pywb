@@ -13,10 +13,20 @@
           {% trans %}Non-Print (Electronic) Legal Deposit Access Policy{%
           endtrans %}
         </h5>
+        {% if not no_lang %}
+        <div class="btn-group" role="group" aria-label="{{ _('Language:') }}" aria-activedescendant="terms-{{ env.pywb_lang | default('en') }}">
+          {% for locale in locales %}
+            <a id="terms-{{ locale }}" class="btn btn-primary{% if env.pywb_lang == locale %} active{% endif %}" href="{{ switch_locale(locale) }}" role="button"{% if env.pywb_lang == locale %} aria-pressed="true" {% endif %}>{{ locale }}</a>
+          {% endfor %}
+        </div>
+        {% endif %}
       </div>
       <div class="modal-body">
-        {% if env.pywb_lang == "cy" %} WELSH TBA... {% else %} {% include
-        'npld_terms_en.html' %} {% endif %}
+        {% if env.pywb_lang == "cy" %}
+          WELSH TBA... 
+        {% else %} 
+          {% include 'npld_terms_en.html' %}
+        {% endif %}
       </div>
       <div class="modal-footer">
         <form id="terms-form" onsubmit="closePopup()">
