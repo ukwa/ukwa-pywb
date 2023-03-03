@@ -23,13 +23,13 @@
       </div>
       <div class="modal-body">
         {% if env.pywb_lang == "cy" %}
-          WELSH TBA... 
+          WELSH To Be Added....
         {% else %} 
           {% include 'npld_terms_en.html' %}
         {% endif %}
       </div>
       <div class="modal-footer">
-        <form id="terms-form" onsubmit="closePopup()">
+        <form id="terms-form" onsubmit="closePopup(event)">
           <div class="form-inline">
             <div class="form-check">
               <input
@@ -72,9 +72,12 @@
     return true;
   }
 
-  function closePopup() {
+  function closePopup(e) {
     $("#termsModal").modal("hide");
     sessionStorage.setItem(sessionStoragePopupKey, false);
+    // Stop the form being submitted:
+    e.preventDefault();
+    return false;
   }
 
   function setModalVisibility() {
