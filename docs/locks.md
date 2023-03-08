@@ -58,10 +58,10 @@ The locks can be expired more quickly via a client-side ping mechanism.
 
 A client-side ping to `/_locks/ping` is made to reset the expiry for the current page, based on the referrer.
 
-If the `LOCK_PING_EXPIRE` env var is set, and the current session owns the referring page, the expiry is set
-to `LOCK_PING_EXPIRE` seconds into the future.
+If the `LOCK_PING_EXTEND_TIME` env var is set, and the current session owns the referring page, the expiry is set
+to `LOCK_PING_EXTEND_TIME` seconds into the future.
 
-The client-side ping is performed every `LOCK_PING_INTERVAL` seconds (defaulting to 30)
+The client-side ping is performed every `LOCK_PING_INTERVAL` seconds (defaulting to 10)
 
 
 ## Select/Copy Restrictions
