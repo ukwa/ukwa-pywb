@@ -23,8 +23,8 @@ collections:
           Expires: 'Thu, 01 Jan 1970 00:00:00 GMT'
 
         ext_redirects:
-          #'epub': '/static/viewers/epub_viewer/index.html?bookPath={0}'
-          'epub': '/static/viewers/vivliostyle/viewer/index.html?src={0}'
+          'epub': '/static/viewers/epub_viewer/index.html?bookPath={0}'
+          # 'epub': '/static/viewers/vivliostyle/viewer/index.html?src={0}'
 
         content_type_redirects:
           # allows
