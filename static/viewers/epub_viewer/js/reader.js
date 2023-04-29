@@ -3303,6 +3303,7 @@ EPUBJS.Reader = function(bookPath, _options) {
 		reader.ControlsController = EPUBJS.reader.ControlsController.call(reader, book);
 		reader.SidebarController = EPUBJS.reader.SidebarController.call(reader, book);
 		reader.BookmarksController = EPUBJS.reader.BookmarksController.call(reader, book);
+    reader.CitationController = EPUBJS.reader.CitationController.call(reader, book);
 		reader.NotesController = EPUBJS.reader.NotesController.call(reader, book);
 
 		window.addEventListener("hashchange", this.hashChanged.bind(this), false);
@@ -3512,8 +3513,109 @@ EPUBJS.Reader.prototype.hashChanged = function(){
 	this.rendition.display(hash);
 };
 
+// EPUBJS.Reader.prototype.getCfiFromHref = function(href){
+//   var reader = this;
+//   var book = this.book;
+
+//   var [_, id] = href.split('#');
+//   var section = book.spine.get(href);
+//   var el = (id ? section.document.getElementById(id) : section.document.body);
+//   return section.cfiFromElement(el);
+// };
+
+EPUBJS.Reader.prototype.getCfiFromCalibreRef = function(ref){
+  // Return CFI to location specified by Calibre Reference Mode reference
+  // (chapter.paragraph), or chapter href as backup, asoth CFIs and hrefs
+  // work as argument to rendition.display().
+
+  var reader = this;
+  var book = this.book;
+
+  var splitRef = ref.split(".");
+  var chapter = Number(splitRef[0]);
+
+  var paragraph = 1;
+  if (splitRef[1]) {
+    paragraph = Number(splitRef[1]);
+  }
+
+  var spineItem = this.getSpineItemFromChapterNumber(book.spine.spineItems, chapter);
+  var cfi = this.getCFIFromParagraphNumber(spineItem, paragraph);
+
+  if (cfi) {
+    return cfi;
+  }
+
+  return spineItem.href;
+};
+
+EPUBJS.Reader.prototype.getSpineItemFromChapterNumber = function(spineItems, chapterNumber){
+  for (var i = 0; i < spineItems.length; i++) {
+    var spineItem = spineItems[i];
+    if (spineItem.index === chapterNumber) {
+      return spineItem;
+    }
+  }
+};
+
+EPUBJS.Reader.prototype.getSpineItemParagraphs = function(spineItem){
+  var pNodes = spineItem.document.body.getElementsByTagName("p");
+  var paragraphs = [...Array(pNodes.length).keys()].map((pIndex) => {
+    var pNode = spineItem.document.body.getElementsByTagName("p").item(pIndex);
+    if (pNode.nodeType == 1) {
+      var cfi = spineItem.cfiFromElement(pNode);
+      return {paragraphNumber: pIndex + 1, cfi: cfi};
+    }
+  });
+  return paragraphs;
+};
+
+EPUBJS.Reader.prototype.getParagraphNumberFromCFI = function(spineItem, cfi){
+  var paragraphs = this.getSpineItemParagraphs(spineItem);
+  for (var i = 0; i < paragraphs.length; i++){
+    var paragraph = paragraphs[i];
+    var paragraphCfiLastCharStripped = paragraph.cfi.substring(0, paragraph.cfi.length - 1);
+    if (cfi.startsWith(paragraphCfiLastCharStripped)){
+      return paragraph.paragraphNumber;
+    }
+  }
+};
+
+EPUBJS.Reader.prototype.getCFIFromParagraphNumber = function(spineItem, paragraphNumber){
+  var paragraphs = this.getSpineItemParagraphs(spineItem);
+  for (var i = 0; i < paragraphs.length; i++){
+    var paragraph = paragraphs[i];
+    if (paragraph.paragraphNumber === Number(paragraphNumber)){
+      return paragraph.cfi;
+    }
+  }
+}
+
+// EPUBJS.Reader.prototype.getSpineItemSectionId = function(spineItem){
+//   var sectionNode = spineItem.document.body.getElementsByTagName("section")[0];
+//   // node is html element
+//   if (sectionNode.nodeType == 1) {
+//     return sectionNode.id;
+//   }
+// };
+
+// EPUBJS.Reader.prototype.getSpineItemSections = function(spineItem){
+//   var sectionNodes = spineItem.document.body.getElementsByTagName("section");
+//   var sections = [...Array(sectionNodes.length).keys()].map((sectionIndex) => {
+//     var sectionNode = spineItem.document.body.getElementsByTagName("section").item(sectionIndex);
+//     if (sectionNode.nodeType == 1) {
+//       var text = sectionNode.innerHTML;
+//       var cfi = spineItem.cfiFromElement(sectionNode);
+//       return {index: sectionIndex, text: text, cfi: cfi};
+//     }
+//   });
+//   return sections;
+// };
+
 EPUBJS.Reader.prototype.selectedRange = function(cfiRange){
-	var cfiFragment = "#"+cfiRange;
+	var cfiFragment = `#${cfiRange}`;
+  var reader = this;
+  var book = this.book;
 
 	// Update the History Location
 	if(this.settings.history &&
@@ -3522,6 +3624,22 @@ EPUBJS.Reader.prototype.selectedRange = function(cfiRange){
 		history.pushState({}, '', cfiFragment);
 		this.currentLocationCfi = cfiRange;
 	}
+
+  var spineItem = book.spine.get(this.currentLocationCfi);
+
+  var chapterNumber = spineItem.index;
+  var paragraphNumber = this.getParagraphNumberFromCFI(spineItem, this.currentLocationCfi);
+
+  var $citationDialog = $("#citationDialog");
+  var citationHtml = `<p>${chapterNumber}.${paragraphNumber}</p>`;  
+  $citationDialog.html(citationHtml);
+  $citationDialog.show();
+
+  // Hide citation dialog after 10 seconds
+  // TODO: Improve/implement manual closing?
+  setTimeout(() => {
+    $citationDialog.hide();
+  }, 10000);
 };
 
 //-- Enable binding events to reader
@@ -3601,6 +3719,75 @@ EPUBJS.reader.BookmarksController = function() {
 		"show" : show,
 		"hide" : hide
 	};
+};
+
+EPUBJS.reader.CitationController = function() {
+  var reader = this;
+  var book = this.book;
+  var rendition = this.rendition;
+
+  var $citation = $("#citationView"),
+      $citationInputRef = $("#citation-input-ref"),
+      $citationInputRefBtn = $("#citation-input-ref-btn"),
+      $citationInputCFI = $("#citation-input-cfi"),
+      $citationInputCFIBtn = $("#citation-input-cfi-btn");
+
+  var show = function() {
+    $citation.show();
+  };
+
+  var hide = function() {
+    $citation.hide();
+  };
+
+  var goToRef = function() {
+    var ref = $citationInputRef.val();
+    var cfi = reader.getCfiFromCalibreRef(ref);
+    rendition.display(cfi);
+  }
+
+  var goToCFI = function() {
+    var cfiStr = $citationInputCFI.val();
+    // Make sure first char is lowercase, since bookmarks in UI puts it
+    // into title case for some reason
+    cfiStr = cfiStr.charAt(0).toLowerCase() + cfiStr.slice(1);
+    rendition.display(cfiStr);
+  }
+
+  $citationInputRef.keypress(function(event){
+    var key = event.which;
+    // check if enter was pressed
+    if (key != 13) {
+      return;
+    }
+    goToRef();
+    event.preventDefault();
+  });
+
+  $citationInputRefBtn.on("click", function(event){
+    goToRef();
+    event.preventDefault();
+  });
+
+  $citationInputCFI.keypress(function(event){
+    var key = event.which;
+    // check if enter was pressed
+    if (key != 13) {
+      return;
+    }
+    goToCFI();
+    event.preventDefault();
+  });
+
+  $citationInputCFIBtn.on("click", function(event){
+    goToCFI();
+    event.preventDefault();
+  });
+
+  return {
+    "show" : show,
+    "hide" : hide
+  };
 };
 
 EPUBJS.reader.ControlsController = function(book) {
