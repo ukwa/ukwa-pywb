@@ -3241,6 +3241,7 @@ EPUBJS.Reader = function(bookPath, _options) {
 		bookKey : undefined,
 		styles : undefined,
 		sidebarReflow: false,
+    useCfiForRefs: false,
 		generatePagination: false,
 		history: true
 	});
@@ -3590,7 +3591,7 @@ EPUBJS.Reader.prototype.getCFIFromParagraphNumber = function(spineItem, paragrap
       return paragraph.cfi;
     }
   }
-}
+};
 
 // EPUBJS.Reader.prototype.getSpineItemSectionId = function(spineItem){
 //   var sectionNode = spineItem.document.body.getElementsByTagName("section")[0];
@@ -3632,7 +3633,10 @@ EPUBJS.Reader.prototype.selectedRange = function(cfiRange){
   var paragraphNumber = this.getParagraphNumberFromCFI(spineItem, this.currentLocationCfi);
 
   var $citationDialog = $("#citationDialog");
-  var citationHtml = `<p>${chapterNumber}.${paragraphNumber}</p>`;  
+  var citationHtml = `<p>${chapterNumber}.${paragraphNumber}</p>`;
+  if (reader.settings.useCfiForRefs) {
+    citationHtml = `<p>${this.currentLocationCfi}</p>`;
+  }
   $citationDialog.html(citationHtml);
   $citationDialog.show();
 
@@ -4375,10 +4379,15 @@ EPUBJS.reader.SettingsController = function() {
 	};
 
 	var $sidebarReflowSetting = $('#sidebarReflow');
+  var $useCfiForRefs = $("#useCfiForRefs");
 
 	$sidebarReflowSetting.on('click', function() {
 		reader.settings.sidebarReflow = !reader.settings.sidebarReflow;
 	});
+
+  $useCfiForRefs.on('click', function() {
+    reader.settings.useCfiForRefs = !reader.settings.useCfiForRefs;
+  });
 
 	$settings.find(".closer").on("click", function() {
 		hide();
