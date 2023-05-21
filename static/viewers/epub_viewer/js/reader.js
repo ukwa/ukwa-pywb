@@ -3550,9 +3550,10 @@ EPUBJS.Reader.prototype.getCfiFromCalibreRef = function(ref){
 };
 
 EPUBJS.Reader.prototype.getSpineItemFromChapterNumber = function(spineItems, chapterNumber){
+  var chapterSpineIndex = chapterNumber - 1;
   for (var i = 0; i < spineItems.length; i++) {
     var spineItem = spineItems[i];
-    if (spineItem.index === chapterNumber) {
+    if (spineItem.index === chapterSpineIndex) {
       return spineItem;
     }
   }
@@ -3627,7 +3628,7 @@ EPUBJS.Reader.prototype.selectedRange = function(cfiRange){
 
   var spineItem = book.spine.get(this.currentLocationCfi);
 
-  var chapterNumber = spineItem.index;
+  var chapterNumber = spineItem.index + 1;
   var paragraphNumber = this.getParagraphNumberFromCFI(spineItem, this.currentLocationCfi);
 
   var $citationDialog = $("#citationDialog");
