@@ -4274,7 +4274,16 @@ EPUBJS.reader.ReaderController = function(book) {
 	var keylock = false;
 
 	var arrowKeys = function(e) {
-		if(e.keyCode == 37) {
+    var refInput = document.getElementById("citation-input-ref"),
+        cfiInput = document.getElementById("citation-input-cfi");
+
+    // ignore arrow key page turn if citation input is in focus
+    var citationFocused = false;
+    if (document.activeElement == refInput || document.activeElement == cfiInput){
+      citationFocused = true;
+    }
+
+		if (!citationFocused && e.keyCode == 37) {
 
 			if(book.package.metadata.direction === "rtl") {
 				rendition.next();
@@ -4292,7 +4301,7 @@ EPUBJS.reader.ReaderController = function(book) {
 
 			 e.preventDefault();
 		}
-		if(e.keyCode == 39) {
+		if (!citationFocused && e.keyCode == 39) {
 
 			if(book.package.metadata.direction === "rtl") {
 				rendition.prev();
