@@ -3514,19 +3514,19 @@ EPUBJS.Reader.prototype.hashChanged = function(){
 	this.rendition.display(hash);
 };
 
-// EPUBJS.Reader.prototype.getCfiFromHref = function(href){
-//   var reader = this;
-//   var book = this.book;
+EPUBJS.Reader.prototype.getCfiFromHref = function(href){
+  var reader = this;
+  var book = this.book;
 
-//   var [_, id] = href.split('#');
-//   var section = book.spine.get(href);
-//   var el = (id ? section.document.getElementById(id) : section.document.body);
-//   return section.cfiFromElement(el);
-// };
+  var [_, id] = href.split('#');
+  var section = book.spine.get(href);
+  var el = (id ? section.document.getElementById(id) : section.document.body);
+  return section.cfiFromElement(el);
+};
 
 EPUBJS.Reader.prototype.getCfiFromCalibreRef = function(ref){
   // Return CFI to location specified by Calibre Reference Mode reference
-  // (chapter.paragraph), or chapter href as backup, asoth CFIs and hrefs
+  // (chapter.paragraph), or chapter href as backup, as both CFIs and hrefs
   // work as argument to rendition.display().
 
   var reader = this;
@@ -3593,27 +3593,6 @@ EPUBJS.Reader.prototype.getCFIFromParagraphNumber = function(spineItem, paragrap
   }
 };
 
-// EPUBJS.Reader.prototype.getSpineItemSectionId = function(spineItem){
-//   var sectionNode = spineItem.document.body.getElementsByTagName("section")[0];
-//   // node is html element
-//   if (sectionNode.nodeType == 1) {
-//     return sectionNode.id;
-//   }
-// };
-
-// EPUBJS.Reader.prototype.getSpineItemSections = function(spineItem){
-//   var sectionNodes = spineItem.document.body.getElementsByTagName("section");
-//   var sections = [...Array(sectionNodes.length).keys()].map((sectionIndex) => {
-//     var sectionNode = spineItem.document.body.getElementsByTagName("section").item(sectionIndex);
-//     if (sectionNode.nodeType == 1) {
-//       var text = sectionNode.innerHTML;
-//       var cfi = spineItem.cfiFromElement(sectionNode);
-//       return {index: sectionIndex, text: text, cfi: cfi};
-//     }
-//   });
-//   return sections;
-// };
-
 EPUBJS.Reader.prototype.selectedRange = function(cfiRange){
 	var cfiFragment = `#${cfiRange}`;
   var reader = this;
@@ -3641,7 +3620,6 @@ EPUBJS.Reader.prototype.selectedRange = function(cfiRange){
   $citationDialog.show();
 
   // Hide citation dialog after 10 seconds
-  // TODO: Improve/implement manual closing?
   setTimeout(() => {
     $citationDialog.hide();
   }, 10000);
