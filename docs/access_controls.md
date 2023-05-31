@@ -132,8 +132,7 @@ By design, resources that are `exclude`-ed simply appear as 404 not found and no
 
 ### Implementation
 
-The implementation of the access system is part of the [ukwa fork of pywb](https://github.com/ukwa/pywb) but will eventually be added
-to a future release of pywb!
+The implementation of the access system was part of the [ukwa fork of pywb](https://github.com/ukwa/pywb) but has since been contributed upstream.
 
 The fork contains unit tests for this system, and additional tests are part of the [Integration Test Suite](https://github.com/ukwa/ukwa-pywb/tree/master/integration-test)
 
