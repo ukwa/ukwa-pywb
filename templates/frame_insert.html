@@ -55,6 +55,9 @@ html, body
   gtag('config', 'G-K5N6D6LKHP');
 </script>
 
+<!-- The UKWA UI requires this and we want to override the banner template, which can't import further files. -->
+{% include 'bootstrap_jquery.html' %}
+
 {{ banner_html }}
 
 </head>
