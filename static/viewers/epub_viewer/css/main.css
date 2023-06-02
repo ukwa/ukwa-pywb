@@ -419,46 +419,27 @@ input:-ms-placeholder {
   overflow-y: auto;
 }
 
-#searchResults {
-  margin-bottom: 50px;
-  padding-left: 20px;
-  display: block;
+#search-in-progress {
+  display: none;
 }
 
-#searchResults li {
-  margin-bottom:10px;
+#search-results-div {
+  display: none;
+  margin-bottom: 20px;
+  display: block;
+  overflow-y: scroll;
+}
+
+#search-results {
+  padding-left: 0 !important;
+  padding-inline-start: 1em;
+}
+
+#search-results li {
+  margin-bottom: 10px;
   width: 225px;
   font-family: Georgia, "Times New Roman", Times, serif;
   list-style: none;
-}
-
-#searchResults a {
-  color: #AAA;
-  text-decoration: none;
-}
-
-#searchResults p {
-  text-decoration: none;
-  font-size: 12px;
-  line-height: 16px;
-}
-
-#searchResults p .match {
-  background: #ccc;
-  color: #000;
-}
-
-#searchResults li > p {
-  color: #AAA;
-}
-
-#searchResults li a:hover {
-  color: #E2E2E2;
-}
-
-#searchView.shown {
-  display: block;
-  overflow-y: scroll;
 }
 
 #citationView {

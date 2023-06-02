@@ -3713,7 +3713,12 @@ EPUBJS.reader.CitationController = function() {
       $citationInputRef = $("#citation-input-ref"),
       $citationInputRefBtn = $("#citation-input-ref-btn"),
       $citationInputCFI = $("#citation-input-cfi"),
-      $citationInputCFIBtn = $("#citation-input-cfi-btn");
+      $citationInputCFIBtn = $("#citation-input-cfi-btn"),
+      $searchInput = $("#search-input"),
+      $searchInputBtn = $("#search-input-btn"),
+      $searchInProgress = $("#search-in-progress"),
+      $searchResultsDiv = $("#search-results-div"),
+      $searchResults = $("#search-results");
 
   var show = function() {
     $citation.show();
@@ -3723,11 +3728,27 @@ EPUBJS.reader.CitationController = function() {
     $citation.hide();
   };
 
+  var showSearchResults = function() {
+    $searchResultsDiv.show();
+  };
+
+  var hideSearchResults = function() {
+    $searchResultsDiv.hide();
+  };
+
+  var showSearchInProgress = function() {
+    $searchInProgress.show();
+  };
+
+  var hideSearchInProgress = function() {
+    $searchInProgress.hide();
+  };
+
   var goToRef = function() {
     var ref = $citationInputRef.val();
     var cfi = reader.getCfiFromCalibreRef(ref);
     rendition.display(cfi);
-  }
+  };
 
   var goToCFI = function() {
     var cfiStr = $citationInputCFI.val();
@@ -3735,7 +3756,47 @@ EPUBJS.reader.CitationController = function() {
     // into title case for some reason
     cfiStr = cfiStr.charAt(0).toLowerCase() + cfiStr.slice(1);
     rendition.display(cfiStr);
+  };
+
+  var doSearch = function(q) {
+    return Promise.all(
+        book.spine.spineItems.map(item => item.load(book.load.bind(book)).then(item.find.bind(item, q)).finally(item.unload.bind(item)))
+    ).then(results => Promise.resolve([].concat.apply([], results)));
+  };
+
+  var displayResults = function(results) {
+    for (var i = 0; i < results.length; i++) {
+      var result = results[i];
+      var text = `Excerpt: ${result.excerpt}`;
+      var li = $("<li>").text(text);
+      var btn = $("<button>").addClass("search-cfi").attr("data-cfi", result.cfi).text("Go to result")
+      btn.appendTo(li);
+      li.appendTo($searchResults);
+    }
+    hideSearchInProgress();
+    showSearchResults();
+  };
+
+  var clearResults = function() {
+    $searchResults.empty();
   }
+
+  var searchBook = function() {
+    var query = $searchInput.val();
+
+    clearResults();
+    showSearchInProgress();
+
+    doSearch(query).then((values) => {
+      displayResults(values);
+    });
+  };
+
+  $(document).on("click", ".search-cfi", function(event) {
+    var cfi = event.target.getAttribute("data-cfi");
+    rendition.display(cfi);
+    event.preventDefault();
+  });
 
   $citationInputRef.keypress(function(event){
     var key = event.which;
@@ -3766,6 +3827,25 @@ EPUBJS.reader.CitationController = function() {
     goToCFI();
     event.preventDefault();
   });
+
+  $searchInput.keypress(function(event){
+    var key = event.which;
+    // check if enter was pressed
+    if (key != 13) {
+      return;
+    }
+    searchBook();
+    showSearchResults();
+    event.preventDefault();
+  });
+
+  $searchInputBtn.on("click", function(event){
+    searchBook();
+    showSearchResults();
+    event.preventDefault();
+  });
+
+  hideSearchResults();
 
   return {
     "show" : show,
@@ -4253,11 +4333,12 @@ EPUBJS.reader.ReaderController = function(book) {
 
 	var arrowKeys = function(e) {
     var refInput = document.getElementById("citation-input-ref"),
-        cfiInput = document.getElementById("citation-input-cfi");
+        cfiInput = document.getElementById("citation-input-cfi"),
+        searchInput = document.getElementById("search-input");
 
     // ignore arrow key page turn if citation input is in focus
     var citationFocused = false;
-    if (document.activeElement == refInput || document.activeElement == cfiInput){
+    if (document.activeElement == refInput || document.activeElement == cfiInput || document.activeElement == searchInput){
       citationFocused = true;
     }
 
