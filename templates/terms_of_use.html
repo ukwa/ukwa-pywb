@@ -1,0 +1,95 @@
+{% if env.MUST_AGREE_TO_TERMS %}
+<div
+  class="modal"
+  id="termsModal"
+  tabindex="-1"
+  role="dialog"
+  data-backdrop="static"
+  data-keyboard="false"
+>
+  <div class="modal-dialog modal-xl" role="document" style="min-width: 95%">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          {% trans %}Non-Print (Electronic) Legal Deposit Access Policy{%
+          endtrans %}
+        </h5>
+        {% if not no_lang %}
+        <div class="btn-group" role="group" aria-label="{{ _('Language:') }}" aria-activedescendant="terms-{{ env.pywb_lang | default('en') }}">
+          {% for locale in locales %}
+            <a id="terms-{{ locale }}" class="btn btn-primary{% if env.pywb_lang == locale %} active{% endif %}" href="{{ switch_locale(locale) }}" role="button"{% if env.pywb_lang == locale %} aria-pressed="true" {% endif %}>{{ locale }}</a>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+      <div class="modal-body">
+        {% if env.pywb_lang == "cy" %}
+          WELSH To Be Added....
+        {% else %} 
+          {% include 'npld_terms_en.html' %}
+        {% endif %}
+      </div>
+      <div class="modal-footer">
+        <form id="terms-form" onsubmit="closePopup(event)">
+          <div class="form-inline">
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                id="terms-conditions"
+                name="terms-conditions"
+                value="screen-reader"
+                required
+                style="transform: scale(2)"
+              />
+
+              <label
+                class="form-check-label"
+                for="terms-conditions"
+                style="margin-left: 0.6em; margin-right: 1em"
+                >I agree to the terms and conditions of this policy</label
+              >
+            </div>
+            <button id="agree" class="btn btn-primary" type="submit">
+              {% trans %}Continue{% endtrans %}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const sessionStoragePopupKey = "ukwa-pywb--terms-of-use-popup";
+
+  function getDisplayPopupValue() {
+    if (sessionStorage) {
+      let displayValue = sessionStorage.getItem(sessionStoragePopupKey);
+      if (displayValue !== null) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  function closePopup(e) {
+    $("#termsModal").modal("hide");
+    sessionStorage.setItem(sessionStoragePopupKey, false);
+    // Stop the form being submitted:
+    e.preventDefault();
+    return false;
+  }
+
+  function setModalVisibility() {
+    let displayPopup = getDisplayPopupValue();
+    if (displayPopup) {
+      $("#termsModal").modal("show");
+    } else {
+      closePopup();
+    }
+  }
+
+  setModalVisibility();
+</script>
+{% endif %}

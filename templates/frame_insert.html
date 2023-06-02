@@ -59,6 +59,9 @@ html, body
 
 </head>
 <body style="margin: 0px; padding: 0px;">
+
+{% include 'terms_of_use.html' %}
+
 <iframe id="replay_iframe" frameborder="0" seamless="seamless" scrolling="yes" class="wb_iframe"></iframe>
 <script>
   var cframe = new ContentFrame({"url": "{{ url }}" + window.location.hash,

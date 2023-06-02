@@ -13,6 +13,7 @@ This repository represents a customized extension of [pywb](https://github.com/w
 - download blocks ? TBC
 - Memento Prefer Header initial implementation (See [this issue](https://github.com/mementoweb/rfc-extensions/issues/7) for further discussion) (TBC: now part of PyWB) ???
 - ePub/PDF reader support TBA
+- [NPLD Viewer Access Control Setup](docs/npld_access_controls.md)
 
 ...and configuration files for standard PyWB features:
 
