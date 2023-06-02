@@ -3718,7 +3718,8 @@ EPUBJS.reader.CitationController = function() {
       $searchInputBtn = $("#search-input-btn"),
       $searchInProgress = $("#search-in-progress"),
       $searchResultsDiv = $("#search-results-div"),
-      $searchResults = $("#search-results");
+      $searchResults = $("#search-results"),
+      $searchResultsCount = $("#results-count");
 
   var show = function() {
     $citation.show();
@@ -3765,6 +3766,7 @@ EPUBJS.reader.CitationController = function() {
   };
 
   var displayResults = function(results) {
+    var resultsCount = results.length;
     for (var i = 0; i < results.length; i++) {
       var result = results[i];
       var text = `Excerpt: ${result.excerpt}`;
@@ -3773,6 +3775,7 @@ EPUBJS.reader.CitationController = function() {
       btn.appendTo(li);
       li.appendTo($searchResults);
     }
+    $searchResultsCount.html(resultsCount);
     hideSearchInProgress();
     showSearchResults();
   };
