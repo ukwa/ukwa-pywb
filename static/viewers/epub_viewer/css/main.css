@@ -461,6 +461,10 @@ input:-ms-placeholder {
   overflow-y: scroll;
 }
 
+#citationView {
+  color: #AAA;
+}
+
 #notes {
  padding: 0 0 0 34px;
 }
@@ -650,6 +654,29 @@ input:-ms-placeholder {
   top: 0;
   font-size: 24px;
   padding: 4px;
+}
+
+#citationDialog {
+  display: none;
+  z-index: 9999999999999;
+  color: black;
+  background-color: #FFFFE0;
+  border: 1px solid;
+  padding: 0 .5em 0 .5em;
+  margin-left: 5em;
+  margin-top: 2.5em;
+  position: fixed;
+}
+
+#citationView {
+  color: #E2E2E2;
+  margin-top: 10px;
+  margin-bottom: 50px;
+  padding-left: 20px;
+}
+
+#citationView input {
+  margin-top: 5px;
 }
 
 @media only screen and (max-width: 1040px) {
