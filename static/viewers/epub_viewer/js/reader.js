@@ -3787,6 +3787,12 @@ EPUBJS.reader.CitationController = function() {
   var searchBook = function() {
     var query = $searchInput.val();
 
+    if (query === "") {
+      clearResults();
+      hideSearchResults();
+      return;
+    }
+
     clearResults();
     showSearchInProgress();
 
@@ -3795,6 +3801,14 @@ EPUBJS.reader.CitationController = function() {
     });
   };
 
+  // Clear search results if user clicks "X" in HTML5 search input
+  document.getElementById("search-input").addEventListener("search", function(event) {
+    clearResults();
+    hideSearchResults();
+    event.preventDefault();
+  });
+
+  // Handle "Go to result" search result button click
   $(document).on("click", ".search-cfi", function(event) {
     var cfi = event.target.getAttribute("data-cfi");
     rendition.display(cfi);

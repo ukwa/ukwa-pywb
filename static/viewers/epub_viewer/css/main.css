@@ -425,9 +425,9 @@ input:-ms-placeholder {
 
 #search-results-div {
   display: none;
-  margin-bottom: 20px;
   display: block;
-  overflow-y: scroll;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 #search-results {
