@@ -56,7 +56,9 @@ html, body
 <!-- The UKWA UI requires this and we want to override the banner template, which can't import further files. -->
 {% include 'bootstrap_jquery.html' %}
 
+{% autoescape false %}
 {{ banner_html }}
+{% endautoescape %}
 
 </head>
 <body style="margin: 0px; padding: 0px;">
