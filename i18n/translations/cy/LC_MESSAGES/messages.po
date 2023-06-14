@@ -1,15 +1,16 @@
-# Welsh translations for ukwa_pywb.
-# Copyright (C) 2018 UKWA
-# This file is distributed under the same license as the ukwa_pywb project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2018.
+# Welsh translations for PROJECT.
+# Copyright (C) 2023 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
 #
+#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: ukwa_pywb 1.0\n"
+"Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2023-06-14 10:53+0100\n"
-"PO-Revision-Date: 2018-02-27 11:34-0800\n"
-"Last-Translator: Google Translate\n"
+"POT-Creation-Date: 2023-06-14 11:03+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: cy\n"
 "Language-Team: cy <LL@li.org>\n"
 "Plural-Forms: nplurals=5; plural=(n==1 ? 1 : n==2 ? 2 : n==3 ? 3 : n==6 ?"
@@ -49,15 +50,15 @@ msgstr "Logo Archif We y DG"
 msgid "UKWA Error"
 msgstr ""
 
+# | msgid "Collection not found:"
 #: templates/error.html:8
 #, fuzzy
-#| msgid "Collection not found:"
 msgid "Collection not found:"
 msgstr "Heb ddarganfod casgliad:"
 
+# | msgid "Static file not found:"
 #: templates/error.html:13
 #, fuzzy
-#| msgid "Static file not found:"
 msgid "Static file not found:"
 msgstr "Heb ddarganfod Ffeil statig:"
 
@@ -134,9 +135,9 @@ msgstr "Ymweld â safle byw a chyfredol"
 msgid "Seeing if other web archives hold copies of this URL"
 msgstr "Edrych os oes copïau o'r Url hwn gyda archifoedd y we eraill "
 
+# | msgid "Sorry, access not authorized to this resource."
 #: templates/error.html:52
 #, fuzzy
-#| msgid "Sorry, access not authorized to this resource."
 msgid "Sorry, access not authorized to this resource."
 msgstr "Ymddirheuriadau, gwaherddir mynediad i'r adnodd hwn. "
 
@@ -144,18 +145,18 @@ msgstr "Ymddirheuriadau, gwaherddir mynediad i'r adnodd hwn. "
 msgid "Page Locked"
 msgstr ""
 
+# | msgid "Access to this resource is currently not allowed. Please try again
+# | later."
 #: templates/error.html:57
 #, fuzzy
-#| msgid "Access to this resource is currently not allowed. Please try again
-#| later."
 msgid "The page you have requested is currently in use. Please try again later."
 msgstr ""
 "Ni chaniateir mynediad i'r adnodd hwn ar hyn o bryd. Ceisiwch rhywbryd "
 "eto."
 
+# | msgid "Error Details:"
 #: templates/error.html:66
 #, fuzzy
-#| msgid "Error Details:"
 msgid "Error Details:"
 msgstr "Manylion y gwall:"
 
@@ -200,10 +201,6 @@ msgstr "Parhau"
 #~ msgid "Archived On:"
 #~ msgstr "Archifwyd:"
 
-#~ msgctxt ""
-#~ "templates/error.html:6 templates/error.html:11 "
-#~ "templates/error.html:44 templates/error.html:49 "
-#~ "templates/error.html:54"
 #~ msgid "UKWA Error"
 #~ msgstr "Gwall UKWA"
 
@@ -309,9 +306,6 @@ msgstr "Parhau"
 
 #~ msgid "pywb Query Results"
 #~ msgstr "Canlyniadau chwilio pywb "
-
-#~ msgid "UKWA Error"
-#~ msgstr "Gwall UKWA"
 
 #~ msgid "Access Blocked to %(url)s"
 #~ msgstr "Gwaheddir mynediad i %(url)s"
