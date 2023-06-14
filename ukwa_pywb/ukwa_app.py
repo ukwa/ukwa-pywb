@@ -268,7 +268,8 @@ class UKWARewriter(RewriterApp):
 class UKWApp(FrontEndApp):
     REWRITER_APP_CLS = UKWARewriter
 
-    REFER_WB_URL_RX = re.compile(r'(\w+)/([\d]{1,14}(?:\w\w_)?/.*)')
+    # Match (OPTIONAL-LANG-PREFIX/)COLLECTION/TIMESTAMP/URL:
+    REFER_WB_URL_RX = re.compile(r'([a-z]{2}/|)(\w+)/([\d]{1,14}(?:\w\w_)?/.*)')
 
     def _init_routes(self):
         super(UKWApp, self)._init_routes()
@@ -293,11 +294,11 @@ class UKWApp(FrontEndApp):
         referrer = referrer[len(full_prefix):]
         m = self.REFER_WB_URL_RX.match(referrer)
         if not m:
-            return WbResponse.json_response({'status': 'no-referrer-match', 'referrer': referrer})
+            return WbResponse.json_response({'status': 'no-referrer-match', 'full-prefix': full_prefix, 'referrer': referrer})
 
-        wb_url = WbUrl(m.group(2))
+        wb_url = WbUrl(m.group(3))
 
-        lock_key = LOCK_KEY.format(coll=m.group(1),
+        lock_key = LOCK_KEY.format(coll=m.group(2),
                                    ts=wb_url.timestamp,
                                    url=wb_url.url)
 
