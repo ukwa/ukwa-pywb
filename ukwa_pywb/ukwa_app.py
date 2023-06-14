@@ -293,7 +293,7 @@ class UKWApp(FrontEndApp):
         referrer = referrer[len(full_prefix):]
         m = self.REFER_WB_URL_RX.match(referrer)
         if not m:
-            return WbResponse.json_response({'status': 'no-referrer-match'})
+            return WbResponse.json_response({'status': 'no-referrer-match', 'referrer': referrer})
 
         wb_url = WbUrl(m.group(2))
 
