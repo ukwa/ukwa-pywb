@@ -283,17 +283,17 @@ class UKWApp(FrontEndApp):
     def lock_ping_reset(self, environ):
         referrer = environ.get('HTTP_REFERER')
         if not referrer:
-            return WbResponse.json_response({})
+            return WbResponse.json_response({'status': 'missing-referrer'})
 
         full_prefix = self.rewriterapp.get_full_prefix(environ)
 
         if not referrer.startswith(full_prefix):
-            return WbResponse.json_response({})
+            return WbResponse.json_response({'status': 'no-prefix-match', 'full-prefix': full_prefix })
 
         referrer = referrer[len(full_prefix):]
         m = self.REFER_WB_URL_RX.match(referrer)
         if not m:
-            return WbResponse.json_response({})
+            return WbResponse.json_response({'status': 'no-referrer-match'})
 
         wb_url = WbUrl(m.group(2))
 
@@ -304,9 +304,12 @@ class UKWApp(FrontEndApp):
         session = environ[SESSION_KEY]
         # If there is an extend-time set, then modify locks if NOT locked to another session:
         if self.lock_ping_extend_time and not session.is_locked(lock_key):
+            status = 'lock-extended'
             res = session.redis.expire(lock_key, self.lock_ping_extend_time)
+        else:
+            status = 'lock-not-extended'
 
-        return WbResponse.json_response({})
+        return WbResponse.json_response({'status': status})
 
     @authorize
     def lock_clear_url(self, environ, url):
