@@ -284,17 +284,17 @@ class UKWApp(FrontEndApp):
     def lock_ping_reset(self, environ):
         referrer = environ.get('HTTP_REFERER')
         if not referrer:
-            return WbResponse.json_response({'status': 'missing-referrer'})
+            return WbResponse.json_response({'error': 'missing-referrer'}, status='400 Bad Request')
 
         full_prefix = self.rewriterapp.get_full_prefix(environ)
 
         if not referrer.startswith(full_prefix):
-            return WbResponse.json_response({'status': 'no-prefix-match', 'full-prefix': full_prefix })
+            return WbResponse.json_response({'error': 'no-prefix-match', 'full-prefix': full_prefix }, status='400 Bad Request')
 
         referrer = referrer[len(full_prefix):]
         m = self.REFER_WB_URL_RX.match(referrer)
         if not m:
-            return WbResponse.json_response({'status': 'no-referrer-match', 'full-prefix': full_prefix, 'referrer': referrer})
+            return WbResponse.json_response({'error': 'no-referrer-match', 'full-prefix': full_prefix, 'referrer': referrer}, status="400 Bad Request")
 
         wb_url = WbUrl(m.group(3))
 
@@ -310,7 +310,7 @@ class UKWApp(FrontEndApp):
         else:
             status = 'lock-not-extended'
 
-        return WbResponse.json_response({'status': status})
+        return WbResponse.json_response({'msg': status, 'session': session, 'lock_key': lock_key})
 
     @authorize
     def lock_clear_url(self, environ, url):
@@ -370,13 +370,32 @@ class UKWApp(FrontEndApp):
         lock_view = BaseInsertView(self.rewriterapp.jinja_env, 'locks.html')
 
         session = environ[SESSION_KEY]
+        redis: StrictRedis = session.redis
 
+        # List all locks:
+        locks = set()
+        for lock_key in redis.scan_iter('lock:*'):
+            locks.add(lock_key)
+
+        # List all sessions:
         sessions = {}
 
-        for sesh_key in session.redis.scan_iter(SESH_LIST.format('*')):
+        for sesh_key in redis.scan_iter(SESH_LIST.format('*')):
             sesh = sesh_key.split(':')[1]
 
-            sessions[sesh] = [key[5:] for key in session.redis.smembers(sesh_key)]
+            sessions[sesh] = []
+            dropped_locks = []
+            for lock_key in redis.smembers(sesh_key):
+                if lock_key in locks:
+                    sessions[sesh].append(lock_key[5:])
+                else:
+                    sessions[sesh].append(lock_key[5:] + ' (expired)')
+                    dropped_locks.append(lock_key)
+
+            # Remove session references to locks if the locks have expired:
+            if len(dropped_locks) > 0:
+                # Use the 'splat' operator to pass the list as a series of values:
+                redis.srem(sesh_key, *dropped_locks)
 
         content = lock_view.render_to_string(environ,
                                              current=session.sid,
