@@ -192,7 +192,7 @@ msgstr ""
 
 #: templates/terms_of_use.html:50
 msgid "I agree to the terms and conditions of this policy"
-msgstr "Cytunnaf i delerau ac amodau’r polisi hwn"
+msgstr "Cytunnaf i delerau ac amodau'r polisi hwn"
 
 #: templates/terms_of_use.html:54
 msgid "Continue"

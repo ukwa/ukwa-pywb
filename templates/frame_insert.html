@@ -33,8 +33,6 @@ html, body
 </style>
 <script src='{{ static_prefix }}/wb_frame.js'> </script>
 
-{% autoescape false %}
-
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-7571526-1"></script>
 <script>
@@ -65,6 +63,8 @@ html, body
 
 {% include 'terms_of_use.html' %}
 
+{% autoescape false %}
+
 <iframe id="replay_iframe" frameborder="0" seamless="seamless" scrolling="yes" class="wb_iframe"></iframe>
 <script>
   var cframe = new ContentFrame({"url": "{{ url }}" + window.location.hash,
@@ -89,4 +89,5 @@ html, body
 <![endif]-->
 </body>
 </html>
+
 {% endautoescape %}
