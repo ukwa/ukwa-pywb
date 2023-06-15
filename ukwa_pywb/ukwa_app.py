@@ -125,6 +125,8 @@ class LockingSession(Session):
 
 # ============================================================================
 class UKWARewriter(RewriterApp):
+    # This gives the form of _referrer_ URLs that can be locked.
+    # It does not include the 'mp_' URLs.
     WB_URL_RX = re.compile(r'[\d]{1,14}/.*')
 
     def get_lock_url(self, wb_url, full_prefix, environ):
@@ -146,17 +148,18 @@ class UKWARewriter(RewriterApp):
         if referrer.endswith('.css'):
             return None
         
+        logger.debug(f"URL {wb_url} {full_prefix} r {referrer}")
         logger.info(f"URL {wb_url} {full_prefix} r {referrer}")
-        logger.warning(f"URL {wb_url} {full_prefix} r {referrer}")
         if referrer.startswith(full_prefix):
             referrer = referrer[len(full_prefix):]
+            logger.info(f"URL {wb_url} sub-r {referrer}")
             m = self.WB_URL_RX.search(referrer)
             if m:
-                logger.warning(f"URL {wb_url} Matched {referrer}, returning {m.group(0)}")
+                logger.info(f"URL {wb_url} Matched {referrer}, returning {m.group(0)}")
                 return WbUrl(m.group(0))
 
-        logger.warning("URL {wb_url} not lockable")
-        return None
+        logger.info(f"URL {wb_url} lockable (default)")
+        return wb_url
 
     def handle_custom_response(self, environ, wb_url, full_prefix, host_prefix, kwargs):
         # if acl user starts with "no_auth:x", set to "x", and set var to indicate auth needed
