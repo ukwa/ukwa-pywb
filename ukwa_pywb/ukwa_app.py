@@ -5,6 +5,7 @@ from werkzeug.http import parse_authorization_header
 import time
 import os
 import re
+import logging
 
 from redis import StrictRedis
 
@@ -19,6 +20,9 @@ from pywb.rewrite.templateview import BaseInsertView
 from pywb.apps.cli import ReplayCli
 
 from pywb.apps.wbrequestresponse import WbResponse
+
+
+logger = logging.getLogger(__name__)
 
 # ============================================================================
 # Monkeypatch pywb to accept schemes with colons:
@@ -124,6 +128,7 @@ class UKWARewriter(RewriterApp):
     WB_URL_RX = re.compile(r'[\d]{1,14}/.*')
 
     def get_lock_url(self, wb_url, full_prefix, environ):
+        logger.warning(f"URL {wb_url} {full_prefix}")
         # don't lock embeds
         if wb_url.mod != 'mp_':
             return None
@@ -140,13 +145,17 @@ class UKWARewriter(RewriterApp):
         # if referrer is a .css, still an embed
         if referrer.endswith('.css'):
             return None
-
+        
+        logger.info(f"URL {wb_url} {full_prefix} r {referrer}")
+        logger.warning(f"URL {wb_url} {full_prefix} r {referrer}")
         if referrer.startswith(full_prefix):
             referrer = referrer[len(full_prefix):]
             m = self.WB_URL_RX.search(referrer)
             if m:
+                logger.warning(f"URL {wb_url} Matched {referrer}, returning {m.group(0)}")
                 return WbUrl(m.group(0))
 
+        logger.warning("URL {wb_url} not lockable")
         return None
 
     def handle_custom_response(self, environ, wb_url, full_prefix, host_prefix, kwargs):
