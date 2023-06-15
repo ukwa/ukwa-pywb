@@ -130,7 +130,6 @@ class UKWARewriter(RewriterApp):
     WB_URL_RX = re.compile(r'[\d]{1,14}/.*')
 
     def get_lock_url(self, wb_url, full_prefix, environ):
-        logger.warning(f"URL {wb_url} {full_prefix}")
         # don't lock embeds
         if wb_url.mod != 'mp_':
             return None
@@ -148,14 +147,10 @@ class UKWARewriter(RewriterApp):
         if referrer.endswith('.css'):
             return None
         
-        logger.debug(f"URL {wb_url} {full_prefix} r {referrer}")
-        logger.info(f"URL {wb_url} {full_prefix} r {referrer}")
         if referrer.startswith(full_prefix):
             referrer = referrer[len(full_prefix):]
-            logger.info(f"URL {wb_url} sub-r {referrer}")
             m = self.WB_URL_RX.search(referrer)
             if m:
-                logger.info(f"URL {wb_url} Matched {referrer}, returning {m.group(0)}")
                 return WbUrl(m.group(0))
 
         logger.info(f"URL {wb_url} lockable (default)")
