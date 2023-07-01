@@ -3719,7 +3719,8 @@ EPUBJS.reader.CitationController = function() {
       $searchInProgress = $("#search-in-progress"),
       $searchResultsDiv = $("#search-results-div"),
       $searchResults = $("#search-results"),
-      $searchResultsCount = $("#results-count");
+      $searchResultsCount = $("#results-count"),
+      $clearResultsBtn = $("#clear-results-btn");
 
   var show = function() {
     $citation.show();
@@ -3782,6 +3783,10 @@ EPUBJS.reader.CitationController = function() {
 
   var clearResults = function() {
     $searchResults.empty();
+  }
+
+  var clearSearchInput = function() {
+    $searchInput.val("");
   }
 
   var searchBook = function() {
@@ -3859,6 +3864,13 @@ EPUBJS.reader.CitationController = function() {
   $searchInputBtn.on("click", function(event){
     searchBook();
     showSearchResults();
+    event.preventDefault();
+  });
+
+  $clearResultsBtn.on("click", function(event){
+    clearResults();
+    hideSearchResults();
+    clearSearchInput();
     event.preventDefault();
   });
 
