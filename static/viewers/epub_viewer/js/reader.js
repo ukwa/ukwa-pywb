@@ -3708,6 +3708,7 @@ EPUBJS.reader.CitationController = function() {
   var reader = this;
   var book = this.book;
   var rendition = this.rendition;
+  var annotations = reader.settings.annotations;
 
   var $citation = $("#citationView"),
       $citationInputRef = $("#citation-input-ref"),
@@ -3750,6 +3751,8 @@ EPUBJS.reader.CitationController = function() {
     var ref = $citationInputRef.val();
     var cfi = reader.getCfiFromCalibreRef(ref);
     rendition.display(cfi);
+    // TODO: Highlight
+    // rendition.annotations.highlight(cfi);
   };
 
   var goToCFI = function() {
@@ -3758,6 +3761,7 @@ EPUBJS.reader.CitationController = function() {
     // into title case for some reason
     cfiStr = cfiStr.charAt(0).toLowerCase() + cfiStr.slice(1);
     rendition.display(cfiStr);
+    // rendition.annotations.highlight(cfiStr);
   };
 
   var doSearch = function(q) {
@@ -3781,8 +3785,18 @@ EPUBJS.reader.CitationController = function() {
     showSearchResults();
   };
 
+  var clearHighlights = function() {
+    var annotations = Object.values(rendition.annotations._annotations);
+    annotations.forEach(annotation => {
+      if (annotation.type === "highlight") {
+        rendition.annotations.remove(annotation.cfiRange, "highlight");
+      }
+    });
+  };
+
   var clearResults = function() {
     $searchResults.empty();
+    clearHighlights();
   }
 
   var clearSearchInput = function() {
@@ -3794,6 +3808,7 @@ EPUBJS.reader.CitationController = function() {
 
     if (query === "") {
       clearResults();
+      $searchResultsCount.html("0");
       hideSearchResults();
       return;
     }
@@ -3815,9 +3830,14 @@ EPUBJS.reader.CitationController = function() {
 
   // Handle "Go to result" search result button click
   $(document).on("click", ".search-cfi", function(event) {
-    var cfi = event.target.getAttribute("data-cfi");
-    rendition.display(cfi);
     event.preventDefault();
+
+    var cfi = event.target.getAttribute("data-cfi");
+    var searchText = $searchInput.val();
+
+    clearHighlights();
+    rendition.display(cfi);
+    rendition.annotations.highlight(cfi);
   });
 
   $citationInputRef.keypress(function(event){
