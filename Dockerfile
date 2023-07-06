@@ -18,7 +18,9 @@ ADD ukwa_pywb/ ./ukwa_pywb/
 RUN python setup.py install
 
 COPY i18n/ i18n/
-RUN python setup.py compile_catalog
+# Include 'fuzzy' translations (so we can see changes here)
+# See https://stackoverflow.com/a/12555922
+RUN python setup.py compile_catalog -f
 
 COPY acl/ acl/
 COPY proxy-certs/ proxy-certs/

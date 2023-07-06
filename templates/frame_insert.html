@@ -33,8 +33,6 @@ html, body
 </style>
 <script src='{{ static_prefix }}/wb_frame.js'> </script>
 
-{% autoescape false %}
-
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-7571526-1"></script>
 <script>
@@ -58,7 +56,9 @@ html, body
 <!-- The UKWA UI requires this and we want to override the banner template, which can't import further files. -->
 {% include 'bootstrap_jquery.html' %}
 
+{% autoescape false %}
 {{ banner_html }}
+{% endautoescape %}
 
 {% include 'vue_loc.html' %}
 
@@ -67,15 +67,8 @@ html, body
 
 {% include 'terms_of_use.html' %}
 
-<div id="app" style="width: 100%; height: 200px"></div>
-<script>
-    VueUI.main("{{ static_prefix }}", "{{ url }}", "{{ wb_prefix }}", "{{ timestamp }}", "{{ ui.logo }}", "{{ ui.navbar_background_hex | default('f8f9fa') }}", "{{ ui.navbar_color_hex | default('212529') }}", "{{ ui.navbar_light_buttons }}", "{{ env.pywb_lang | default('en') }}",
-      allLocales, i18nStrings);
-</script>
+{% autoescape false %}
 
-<!-- TEST UPDATE -->
-
-<div id="wb_iframe_div">
 <iframe id="replay_iframe" frameborder="0" seamless="seamless" scrolling="yes" class="wb_iframe"></iframe>
 <script>
   var cframe = new ContentFrame({"url": "{{ url }}" + window.location.hash,
@@ -100,4 +93,5 @@ html, body
 <![endif]-->
 </body>
 </html>
+
 {% endautoescape %}
