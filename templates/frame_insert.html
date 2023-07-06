@@ -33,8 +33,6 @@ html, body
 </style>
 <script src='{{ static_prefix }}/wb_frame.js'> </script>
 
-{% autoescape false %}
-
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-7571526-1"></script>
 <script>
@@ -55,13 +53,21 @@ html, body
   gtag('config', 'G-K5N6D6LKHP');
 </script>
 
+<!-- The UKWA UI requires this and we want to override the banner template, which can't import further files. -->
+{% include 'bootstrap_jquery.html' %}
+
+{% autoescape false %}
 {{ banner_html }}
+{% endautoescape %}
 
 </head>
 <body style="margin: 0px; padding: 0px;">
-<div id="wb_iframe_div">
+
+{% include 'terms_of_use.html' %}
+
+{% autoescape false %}
+
 <iframe id="replay_iframe" frameborder="0" seamless="seamless" scrolling="yes" class="wb_iframe"></iframe>
-</div>
 <script>
   var cframe = new ContentFrame({"url": "{{ url }}" + window.location.hash,
                                  "prefix": "{{ wb_prefix }}",
@@ -85,4 +91,5 @@ html, body
 <![endif]-->
 </body>
 </html>
+
 {% endautoescape %}

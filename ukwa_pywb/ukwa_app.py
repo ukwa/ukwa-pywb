@@ -5,6 +5,7 @@ from werkzeug.http import parse_authorization_header
 import time
 import os
 import re
+import logging
 
 from redis import StrictRedis
 
@@ -19,6 +20,9 @@ from pywb.rewrite.templateview import BaseInsertView
 from pywb.apps.cli import ReplayCli
 
 from pywb.apps.wbrequestresponse import WbResponse
+
+
+logger = logging.getLogger(__name__)
 
 # ============================================================================
 # Monkeypatch pywb to accept schemes with colons:
@@ -121,6 +125,8 @@ class LockingSession(Session):
 
 # ============================================================================
 class UKWARewriter(RewriterApp):
+    # This gives the form of _referrer_ URLs that can be locked.
+    # It does not include the 'mp_' URLs.
     WB_URL_RX = re.compile(r'[\d]{1,14}/.*')
 
     def get_lock_url(self, wb_url, full_prefix, environ):
@@ -140,16 +146,24 @@ class UKWARewriter(RewriterApp):
         # if referrer is a .css, still an embed
         if referrer.endswith('.css'):
             return None
-
+        
         if referrer.startswith(full_prefix):
             referrer = referrer[len(full_prefix):]
             m = self.WB_URL_RX.search(referrer)
             if m:
                 return WbUrl(m.group(0))
 
-        return None
+        logger.info(f"URL {wb_url} lockable (default)")
+        return wb_url
 
     def handle_custom_response(self, environ, wb_url, full_prefix, host_prefix, kwargs):
+        # if acl user starts with "no_auth:x", set to "x", and set var to indicate auth needed
+        # in error.html, a custom error page with npld+player:// link will be shown
+        acl_user = environ.get("HTTP_X_PYWB_ACL_USER")
+        if acl_user and acl_user.startswith("need-auth:"):
+            environ["HTTP_X_PYWB_ACL_USER"] = acl_user[len("need-auth:"):]
+            environ["ACCESS_AUTH_NEEDED"] = "1"
+
         if kwargs.get('single-use-lock'):
             environ['single_use_lock'] = True
             environ['select_word_limit'] = SELECT_WORD_LIMIT
@@ -169,7 +183,7 @@ class UKWARewriter(RewriterApp):
                                            ts=lock_wb_url.timestamp,
                                            url=lock_wb_url.url)
 
-                session.lock(lock_key)
+                environ[LOCK_KEY] = lock_key
 
         return super(UKWARewriter, self).handle_custom_response(environ, wb_url, full_prefix, host_prefix, kwargs)
 
@@ -182,6 +196,12 @@ class UKWARewriter(RewriterApp):
 
     def render_content(self, wb_url_str, coll_config, environ):
         default_response = super(UKWARewriter, self).render_content(wb_url_str, coll_config, environ)
+
+        # setting lock here -- only get here if not access control blocked, don't set lock if blocked by access control
+        lock_key = environ.get(LOCK_KEY)
+        if lock_key:
+            session = environ[SESSION_KEY]
+            session.lock(lock_key)
 
         add_headers = coll_config.get('add_headers') or {}
         for header in add_headers:
@@ -199,12 +219,22 @@ class UKWARewriter(RewriterApp):
         if default_response.status_headers.get('preference-applied') == 'raw':
             return default_response
 
+        # extension-specific redirects
+        ext_redirects = coll_config.get("ext_redirects") or {}
 
+        wb_url = WbUrl(wb_url_str)
         redirect_url = None
 
-        # if we have a content-disposition, takes precedence using the <any-download> option
+        # attempt to find by extension
+        if redirect_url is None:
+            redirect_url = ext_redirects.get(wb_url.url.rsplit(".", 1)[-1])
+
+        # if we have a content-disposition, look at the extension of the download
         content_disp = default_response.status_headers.get("content-disposition")
         if content_disp and 'attachment' in content_disp:
+            default_response.status_headers.remove_header("content-disposition")
+            #ext = content_disp.rsplit(".", 1)[-1]
+            #redirect_url = ext_redirects.get(ext)
             redirect_url = ct_redirects.get('<any-download>')
 
         # attempt to find rule by content-type
@@ -213,9 +243,10 @@ class UKWARewriter(RewriterApp):
             if content_type:
                 content_type = content_type.split(";", 1)[0]
                 redirect_url = ct_redirects.get(content_type)
-                # find by content-type prefix, eg: text/
-                if redirect_url is None:
-                    redirect_url = ct_redirects.get(content_type.split("/")[0] + "/")
+
+        # find by content-type prefix, eg. application/
+        if redirect_url is None:
+            redirect_url = ct_redirects.get(content_type.split("/")[0] + "/")
 
         # default rule if no other matches
         if redirect_url is None:
@@ -226,12 +257,17 @@ class UKWARewriter(RewriterApp):
             return default_response
 
         # otherwise, redirect to specified url
-        wb_url = WbUrl(wb_url_str)
-        wb_url.mod = 'id_'
+        wb_url.mod = 'ir_'
+
+        # remove scheme from rewritten url as it can confuse certain viewers (eg. epub.js)
+        wb_url.url = wb_url.url.split(":", 1)[1]
+        # full location url
         loc = self.get_full_prefix(environ) + str(wb_url)
 
-        query = urllib.parse.urlencode({'url': loc})
-        final_url = redirect_url.format(query=query)
+        #query = urllib.parse.urlencode({'url': loc})
+        #final_url = redirect_url.format(query=query)
+        final_url=redirect_url.format(urllib.parse.quote(loc))
+        #print(f"FINAL {final_url} {loc}")
         return WbResponse.redir_response(final_url)
 
 
@@ -239,7 +275,8 @@ class UKWARewriter(RewriterApp):
 class UKWApp(FrontEndApp):
     REWRITER_APP_CLS = UKWARewriter
 
-    REFER_WB_URL_RX = re.compile(r'(\w+)/([\d]{1,14}(?:\w\w_)?/.*)')
+    # Match (OPTIONAL-LANG-PREFIX/)COLLECTION/TIMESTAMP/URL:
+    REFER_WB_URL_RX = re.compile(r'([a-z]{2}/|)(\w+)/([\d]{1,14}(?:\w\w_)?/.*)')
 
     def _init_routes(self):
         super(UKWApp, self)._init_routes()
@@ -254,30 +291,33 @@ class UKWApp(FrontEndApp):
     def lock_ping_reset(self, environ):
         referrer = environ.get('HTTP_REFERER')
         if not referrer:
-            return WbResponse.json_response({})
+            return WbResponse.json_response({'error': 'missing-referrer'}, status='400 Bad Request')
 
         full_prefix = self.rewriterapp.get_full_prefix(environ)
 
         if not referrer.startswith(full_prefix):
-            return WbResponse.json_response({})
+            return WbResponse.json_response({'error': 'no-prefix-match', 'full-prefix': full_prefix }, status='400 Bad Request')
 
         referrer = referrer[len(full_prefix):]
         m = self.REFER_WB_URL_RX.match(referrer)
         if not m:
-            return WbResponse.json_response({})
+            return WbResponse.json_response({'error': 'no-referrer-match', 'full-prefix': full_prefix, 'referrer': referrer}, status="400 Bad Request")
 
-        wb_url = WbUrl(m.group(2))
+        wb_url = WbUrl(m.group(3))
 
-        lock_key = LOCK_KEY.format(coll=m.group(1),
+        lock_key = LOCK_KEY.format(coll=m.group(2),
                                    ts=wb_url.timestamp,
                                    url=wb_url.url)
 
         session = environ[SESSION_KEY]
         # If there is an extend-time set, then modify locks if NOT locked to another session:
         if self.lock_ping_extend_time and not session.is_locked(lock_key):
+            status = 'lock-extended'
             res = session.redis.expire(lock_key, self.lock_ping_extend_time)
+        else:
+            status = 'lock-not-extended'
 
-        return WbResponse.json_response({})
+        return WbResponse.json_response({'msg': status, 'session': session, 'lock_key': lock_key})
 
     @authorize
     def lock_clear_url(self, environ, url):
@@ -337,13 +377,32 @@ class UKWApp(FrontEndApp):
         lock_view = BaseInsertView(self.rewriterapp.jinja_env, 'locks.html')
 
         session = environ[SESSION_KEY]
+        redis: StrictRedis = session.redis
 
+        # List all locks:
+        locks = set()
+        for lock_key in redis.scan_iter('lock:*'):
+            locks.add(lock_key)
+
+        # List all sessions:
         sessions = {}
 
-        for sesh_key in session.redis.scan_iter(SESH_LIST.format('*')):
+        for sesh_key in redis.scan_iter(SESH_LIST.format('*')):
             sesh = sesh_key.split(':')[1]
 
-            sessions[sesh] = [key[5:] for key in session.redis.smembers(sesh_key)]
+            sessions[sesh] = []
+            dropped_locks = []
+            for lock_key in redis.smembers(sesh_key):
+                if lock_key in locks:
+                    sessions[sesh].append(lock_key[5:])
+                else:
+                    sessions[sesh].append(lock_key[5:] + ' (expired)')
+                    dropped_locks.append(lock_key)
+
+            # Remove session references to locks if the locks have expired:
+            if len(dropped_locks) > 0:
+                # Use the 'splat' operator to pass the list as a series of values:
+                redis.srem(sesh_key, *dropped_locks)
 
         content = lock_view.render_to_string(environ,
                                              current=session.sid,

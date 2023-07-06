@@ -5,6 +5,10 @@ FROM webrecorder/pywb:2.6.9
 USER root
 WORKDIR /ukwa_pywb
 
+# Grab any security updates:
+#RUN apt-get update && apt-get upgrade -y \
+#  && rm -rf /var/lib/apt/lists/*
+
 # Add in source files and build:
 ADD setup.py .
 ADD setup.cfg .
@@ -14,7 +18,9 @@ ADD ukwa_pywb/ ./ukwa_pywb/
 RUN python setup.py install
 
 COPY i18n/ i18n/
-RUN python setup.py compile_catalog
+# Include 'fuzzy' translations (so we can see changes here)
+# See https://stackoverflow.com/a/12555922
+RUN python setup.py compile_catalog -f
 
 COPY acl/ acl/
 COPY proxy-certs/ proxy-certs/
@@ -29,6 +35,7 @@ COPY templates/ templates/
 # Parent image no longer uses this user.
 
 RUN mkdir /ukwa_pywb/collections
+RUN mkdir -p /webarchive
 COPY config.yaml /webarchive
 #ADD integration-test/test-data/ /webarchive/integration-test/test-data/
 

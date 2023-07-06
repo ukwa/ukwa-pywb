@@ -12,6 +12,12 @@
         
         {% trans %}Static file not found:{% endtrans %} <b>{{ err_msg }}</b>
 
+    {% elif err_status == 451 and env.ACCESS_AUTH_NEEDED == '1' %}
+    {% set uri = env.REQUEST_URI %}
+
+    <h2>{% trans %}Available via Custom Viewer{% endtrans %}</h2>
+    <p>{% trans %}Click <a href="npld-viewer:/{{ uri }}">here</a> to load this page in a custom viewer.{% endtrans %}</p>
+
     {% elif err_status == 451 %}
 
         <h2>{% trans %}Available in Legal Deposit Library Reading Rooms only{% endtrans %}</h2>
@@ -46,7 +52,7 @@
         {% trans %}Sorry, access not authorized to this resource.{% endtrans %}
 
     {% elif err_status == 403 and err_details == 'access-locked' %}
-        <h2>{% trans %}Archived Web Page Locked{% endtrans %}</h2>
+        <h2>{% trans %}Page Locked{% endtrans %}</h2>
         <p> 
         {% trans %}The page you have requested is currently in use. Please try again later.{% endtrans %}
         </p>
