@@ -433,10 +433,11 @@ input:-ms-placeholder {
 #search-results {
   padding-left: 0 !important;
   padding-inline-start: 1em;
+  padding-bottom: 50px;
 }
 
 #search-results li {
-  margin-bottom: 10px;
+  margin-top: 10px;
   width: 225px;
   font-family: Georgia, "Times New Roman", Times, serif;
   list-style: none;
