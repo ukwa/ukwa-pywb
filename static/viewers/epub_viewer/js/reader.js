@@ -3708,12 +3708,20 @@ EPUBJS.reader.CitationController = function() {
   var reader = this;
   var book = this.book;
   var rendition = this.rendition;
+  var annotations = reader.settings.annotations;
 
   var $citation = $("#citationView"),
       $citationInputRef = $("#citation-input-ref"),
       $citationInputRefBtn = $("#citation-input-ref-btn"),
       $citationInputCFI = $("#citation-input-cfi"),
-      $citationInputCFIBtn = $("#citation-input-cfi-btn");
+      $citationInputCFIBtn = $("#citation-input-cfi-btn"),
+      $searchInput = $("#search-input"),
+      $searchInputBtn = $("#search-input-btn"),
+      $searchInProgress = $("#search-in-progress"),
+      $searchResultsDiv = $("#search-results-div"),
+      $searchResults = $("#search-results"),
+      $searchResultsCount = $("#results-count"),
+      $clearResultsBtn = $("#clear-results-btn");
 
   var show = function() {
     $citation.show();
@@ -3723,11 +3731,29 @@ EPUBJS.reader.CitationController = function() {
     $citation.hide();
   };
 
+  var showSearchResults = function() {
+    $searchResultsDiv.show();
+  };
+
+  var hideSearchResults = function() {
+    $searchResultsDiv.hide();
+  };
+
+  var showSearchInProgress = function() {
+    $searchInProgress.show();
+  };
+
+  var hideSearchInProgress = function() {
+    $searchInProgress.hide();
+  };
+
   var goToRef = function() {
     var ref = $citationInputRef.val();
     var cfi = reader.getCfiFromCalibreRef(ref);
     rendition.display(cfi);
-  }
+    // TODO: Highlight
+    // rendition.annotations.highlight(cfi);
+  };
 
   var goToCFI = function() {
     var cfiStr = $citationInputCFI.val();
@@ -3735,7 +3761,84 @@ EPUBJS.reader.CitationController = function() {
     // into title case for some reason
     cfiStr = cfiStr.charAt(0).toLowerCase() + cfiStr.slice(1);
     rendition.display(cfiStr);
+    // rendition.annotations.highlight(cfiStr);
+  };
+
+  var doSearch = function(q) {
+    return Promise.all(
+        book.spine.spineItems.map(item => item.load(book.load.bind(book)).then(item.find.bind(item, q)).finally(item.unload.bind(item)))
+    ).then(results => Promise.resolve([].concat.apply([], results)));
+  };
+
+  var displayResults = function(results) {
+    var resultsCount = results.length;
+    for (var i = 0; i < results.length; i++) {
+      var result = results[i];
+      var text = `Excerpt: ${result.excerpt}`;
+      var li = $("<li>").text(text);
+      var btn = $("<button>").addClass("search-cfi").attr("data-cfi", result.cfi).text("Go to result")
+      btn.appendTo(li);
+      li.appendTo($searchResults);
+    }
+    $searchResultsCount.html(resultsCount);
+    hideSearchInProgress();
+    showSearchResults();
+  };
+
+  var clearHighlights = function() {
+    var annotations = Object.values(rendition.annotations._annotations);
+    annotations.forEach(annotation => {
+      if (annotation.type === "highlight") {
+        rendition.annotations.remove(annotation.cfiRange, "highlight");
+      }
+    });
+  };
+
+  var clearResults = function() {
+    $searchResults.empty();
+    clearHighlights();
   }
+
+  var clearSearchInput = function() {
+    $searchInput.val("");
+  }
+
+  var searchBook = function() {
+    var query = $searchInput.val();
+
+    if (query === "") {
+      clearResults();
+      $searchResultsCount.html("0");
+      hideSearchResults();
+      return;
+    }
+
+    clearResults();
+    showSearchInProgress();
+
+    doSearch(query).then((values) => {
+      displayResults(values);
+    });
+  };
+
+  // Clear search results if user clicks "X" in HTML5 search input
+  document.getElementById("search-input").addEventListener("search", function(event) {
+    clearResults();
+    hideSearchResults();
+    event.preventDefault();
+  });
+
+  // Handle "Go to result" search result button click
+  $(document).on("click", ".search-cfi", function(event) {
+    event.preventDefault();
+
+    var cfi = event.target.getAttribute("data-cfi");
+    var searchText = $searchInput.val();
+
+    clearHighlights();
+    rendition.display(cfi);
+    rendition.annotations.highlight(cfi);
+  });
 
   $citationInputRef.keypress(function(event){
     var key = event.which;
@@ -3766,6 +3869,32 @@ EPUBJS.reader.CitationController = function() {
     goToCFI();
     event.preventDefault();
   });
+
+  $searchInput.keypress(function(event){
+    var key = event.which;
+    // check if enter was pressed
+    if (key != 13) {
+      return;
+    }
+    searchBook();
+    showSearchResults();
+    event.preventDefault();
+  });
+
+  $searchInputBtn.on("click", function(event){
+    searchBook();
+    showSearchResults();
+    event.preventDefault();
+  });
+
+  $clearResultsBtn.on("click", function(event){
+    clearResults();
+    hideSearchResults();
+    clearSearchInput();
+    event.preventDefault();
+  });
+
+  hideSearchResults();
 
   return {
     "show" : show,
@@ -4253,11 +4382,12 @@ EPUBJS.reader.ReaderController = function(book) {
 
 	var arrowKeys = function(e) {
     var refInput = document.getElementById("citation-input-ref"),
-        cfiInput = document.getElementById("citation-input-cfi");
+        cfiInput = document.getElementById("citation-input-cfi"),
+        searchInput = document.getElementById("search-input");
 
     // ignore arrow key page turn if citation input is in focus
     var citationFocused = false;
-    if (document.activeElement == refInput || document.activeElement == cfiInput){
+    if (document.activeElement == refInput || document.activeElement == cfiInput || document.activeElement == searchInput){
       citationFocused = true;
     }
 
