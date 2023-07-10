@@ -1,14 +1,9 @@
-# Welsh translations for PROJECT.
-# Copyright (C) 2023 ORGANIZATION
-# This file is distributed under the same license as the PROJECT project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
-#
-#, fuzzy
+
 msgid ""
 msgstr ""
-"Project-Id-Version: PROJECT VERSION\n"
-"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2023-06-14 11:13+0100\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-07-10 13:50+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: cy\n"
@@ -18,7 +13,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.11.0\n"
+"Generated-By: Babel 2.12.1\n"
 
 #: templates/banner.html:38
 msgid "Live On"
@@ -47,24 +42,26 @@ msgstr "Logo Archif We y DG"
 
 #: templates/error.html:6 templates/error.html:11 templates/error.html:50
 #: templates/error.html:61
+#, fuzzy
+#| msgid "UKWA Error"
 msgid "UKWA Error"
-msgstr ""
+msgstr "Gwall UKWA"
 
-# | msgid "Collection not found:"
 #: templates/error.html:8
 #, fuzzy
+#| msgid "Collection not found:"
 msgid "Collection not found:"
-msgstr "Heb ddarganfod casgliad:"
+msgstr "Casgliad heb ei ddarganfod:"
 
-# | msgid "Static file not found:"
 #: templates/error.html:13
 #, fuzzy
+#| msgid "Static file not found:"
 msgid "Static file not found:"
-msgstr "Heb ddarganfod Ffeil statig:"
+msgstr "Ffeil statig heb ei ddarganfod:"
 
 #: templates/error.html:18
 msgid "Available via Custom Viewer"
-msgstr ""
+msgstr "Ar gael trwy Custom Viewer"
 
 #: templates/error.html:19
 #, python-format
@@ -72,6 +69,8 @@ msgid ""
 "Click <a href=\"npld-viewer:/%(uri)s\">here</a> to load this page in a "
 "custom viewer."
 msgstr ""
+"Cliciwch <a href=\"npld-viewer:/%(uri)s\">yma</a> i lwytho'r dudalen hon "
+"mewn syllwr personol"
 
 #: templates/error.html:23
 msgid "Available in Legal Deposit Library Reading Rooms only"
@@ -135,32 +134,29 @@ msgstr "Ymweld â safle byw a chyfredol"
 msgid "Seeing if other web archives hold copies of this URL"
 msgstr "Edrych os oes copïau o'r Url hwn gyda archifoedd y we eraill "
 
-# | msgid "Sorry, access not authorized to this resource."
 #: templates/error.html:52
 #, fuzzy
+#| msgid "Sorry, access not authorized to this resource."
 msgid "Sorry, access not authorized to this resource."
 msgstr "Ymddirheuriadau, gwaherddir mynediad i'r adnodd hwn. "
 
 #: templates/error.html:55
 msgid "Page Locked"
-msgstr ""
+msgstr "Tudalen ar Glo"
 
-# | msgid "Access to this resource is currently not allowed. Please try again
-# | later."
 #: templates/error.html:57
-#, fuzzy
 msgid "The page you have requested is currently in use. Please try again later."
 msgstr ""
 "Ni chaniateir mynediad i'r adnodd hwn ar hyn o bryd. Ceisiwch rhywbryd "
 "eto."
 
-# | msgid "Error Details:"
 #: templates/error.html:66
 #, fuzzy
+#| msgid "Error Details:"
 msgid "Error Details:"
 msgstr "Manylion y gwall:"
 
-#: templates/frame_insert.html:78
+#: templates/frame_insert.html:80
 msgid ""
 "You are using a browser that is out of date and is not supported for this"
 " site. Certain portions of this site may not work correctly. Please try "
@@ -188,7 +184,7 @@ msgstr "Mae'r archif we hon yn cynnwys y casgliadau canlynol:"
 
 #: templates/terms_of_use.html:14
 msgid "Non-Print (Electronic) Legal Deposit Access Policy"
-msgstr ""
+msgstr "Polisi Mynediad Adnau Cyfreithiol Di-brint (Electronig)."
 
 #: templates/terms_of_use.html:50
 msgid "I agree to the terms and conditions of this policy"
@@ -198,27 +194,30 @@ msgstr "Cytunnaf i delerau ac amodau'r polisi hwn"
 msgid "Continue"
 msgstr "Parhau"
 
-#~ msgid "Archived On:"
-#~ msgstr "Archifwyd:"
-
+#~ msgctxt ""
+#~ "templates/error.html:6 templates/error.html:11 "
+#~ "templates/error.html:50 templates/error.html:61"
 #~ msgid "UKWA Error"
-#~ msgstr "Gwall UKWA"
+#~ msgstr "Gwall Archif We y DG"
 
 #~ msgctxt "templates/error.html:8"
 #~ msgid "Collection not found:"
-#~ msgstr "Casgliad heb ei ddarganfod:"
+#~ msgstr "Heb ddarganfod casgliad:"
 
 #~ msgctxt "templates/error.html:13"
 #~ msgid "Static file not found:"
-#~ msgstr "Ffeil statig heb ei ddarganfod:"
+#~ msgstr "Heb ddarganfod Ffeil statig:"
 
-#~ msgctxt "templates/error.html:46"
+#~ msgctxt "templates/error.html:52"
 #~ msgid "Sorry, access not authorized to this resource."
 #~ msgstr "Ymddirheuriadau, gwaherddir mynediad i'r adnodd hwn. "
 
-#~ msgctxt "templates/error.html:59"
+#~ msgctxt "templates/error.html:66"
 #~ msgid "Error Details:"
 #~ msgstr "Manylion y gwall:"
+
+#~ msgid "Archived On:"
+#~ msgstr "Archifwyd:"
 
 #~ msgid "Url Not Found"
 #~ msgstr "Ni ddarganfuwyd yr URL"
