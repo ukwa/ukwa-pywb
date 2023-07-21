@@ -3561,13 +3561,18 @@ EPUBJS.Reader.prototype.getSpineItemFromChapterNumber = function(spineItems, cha
 };
 
 EPUBJS.Reader.prototype.getSpineItemParagraphs = function(spineItem){
-  var pNodes = spineItem.document.body.getElementsByTagName("p");
-  var paragraphs = [...Array(pNodes.length).keys()].map((pIndex) => {
-    var pNode = spineItem.document.body.getElementsByTagName("p").item(pIndex);
-    if (pNode.nodeType == 1) {
-      var cfi = spineItem.cfiFromElement(pNode);
-      return {paragraphNumber: pIndex + 1, cfi: cfi};
-    }
+  var spineItemDoc;
+  var paragraphs = spineItem.load(this.book.load.bind(this.book)).then((contents) => {
+    spineItemDoc = contents;
+    var pNodes = spineItemDoc.body.getElementsByTagName("p");
+    var paragraphs = [...Array(pNodes.length).keys()].map((pIndex) => {
+      var pNode = spineItemDoc.body.getElementsByTagName("p").item(pIndex);
+      if (pNode.nodeType == 1) {
+        var cfi = spineItem.cfiFromElement(pNode);
+        return {paragraphNumber: pIndex + 1, cfi: cfi};
+      }
+    });
+    return paragraphs;
   });
   return paragraphs;
 };
