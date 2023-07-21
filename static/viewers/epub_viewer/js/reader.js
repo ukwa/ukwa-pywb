@@ -3561,9 +3561,8 @@ EPUBJS.Reader.prototype.getSpineItemFromChapterNumber = function(spineItems, cha
 };
 
 EPUBJS.Reader.prototype.getSpineItemParagraphs = function(spineItem){
-  var spineItemDoc;
   var paragraphs = spineItem.load(this.book.load.bind(this.book)).then((contents) => {
-    spineItemDoc = contents;
+    var spineItemDoc = contents;
     var pNodes = spineItemDoc.body.getElementsByTagName("p");
     var paragraphs = [...Array(pNodes.length).keys()].map((pIndex) => {
       var pNode = spineItemDoc.body.getElementsByTagName("p").item(pIndex);
@@ -3757,7 +3756,7 @@ EPUBJS.reader.CitationController = function() {
     var cfi = reader.getCfiFromCalibreRef(ref);
     rendition.display(cfi);
     // TODO: Highlight
-    // rendition.annotations.highlight(cfi);
+    rendition.annotations.highlight(cfi);
   };
 
   var goToCFI = function() {
@@ -3766,7 +3765,7 @@ EPUBJS.reader.CitationController = function() {
     // into title case for some reason
     cfiStr = cfiStr.charAt(0).toLowerCase() + cfiStr.slice(1);
     rendition.display(cfiStr);
-    // rendition.annotations.highlight(cfiStr);
+    rendition.annotations.highlight(cfiStr);
   };
 
   var doSearch = function(q) {
