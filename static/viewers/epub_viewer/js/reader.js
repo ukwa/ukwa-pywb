@@ -3589,6 +3589,7 @@ EPUBJS.Reader.prototype.getParagraphNumberFromCFI = function(spineItem, cfi){
 };
 
 EPUBJS.Reader.prototype.getCfiFromParagraphNumber = function(spineItem, paragraphNumber){
+  // returns a Promise
   return spineItem.load(this.book.load.bind(this.book)).then((contents) => {
     var spineItemDoc = contents;
     var foundCfi;
