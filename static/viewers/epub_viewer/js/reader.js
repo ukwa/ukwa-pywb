@@ -3524,13 +3524,13 @@ EPUBJS.Reader.prototype.getCfiFromHref = function(href){
   return section.cfiFromElement(el);
 };
 
-EPUBJS.Reader.prototype.getCfiFromCalibreRef = function(ref){
-  // Return CFI to location specified by Calibre Reference Mode reference
-  // (chapter.paragraph), or chapter href as backup, as both CFIs and hrefs
-  // work as argument to rendition.display().
+EPUBJS.Reader.prototype.gotoCalibreRef = function(ref){
+  // Go to chapter/paragraph indicated by Calibre-style reference
+  // If reference doesn't resolve, instead go to beginning of chapter
 
   var reader = this;
   var book = this.book;
+  var rendition = this.rendition;
 
   var splitRef = ref.split(".");
   var chapter = Number(splitRef[0]);
@@ -3541,13 +3541,17 @@ EPUBJS.Reader.prototype.getCfiFromCalibreRef = function(ref){
   }
 
   var spineItem = this.getSpineItemFromChapterNumber(book.spine.spineItems, chapter);
-  var cfi = this.getCFIFromParagraphNumber(spineItem, paragraph);
-
-  if (cfi) {
-    return cfi;
-  }
-
-  return spineItem.href;
+  var cfiPromise = this.getCfiFromParagraphNumber(spineItem, paragraph);
+  cfiPromise.then((cfi) => {
+    console.log(cfi);
+    if (cfi) {
+      rendition.display(cfi);
+      // TODO: Highlight
+      // rendition.annotations.highlight(cfi);
+    } else {
+      rendition.display(spineItem.href);
+    }    
+  });
 };
 
 EPUBJS.Reader.prototype.getSpineItemFromChapterNumber = function(spineItems, chapterNumber){
@@ -3561,16 +3565,13 @@ EPUBJS.Reader.prototype.getSpineItemFromChapterNumber = function(spineItems, cha
 };
 
 EPUBJS.Reader.prototype.getSpineItemParagraphs = function(spineItem){
-  var paragraphs = spineItem.load(this.book.load.bind(this.book)).then((contents) => {
-    var spineItemDoc = contents;
-    var pNodes = spineItemDoc.body.getElementsByTagName("p");
-    var paragraphs = [...Array(pNodes.length).keys()].map((pIndex) => {
-      var pNode = spineItemDoc.body.getElementsByTagName("p").item(pIndex);
-      if (pNode.nodeType == 1) {
-        var cfi = spineItem.cfiFromElement(pNode);
-        return {paragraphNumber: pIndex + 1, cfi: cfi};
-      }
-    });
+  var pNodes = spineItem.document.body.getElementsByTagName("p");
+  var paragraphs = [...Array(pNodes.length).keys()].map((pIndex) => {
+    var pNode = spineItem.document.body.getElementsByTagName("p").item(pIndex);
+    if (pNode.nodeType == 1) {
+      var cfi = spineItem.cfiFromElement(pNode);
+      return {paragraphNumber: pIndex + 1, cfi: cfi};
+    }
     return paragraphs;
   });
   return paragraphs;
@@ -3587,14 +3588,22 @@ EPUBJS.Reader.prototype.getParagraphNumberFromCFI = function(spineItem, cfi){
   }
 };
 
-EPUBJS.Reader.prototype.getCFIFromParagraphNumber = function(spineItem, paragraphNumber){
-  var paragraphs = this.getSpineItemParagraphs(spineItem);
-  for (var i = 0; i < paragraphs.length; i++){
-    var paragraph = paragraphs[i];
-    if (paragraph.paragraphNumber === Number(paragraphNumber)){
-      return paragraph.cfi;
-    }
-  }
+EPUBJS.Reader.prototype.getCfiFromParagraphNumber = function(spineItem, paragraphNumber){
+  return spineItem.load(this.book.load.bind(this.book)).then((contents) => {
+    var spineItemDoc = contents;
+    var foundCfi;
+    var pNodes = spineItemDoc.getElementsByTagName("p");
+    [...Array(pNodes.length).keys()].map((pIndex) => {
+      var pNode = spineItemDoc.getElementsByTagName("p").item(pIndex);
+      if (pNode.nodeType == 1) {
+        var pNumber = pIndex + 1;
+        if (pNumber == Number(paragraphNumber)) {
+          foundCfi = spineItem.cfiFromElement(pNode);
+        }
+      }
+    });
+    return foundCfi;
+  });
 };
 
 EPUBJS.Reader.prototype.selectedRange = function(cfiRange){
@@ -3753,10 +3762,7 @@ EPUBJS.reader.CitationController = function() {
 
   var goToRef = function() {
     var ref = $citationInputRef.val();
-    var cfi = reader.getCfiFromCalibreRef(ref);
-    rendition.display(cfi);
-    // TODO: Highlight
-    rendition.annotations.highlight(cfi);
+    reader.gotoCalibreRef(ref);
   };
 
   var goToCFI = function() {
