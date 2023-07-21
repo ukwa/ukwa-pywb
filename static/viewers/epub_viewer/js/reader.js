@@ -3527,7 +3527,6 @@ EPUBJS.Reader.prototype.getCfiFromHref = function(href){
 EPUBJS.Reader.prototype.gotoCalibreRef = function(ref){
   // Go to chapter/paragraph indicated by Calibre-style reference
   // If reference doesn't resolve, instead go to beginning of chapter
-
   var reader = this;
   var book = this.book;
   var rendition = this.rendition;
