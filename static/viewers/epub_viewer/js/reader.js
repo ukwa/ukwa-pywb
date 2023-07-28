@@ -3309,7 +3309,9 @@ EPUBJS.Reader = function(bookPath, _options) {
 
 		window.addEventListener("hashchange", this.hashChanged.bind(this), false);
 
-		document.addEventListener('keydown', this.adjustFontSize.bind(this), false);
+		document.addEventListener("keydown", this.adjustFontSize.bind(this), false);
+
+    window.addEventListener("keydown", this.searchOverride.bind(this), false);
 
 		this.rendition.on("keydown", this.adjustFontSize.bind(this));
 		this.rendition.on("keydown", reader.ReaderController.arrowKeys.bind(this));
@@ -3337,6 +3339,23 @@ EPUBJS.Reader = function(bookPath, _options) {
 	window.addEventListener("beforeunload", this.unload.bind(this), false);
 
 	return this;
+};
+
+EPUBJS.Reader.prototype.searchOverride = function (e) {
+  // Override ctrl-f to instead display and focus on in-app search feature
+  var reader = this;
+
+  if (e.which === 114 || ((e.ctrlKey || e.metaKey) && e.which === 70)) { 
+    e.preventDefault();
+
+    // Open sidebar to Citation panel
+    reader.SidebarController.show();
+    reader.SidebarController.changePanelTo("Citation");
+
+    // Focus on search input
+    $searchInput = $("#search-input");
+    $searchInput.trigger("focus");
+  }
 };
 
 EPUBJS.Reader.prototype.adjustFontSize = function(e) {
@@ -3524,13 +3543,14 @@ EPUBJS.Reader.prototype.getCfiFromHref = function(href){
   return section.cfiFromElement(el);
 };
 
-EPUBJS.Reader.prototype.getCfiFromCalibreRef = function(ref){
-  // Return CFI to location specified by Calibre Reference Mode reference
-  // (chapter.paragraph), or chapter href as backup, as both CFIs and hrefs
-  // work as argument to rendition.display().
-
+EPUBJS.Reader.prototype.gotoCalibreRef = function(ref){
+  // Go to chapter/paragraph indicated by Calibre-style reference
+  // If reference doesn't resolve, instead go to beginning of chapter
   var reader = this;
   var book = this.book;
+  var rendition = this.rendition;
+
+  this.clearHighlights();
 
   var splitRef = ref.split(".");
   var chapter = Number(splitRef[0]);
@@ -3541,13 +3561,18 @@ EPUBJS.Reader.prototype.getCfiFromCalibreRef = function(ref){
   }
 
   var spineItem = this.getSpineItemFromChapterNumber(book.spine.spineItems, chapter);
-  var cfi = this.getCFIFromParagraphNumber(spineItem, paragraph);
-
-  if (cfi) {
-    return cfi;
-  }
-
-  return spineItem.href;
+  var cfiPromise = this.getCfiFromParagraphNumber(spineItem, paragraph);
+  cfiPromise.then((cfis) => {
+    console.log(cfis);
+    if (cfis && cfis.cfi) {
+      rendition.display(cfis.cfi);
+      if (cfis.range) {
+        rendition.annotations.highlight(cfis.range);
+      }
+    } else {
+      rendition.display(spineItem.href);
+    }    
+  });
 };
 
 EPUBJS.Reader.prototype.getSpineItemFromChapterNumber = function(spineItems, chapterNumber){
@@ -3568,6 +3593,7 @@ EPUBJS.Reader.prototype.getSpineItemParagraphs = function(spineItem){
       var cfi = spineItem.cfiFromElement(pNode);
       return {paragraphNumber: pIndex + 1, cfi: cfi};
     }
+    return paragraphs;
   });
   return paragraphs;
 };
@@ -3583,14 +3609,39 @@ EPUBJS.Reader.prototype.getParagraphNumberFromCFI = function(spineItem, cfi){
   }
 };
 
-EPUBJS.Reader.prototype.getCFIFromParagraphNumber = function(spineItem, paragraphNumber){
-  var paragraphs = this.getSpineItemParagraphs(spineItem);
-  for (var i = 0; i < paragraphs.length; i++){
-    var paragraph = paragraphs[i];
-    if (paragraph.paragraphNumber === Number(paragraphNumber)){
-      return paragraph.cfi;
+EPUBJS.Reader.prototype.getCfiFromParagraphNumber = function(spineItem, paragraphNumber){
+  // returns a Promise that resolves to an object with keys `cfi` and `range`
+  // that are the starting CFI and CFI range for the paragraph
+  return spineItem.load(this.book.load.bind(this.book)).then((contents) => {
+    var spineItemDoc = contents;
+    var cfis = {};
+
+    var pNodes = spineItemDoc.getElementsByTagName("p");
+    [...Array(pNodes.length).keys()].map((pIndex) => {
+      var pNode = spineItemDoc.getElementsByTagName("p").item(pIndex);
+      if (pNode.nodeType == 1) {
+        var pNumber = pIndex + 1;
+        if (pNumber == Number(paragraphNumber)) {
+          cfis.cfi = spineItem.cfiFromElement(pNode);
+
+          var range = document.createRange();
+          range.selectNodeContents(pNode);
+          cfis.range = spineItem.cfiFromRange(range);
+        }
+      }
+    });
+    return cfis;
+  });
+};
+
+EPUBJS.Reader.prototype.clearHighlights = function() {
+  var rendition = this.rendition;
+  var annotations = Object.values(rendition.annotations._annotations);
+  annotations.forEach(annotation => {
+    if (annotation.type === "highlight") {
+      rendition.annotations.remove(annotation.cfiRange, "highlight");
     }
-  }
+  });
 };
 
 EPUBJS.Reader.prototype.selectedRange = function(cfiRange){
@@ -3749,10 +3800,7 @@ EPUBJS.reader.CitationController = function() {
 
   var goToRef = function() {
     var ref = $citationInputRef.val();
-    var cfi = reader.getCfiFromCalibreRef(ref);
-    rendition.display(cfi);
-    // TODO: Highlight
-    // rendition.annotations.highlight(cfi);
+    reader.gotoCalibreRef(ref);
   };
 
   var goToCFI = function() {
@@ -3761,7 +3809,7 @@ EPUBJS.reader.CitationController = function() {
     // into title case for some reason
     cfiStr = cfiStr.charAt(0).toLowerCase() + cfiStr.slice(1);
     rendition.display(cfiStr);
-    // rendition.annotations.highlight(cfiStr);
+    rendition.annotations.highlight(cfiStr);
   };
 
   var doSearch = function(q) {
@@ -3785,18 +3833,9 @@ EPUBJS.reader.CitationController = function() {
     showSearchResults();
   };
 
-  var clearHighlights = function() {
-    var annotations = Object.values(rendition.annotations._annotations);
-    annotations.forEach(annotation => {
-      if (annotation.type === "highlight") {
-        rendition.annotations.remove(annotation.cfiRange, "highlight");
-      }
-    });
-  };
-
   var clearResults = function() {
     $searchResults.empty();
-    clearHighlights();
+    reader.clearHighlights();
   }
 
   var clearSearchInput = function() {
@@ -3835,7 +3874,7 @@ EPUBJS.reader.CitationController = function() {
     var cfi = event.target.getAttribute("data-cfi");
     var searchText = $searchInput.val();
 
-    clearHighlights();
+    reader.clearHighlights();
     rendition.display(cfi);
     rendition.annotations.highlight(cfi);
   });
@@ -4519,6 +4558,7 @@ EPUBJS.reader.SettingsController = function() {
 		"hide" : hide
 	};
 };
+
 EPUBJS.reader.SidebarController = function(book) {
 	var reader = this;
 
