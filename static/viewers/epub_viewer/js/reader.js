@@ -3309,7 +3309,9 @@ EPUBJS.Reader = function(bookPath, _options) {
 
 		window.addEventListener("hashchange", this.hashChanged.bind(this), false);
 
-		document.addEventListener('keydown', this.adjustFontSize.bind(this), false);
+		document.addEventListener("keydown", this.adjustFontSize.bind(this), false);
+
+    window.addEventListener("keydown", this.searchOverride.bind(this), false);
 
 		this.rendition.on("keydown", this.adjustFontSize.bind(this));
 		this.rendition.on("keydown", reader.ReaderController.arrowKeys.bind(this));
@@ -3337,6 +3339,23 @@ EPUBJS.Reader = function(bookPath, _options) {
 	window.addEventListener("beforeunload", this.unload.bind(this), false);
 
 	return this;
+};
+
+EPUBJS.Reader.prototype.searchOverride = function (e) {
+  // Override ctrl-f to instead display and focus on in-app search feature
+  var reader = this;
+
+  if (e.which === 114 || ((e.ctrlKey || e.metaKey) && e.which === 70)) { 
+    e.preventDefault();
+
+    // Open sidebar to Citation panel
+    reader.SidebarController.show();
+    reader.SidebarController.changePanelTo("Citation");
+
+    // Focus on search input
+    $searchInput = $("#search-input");
+    $searchInput.trigger("focus");
+  }
 };
 
 EPUBJS.Reader.prototype.adjustFontSize = function(e) {
@@ -4539,6 +4558,7 @@ EPUBJS.reader.SettingsController = function() {
 		"hide" : hide
 	};
 };
+
 EPUBJS.reader.SidebarController = function(book) {
 	var reader = this;
 
