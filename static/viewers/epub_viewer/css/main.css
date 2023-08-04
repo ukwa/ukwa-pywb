@@ -824,3 +824,4 @@ input:-ms-placeholder {
 .icon-columns:before { content: '\e810'; } /* '' */
 .icon-list:before { content: '\e800'; } /* '' */
 .icon-resize-small:before { content: '\e808'; } /* '' */
+.icon-print:before { content: '\e816'; } /* printer icon */

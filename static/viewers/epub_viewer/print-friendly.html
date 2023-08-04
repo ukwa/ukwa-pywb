@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Print Mode</title>
+
+    <link rel="stylesheet" href="css/printfriendly.css">
+
+    <script src="js/libs/jquery.min.js"></script>
+    <script src="js/libs/zip.min.js"></script>
+    <script src="js/epub.js"></script>
+  </head>
+
+  <body>
+    <button id="backToMainView">Back to main view</button>
+    <select id="toc"></select>
+    <div id="viewer" class="scrolled"></div>
+
+    <script>
+      var params = URLSearchParams && new URLSearchParams(document.location.search.substring(1));
+      var url = params && params.get("bookPath") && decodeURIComponent(params.get("bookPath"));
+
+      var book = ePub(url || "https://s3.amazonaws.com/epubjs/books/alice/OPS/package.opf");
+      var rendition = book.renderTo("viewer", {
+        flow: "scrolled-doc",
+        width: "100%",
+        fullsize: true
+      });
+
+      rendition.display();
+
+      var $backToMain = $("#backToMainView");
+
+      $backToMain.on("click", function(){
+        var currentUrl = window.location.href;
+        const mainViewUrl = currentUrl.replace("print-friendly.html", "index.html").split("#")[0];
+        window.location.href = mainViewUrl;
+      });
+
+      // TODO: We may want to add the spine items that precede chapters to the
+      // select as well (e.g. cover, table of contents). This may be trickier
+      // as we don't necessary have labels for these
+      book.loaded.navigation.then(function(toc){
+        var $select = document.getElementById("toc"),
+            docfrag = document.createDocumentFragment();
+
+        var flattenedToc = (function flatten(items) {
+          return [].concat.apply([], items.map(item => [].concat.apply(
+            [item],
+            flatten(item.subitems)
+          )));
+        })(toc.toc);
+
+        flattenedToc.forEach((chapter) => {
+          if (chapter.href) {
+            var option = document.createElement("option");
+            option.textContent = chapter.label;
+            docfrag.appendChild(option);
+          }
+        });
+
+        $select.appendChild(docfrag);
+
+        $select.onchange = function(){
+          var label = $(this).find('option:selected').text();
+          var chapter = flattenedToc.find(chapter => chapter.label === label);
+          displayChapter(chapter.href);
+          return false;
+        };
+
+        function displayChapter(href){
+          if (!href) {
+            var section = book.spine.get(0);
+            rendition.display(section);
+          } else {
+            var section = book.spine.get(href);
+            rendition.display(href);
+          }
+        }
+      });
+
+    </script>
+  </body>
+</html>
