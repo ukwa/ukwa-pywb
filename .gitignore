@@ -102,3 +102,6 @@ ENV/
 
 # Don't commit integration test results
 integration-test/results/
+
+# macOS
+*.DS_Store

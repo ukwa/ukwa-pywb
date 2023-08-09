@@ -3243,7 +3243,7 @@ EPUBJS.Reader = function(bookPath, _options) {
 		sidebarReflow: false,
     useCfiForRefs: false,
 		generatePagination: false,
-		history: true
+		history: true,
 	});
 
 	// Overide options with search parameters
@@ -3313,6 +3313,8 @@ EPUBJS.Reader = function(bookPath, _options) {
 
     window.addEventListener("keydown", this.searchOverride.bind(this), false);
 
+    window.addEventListener("beforeprint", this.printOverride.bind(this), false);
+
 		this.rendition.on("keydown", this.adjustFontSize.bind(this));
 		this.rendition.on("keydown", reader.ReaderController.arrowKeys.bind(this));
 
@@ -3356,6 +3358,18 @@ EPUBJS.Reader.prototype.searchOverride = function (e) {
     $searchInput = $("#search-input");
     $searchInput.trigger("focus");
   }
+};
+
+EPUBJS.Reader.prototype.printOverride = function(e) {
+  // make ctrl-p redirect to print-friendly rendition
+  e.preventDefault();
+  this.goToPrintView();
+};
+
+EPUBJS.Reader.prototype.goToPrintView = function() {
+  const url = window.location.href;
+  const printViewUrl = url.replace("index.html", "print-friendly.html").split("#")[0];
+  window.location.href = printViewUrl;
 };
 
 EPUBJS.Reader.prototype.adjustFontSize = function(e) {
@@ -3953,7 +3967,8 @@ EPUBJS.reader.ControlsController = function(book) {
 			$main = $("#main"),
 			$sidebar = $("#sidebar"),
 			$settings = $("#setting"),
-			$bookmark = $("#bookmark");
+			$bookmark = $("#bookmark"),
+      $printview = $("#printview");
 	/*
 	var goOnline = function() {
 		reader.offline = false;
@@ -4001,6 +4016,10 @@ EPUBJS.reader.ControlsController = function(book) {
 			});
 		}
 	}
+
+  $printview.on("click", function() {
+    reader.goToPrintView();
+  })
 
 	$settings.on("click", function() {
 		reader.SettingsController.show();
