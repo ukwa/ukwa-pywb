@@ -148,9 +148,33 @@ directory in this repository directly. (The above assumes this repository is ins
 
 This is recommended to improve performance.
 
+### Deployment on the UKWA DEV Swarm for Integration Testing
 
+To deploy in a more realistic environment, the service can be deployed on the DEV Swarm at UKWA.
 
+The current process is optimized for contributions being worked on directly in GitHub. e.g. if changes are made to ukwa/ukwa-pywb on branches or tags that match [this](https://github.com/ukwa/ukwa-pywb/blob/4d323f170b1ad03859561490b2571db8c48caf52/.github/workflows/push-to-docker-hub.yml#L4-L10) then a Docker image will be built that can be deployed on DEV.  e.g. commit to master, wait for the container ukwa/ukwa-pywb:master to be built, deploy to DEV by logging into it and using an appropriate docker service update command, e.g.:
 
+    docker service update access_website_pywb --image ukwa/ukwa-pywb:master
+
+Deploying a locally-built Docker image is more difficult, as the service runs over two Swarm hosts, so if you build and tag the Docker image on one and the service tries to deploy on the other, it will grumble.  However, subsequent deployment attempts should try different hosts, so it should work eventually.
+
+To do this, first build and tag the image locally, in the `ukwa-pywb` folder:
+
+    docker build -t ukwa/ukwa-pywb:local-test .
+
+Then use that tag for deployment:
+
+    docker service update access_website_pywb --image ukwa/ukwa-pywb:local-test
+
+Once the service gets deployed on the same node as the build, it should be possible to test it via the DEV system URL.
+
+#### Local deployment across Swarm nodes
+
+To ensure your service can run on any node, you can:
+
+- Log into each node and run the same build command on each one.
+- Use `docker export` to make a tar of the image, then `docker import` it on other nodes.
+- Push the images to an internal registry and deploy from there instead, as per https://docs.gitlab.com/ee/user/packages/container_registry/build_and_push_images.html
 
 
    
