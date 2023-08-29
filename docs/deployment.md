@@ -150,6 +150,10 @@ This is recommended to improve performance.
 
 ## UKWA Production Deployment
 
+All 'official' deployments are run in Docker Swarm stacks, and `ukwa-pywb` is part of multiple stacks, all of which are defined in https://github.com/ukwa/ukwa-services/
+
+We run DEV, BETA and PROD swarms, with the latter two being public access.
+
 ### Deployment on the UKWA DEV Swarm for Integration Testing
 
 To deploy in a more realistic environment, the service can be deployed on the DEV Swarm at UKWA.
