@@ -148,6 +148,8 @@ directory in this repository directly. (The above assumes this repository is ins
 
 This is recommended to improve performance.
 
+## UKWA Production Deployment
+
 ### Deployment on the UKWA DEV Swarm for Integration Testing
 
 To deploy in a more realistic environment, the service can be deployed on the DEV Swarm at UKWA.
@@ -177,4 +179,6 @@ To ensure your service can run on any node, you can:
 - Push the images to an internal registry and deploy from there instead, as per https://docs.gitlab.com/ee/user/packages/container_registry/build_and_push_images.html
 
 
-   
+### Deployment to BETA and PROD
+
+Full deployment must be done via public tagged images, added or updated in the relevant stack from the `ukwa-services` repo(s). 
