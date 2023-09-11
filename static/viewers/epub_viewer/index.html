@@ -24,8 +24,9 @@
                 window.reader = ePubReader("https://s3.amazonaws.com/moby-dick/", {
                    restore: true,
                    contained: true,
-                   // Ensure we use the streamed/directory-layout loading mode:
-                   openAs: "directory"
+                   // Allow the reader to determine the open mode based on file extension etc.
+                   // See: https://github.com/futurepress/epub.js/blob/f09089cf77c55427bfdac7e0a4fa130e373a19c8/src/book.js#L410
+                   // openAs: "directory" // Default is: undefined
                  });
               }
             };
