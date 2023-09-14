@@ -5,9 +5,7 @@ on:
     tags:
       - '*'
     branches:
-      - master
-      - custom-viewers
-      - '2.7.*'
+      - '*'
 
 jobs:
   run_docker_build_workflow:
