@@ -3240,7 +3240,7 @@ EPUBJS.Reader = function(bookPath, _options) {
 		contained : undefined,
 		bookKey : undefined,
 		styles : undefined,
-		sidebarReflow: false,
+		sidebarReflow: true,
     useCfiForRefs: false,
 		generatePagination: false,
 		history: true,
