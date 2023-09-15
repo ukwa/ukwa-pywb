@@ -9458,7 +9458,7 @@ class IframeView {
 
     this.iframe.style.border = "none"; // sandbox
 
-    this.iframe.sandbox = "allow-same-origin";
+    this.iframe.sandbox = "allow-same-origin allow-modals";
 
     if (this.settings.allowScriptedContent) {
       this.iframe.sandbox += " allow-scripts";

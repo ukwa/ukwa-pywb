@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Print Mode</title>
+    <title>UKWA Epub Viewer Print Mode</title>
 
     <link rel="stylesheet" href="css/printfriendly.css">
 
@@ -14,6 +14,7 @@
 
   <body>
     <button id="backToMainView">Back to main view</button>
+    <button id="printSelection">Print selection</button>
     <select id="toc"></select>
     <div id="viewer" class="scrolled"></div>
 
@@ -31,12 +32,21 @@
       rendition.display();
 
       var $backToMain = $("#backToMainView");
+      var $print = $("#printSelection");
 
       $backToMain.on("click", function(){
         var currentUrl = window.location.href;
         const mainViewUrl = currentUrl.replace("print-friendly.html", "index.html").split("#")[0];
         window.location.href = mainViewUrl;
       });
+
+      $print.on("click", function(){
+        printIFrameContents();
+      });
+
+      function printIFrameContents() {
+        document.querySelector("div.epub-view > iframe").contentWindow.print();
+      }
 
       // TODO: We may want to add the spine items that precede chapters to the
       // select as well (e.g. cover, table of contents). This may be trickier
