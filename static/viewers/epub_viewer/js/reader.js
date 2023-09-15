@@ -3367,8 +3367,18 @@ EPUBJS.Reader.prototype.printOverride = function(e) {
 };
 
 EPUBJS.Reader.prototype.goToPrintView = function() {
+  var reader = this;
+  var book = this.book;
+
   const url = window.location.href;
-  const printViewUrl = url.replace("index.html", "print-friendly.html").split("#")[0];
+  let printViewUrl = url.replace("index.html", "print-friendly.html").split("#")[0];
+
+  var cfi = reader.rendition.currentLocation().start.cfi;
+  var spineItem = book.spine.get(cfi);
+  if (spineItem.href) {
+    printViewUrl += "&href=" + spineItem.href;
+  }
+
   window.location.href = printViewUrl;
 };
 
