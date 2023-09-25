@@ -1,5 +1,5 @@
         <header>
-            <a href="{{ env['pywb.app_prefix'] }}/{{ env.pywb_lang + '/' if env.pywb_lang else ''}}" class="logo">
+            <a href="/{{ env.pywb_lang + '/' if env.pywb_lang else '' }}" class="logo">
                 <img src="{{ static_prefix }}/ukwa-2018-w-med.png" width="200" height="122" alt="{{ _('UK Web Archive logo') }}">
             </a>
             {% if not no_lang %}
