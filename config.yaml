@@ -1,6 +1,14 @@
 INDEX:   &INDEX ${UKWA_INDEX}
 ARCHIVE: &ARCHIVE ${UKWA_ARCHIVE}
 
+debug: true
+
+ui:
+    logo: ukwa-2018-w-sml.png
+    navbar_background_hex: 2e6dd9
+    navbar_color_hex: fff
+    navbar_light_buttons: true
+
 collections:
     # live ark
     live-ark:
@@ -83,10 +91,11 @@ collections:
 
     in-test:
         index:
-          type: cdx
-          api_url: "http://cdx.api.wa.bl.uk/data-heritrix?url={url}&closest={closest}&sort=closest&filter=!statuscode:429&filter=!mimetype:warc/revisit"
-          replay_url: ""
+            type: cdx
+            api_url: "http://cdx.api.wa.bl.uk/data-heritrix?url={url}&closest={closest}&sort=closest&filter=!statuscode:429&filter=!mimetype:warc/revisit"
+            replay_url: ""
         archive_paths: "webhdfs://hdfs.api.wa.bl.uk"
+
 
     live:
         index: $live

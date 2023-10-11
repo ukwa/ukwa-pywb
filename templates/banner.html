@@ -27,29 +27,33 @@ __WB_initSelectionLimit({{ env.select_word_limit }});
 
 {% endif %}
 
-<!-- default banner, create through js -->
-<script src='{{ static_prefix }}/default_banner.js'> </script>
-<link rel='stylesheet' href='{{ static_prefix }}/default_banner.css'/>
 <script>
 window.banner_info = {
-    is_gmt: false,
-    logoImg: "{{ static_prefix }}/ukwa-2018-w-sml.png",
+  is_gmt: true,
 
-    liveMsg: decodeURIComponent("{{ _Q('Live On') }}"),
+  liveMsg: decodeURIComponent("{{ _Q('Live on') }}"),
 
-    calendarAlt: decodeURIComponent("{{ _Q('Calendar icon') }}"),
-    calendarLabel: decodeURIComponent("{{ _Q('Back to Calendar') }}"),
-    choiceLabel: decodeURIComponent("{{ _Q('Language:') }}"),
-    loadingLabel: decodeURIComponent("{{ _Q('Loading...') }}"),
-    logoAlt: decodeURIComponent("{{ _Q('UK Web Archive Logo') }}"),
+  calendarAlt: decodeURIComponent("{{ _Q('Calendar icon') }}"),
+  calendarLabel: decodeURIComponent("{{ _Q('View All Captures') }}"),
+  choiceLabel: decodeURIComponent("{{ _Q('Language:') }}"),
+  loadingLabel: decodeURIComponent("{{ _Q('Loading...') }}"),
+  logoAlt: decodeURIComponent("{{ _Q('Logo') }}"),
 
-    locale: "{{ env.pywb_lang | default('en') }}",
-    curr_locale: "{{ env.pywb_lang }}",
-    locales: {{ locales }},
-    locale_prefixes: {{ get_locale_prefixes() | tojson }},
-    prefix: "{{ wb_prefix }}",
-    staticPrefix: "{{ static_prefix }}"
+  locale: "{{ env.pywb_lang | default('en') }}",
+  curr_locale: "{{ env.pywb_lang }}",
+  locales: {{ locales }},
+  locale_prefixes: {{ get_locale_prefixes() | tojson }},
+  prefix: "{{ wb_prefix }}",
+  staticPrefix: "{{ static_prefix }}",
+
+  logoImg: "{{ ui.logo }}"
 };
+</script>
+<script src="{{ static_prefix }}/loading-spinner/loading-spinner.js"></script>
+<script src="{{ static_prefix }}/vue/vueui.js"></script>
+<link rel="stylesheet" href='{{ static_prefix }}/vue_banner.css'/>
+
+<script>
 window.activeUrl = "{{ url }}";
 </script>
 
